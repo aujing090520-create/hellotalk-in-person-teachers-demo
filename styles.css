@@ -620,6 +620,9 @@
 
 /* In-person course card: available locations are part of the course, not a generic note. */
 .map-profile .course-card { padding:0; overflow:hidden; }
+.map-profile .offline-map-card { position:relative; isolation:isolate; }
+.map-profile .offline-map-card::before { content:""; position:absolute; z-index:0; inset:0; pointer-events:none; opacity:.38; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 116'%3E%3Cg fill='none' stroke='%23b9adf2' stroke-linecap='round'%3E%3Cpath d='M-14 22C35 6 74 46 116 29s63-31 118-2' stroke-width='3'/%3E%3Cpath d='M-6 82c39-30 70 3 108-20s64-20 126 10' stroke-width='2'/%3E%3Cpath d='M28 -6c11 31 42 41 68 38s44 20 49 57' stroke-width='2'/%3E%3Cpath d='M185 -9c-24 25-39 49-20 94' stroke-width='3'/%3E%3C/g%3E%3Cpath fill='%237247f3' fill-opacity='.28' d='M164 27c0-9-7-16-16-16s-16 7-16 16c0 16 16 28 16 28s16-12 16-28Z'/%3E%3Ccircle cx='148' cy='27' r='5' fill='%23fff' fill-opacity='.75'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right -10px center; background-size:180px 96px; }
+.map-profile .offline-map-card > * { position:relative; z-index:1; }
 .map-profile .course-card-summary { display:block; width:100%; padding:7px 12px 5px; text-align:left; background:transparent; }
 .map-profile .course-card-title { display:flex; min-width:0; align-items:center; gap:6px; margin-bottom:5px; }
 .map-profile .course-card-title > strong { display:block; min-width:0; flex:1; overflow:hidden; color:#22242a; font-size:14px; line-height:16px; text-overflow:ellipsis; white-space:nowrap; }
