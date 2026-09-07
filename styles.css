@@ -411,6 +411,28 @@
 .map-profile .profile-actions .primary { font-size:15px; }
 .map-profile .profile-actions .gift { color:#fff; background:#e900a7; font-size:19px; }
 
+/* Public teacher profile: reuse the established online-teacher information rhythm. */
+.teacher-archive { padding-top:10px !important; }
+.teacher-archive h3 { margin:0 0 9px; color:#22242a; font-size:16px; line-height:22px; }
+.teacher-types { padding-bottom:17px; border-bottom:1px solid #f0f0f2; }
+.teacher-types > div { display:flex; gap:7px; overflow:hidden; }
+.teacher-types span { flex:0 0 auto; padding:6px 10px; border-radius:14px; color:#7d7f86; background:#f5f5f6; font-size:11px; }
+.teacher-self-intro { position:relative; padding:17px 0 15px; border-bottom:1px solid #f0f0f2; }
+.teacher-self-intro p { max-height:62px; margin:0; overflow:hidden; color:#42444b; font-size:13px; line-height:20px; }
+.teacher-self-intro button { position:absolute; right:0; bottom:13px; display:grid; width:20px; height:20px; place-items:center; padding:0; border-radius:50%; color:#fff; background:#7047f5; font-size:9px; }
+.teacher-time-entry { display:flex; width:100%; height:48px; align-items:center; justify-content:center; gap:7px; margin-top:15px; border-radius:9px; color:#26282e; background:#f6f6f7; font-size:14px; }
+.teacher-time-entry span { font-size:18px; line-height:1; }
+.teacher-reviews { padding-top:10px !important; }
+.review-summary { display:flex; justify-content:space-between; margin-bottom:12px; color:#33353b; font-size:13px; }
+.review-summary span { color:#8b8d94; }
+.teacher-reviews article { padding:12px; border-radius:10px; background:#f7f7f8; }
+.review-head { display:flex; align-items:center; gap:7px; }
+.review-head .mini-avatar { width:26px; height:26px; }
+.review-head b { color:#34363c; font-size:12px; }
+.review-head span { margin-left:auto; color:#f4b523; font-size:11px; letter-spacing:1px; }
+.teacher-reviews article p { margin:9px 0 6px; color:#4d5057; font-size:12px; line-height:18px; }
+.teacher-reviews article small { color:#9b9da3; font-size:10px; }
+
 .detail-nav { height:52px; display:grid; grid-template-columns:36px 1fr 36px; align-items:center; padding:0 14px; border-bottom:1px solid #f3f3f4; background:#fff; }
 .detail-nav button { color:#202228; background:transparent; font-size:23px; }
 .detail-nav strong { overflow:hidden; text-align:center; text-overflow:ellipsis; white-space:nowrap; font-size:16px; }
