@@ -141,6 +141,7 @@
  .map-attribution { position:absolute; z-index:3; right:6px; bottom:5px; color:rgba(41,44,48,.72); background:rgba(255,255,255,.76); font-size:8px; line-height:14px; pointer-events:none; }
 .map-marker { position:absolute; z-index:1; width:19px; min-width:19px; height:19px; padding:0; border:0; border-radius:50% 50% 50% 4px; background:#7047f5; box-shadow:0 2px 6px rgba(70,42,185,.32); transform:translate(-50%,-100%) rotate(-45deg); pointer-events:auto; }
 .map-marker::before { content:""; position:absolute; top:6px; left:6px; width:7px; height:7px; border-radius:50%; background:#fff; }
+.map-marker.multi-course { z-index:2; }
 .map-marker.active { z-index:2; background:#ef4abc; box-shadow:0 4px 9px rgba(196,41,141,.34); transform:translate(-50%,-100%) rotate(-45deg) scale(1.15); }
 .map-marker span { display:none; }
 .venue-list { max-height:143px; overflow:auto; padding-top:8px; }

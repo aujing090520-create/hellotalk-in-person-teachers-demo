@@ -298,7 +298,8 @@ function markerPosition(venue, city) {
 function renderMapMarkers(venues, active) {
   return venues.map((item) => {
     const position = markerPosition(item.venue, state.mapCity);
-    return `<button data-action="select-venue" data-venue="${item.venue}" class="map-marker ${item.venue === active ? 'active' : ''}" style="left:${position.left};top:${position.top}" aria-label="${item.venue}"><span></span></button>`;
+    const multipleCourses = item.prices.length > 1;
+    return `<button data-action="select-venue" data-venue="${item.venue}" class="map-marker ${multipleCourses ? 'multi-course' : ''} ${item.venue === active ? 'active' : ''}" style="left:${position.left};top:${position.top}" aria-label="${item.venue}"><span></span></button>`;
   }).join('');
 }
 
