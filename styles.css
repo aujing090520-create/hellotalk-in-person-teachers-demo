@@ -631,7 +631,6 @@
 .map-profile .course-meta b { margin-top:1px; font-size:16px; line-height:18px; }
 .course-venue-inline { display:flex; align-items:center; justify-content:space-between; min-height:23px; padding:3px 12px 5px; border-top:1px solid #e8e8eb; color:#74767d; font-size:10px; }
 .course-venue-inline span { display:flex; min-width:0; align-items:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.course-venue-inline b { flex:0 0 auto; margin-left:3px; color:#575a62; font-weight:700; }
 .venue-pin { display:inline-flex; flex:0 0 auto; align-items:center; justify-content:center; color:#7047f5; }
 .course-venue-inline button { flex:0 0 auto; margin-left:8px; padding:2px 0 2px 7px; color:#7047f5; background:transparent; font-size:10px; }
 

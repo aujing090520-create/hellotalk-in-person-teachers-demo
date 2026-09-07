@@ -434,7 +434,7 @@ function renderCourseVenueBlock(teacher) {
   const venues = courseVenues(teacher);
   const venue = currentVenue(teacher);
   const venueLabel = venues.length > 1 ? `${venue.venue}等 ${venues.length} 处` : venue.venue;
-  return `<div class="course-venue-inline"><span><i class="venue-pin" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg></i><b>面授地点</b>：${venueLabel}</span><button data-action="open-venue-map" data-id="${teacher.id}" data-venue="${venue.venue}">地图 ›</button></div>`;
+  return `<div class="course-venue-inline"><span><i class="venue-pin" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg></i>${venueLabel}</span><button data-action="open-venue-map" data-id="${teacher.id}" data-venue="${venue.venue}">地图 ›</button></div>`;
 }
 
 function renderCourseVenueSection(teacher, venue) {
