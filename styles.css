@@ -617,7 +617,10 @@
 /* In-person course card: available locations are part of the course, not a generic note. */
 .map-profile .course-card { padding:0; overflow:hidden; }
 .map-profile .course-card-summary { display:block; width:100%; padding:7px 12px 5px; text-align:left; background:transparent; }
-.map-profile .course-card-summary > strong { display:block; margin-bottom:5px; color:#22242a; font-size:14px; line-height:16px; }
+.map-profile .course-card-title { display:flex; min-width:0; align-items:center; gap:6px; margin-bottom:5px; }
+.map-profile .course-card-title > strong { display:block; min-width:0; flex:1; overflow:hidden; color:#22242a; font-size:14px; line-height:16px; text-overflow:ellipsis; white-space:nowrap; }
+.in-person-badge { display:inline-flex; flex:0 0 auto; align-items:center; gap:2px; padding:3px 5px; border-radius:8px; color:#6244d9; background:#eeeaff; font-size:9px; font-weight:700; line-height:12px; }
+.in-person-badge svg,.venue-pin svg { width:11px; height:11px; stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; }
 .map-profile .course-card-body { gap:9px; }
 .map-profile .course-card-body img { width:92px; height:50px; flex-basis:92px; border-radius:8px; }
 .map-profile .course-meta p { gap:7px; margin-bottom:3px; font-size:10px; }
@@ -626,8 +629,10 @@
 .map-profile .course-meta p span { font-size:10px; }
 .course-icon { width:13px; height:13px; flex:0 0 13px; stroke:currentColor; stroke-width:1.9; fill:none; stroke-linecap:round; stroke-linejoin:round; }
 .map-profile .course-meta b { margin-top:1px; font-size:16px; line-height:18px; }
-.course-venue-inline { display:flex; align-items:center; justify-content:space-between; min-height:22px; padding:3px 12px 5px; border-top:1px solid #e8e8eb; color:#74767d; font-size:10px; }
-.course-venue-inline span { overflow:hidden; min-width:0; text-overflow:ellipsis; white-space:nowrap; }
+.course-venue-inline { display:flex; align-items:center; justify-content:space-between; min-height:23px; padding:3px 12px 5px; border-top:1px solid #e8e8eb; color:#74767d; font-size:10px; }
+.course-venue-inline span { display:flex; min-width:0; align-items:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.course-venue-inline b { flex:0 0 auto; margin-left:3px; color:#575a62; font-weight:700; }
+.venue-pin { display:inline-flex; flex:0 0 auto; align-items:center; justify-content:center; color:#7047f5; }
 .course-venue-inline button { flex:0 0 auto; margin-left:8px; padding:2px 0 2px 7px; color:#7047f5; background:transparent; font-size:10px; }
 
 .map-teacher-context { display:flex; align-items:center; justify-content:space-between; min-height:25px; margin:-2px 0 7px; padding:4px 9px; border-radius:7px; color:#6254a8; background:#f5f1ff; font-size:11px; }
