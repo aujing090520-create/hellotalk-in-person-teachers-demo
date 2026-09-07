@@ -308,7 +308,8 @@ function renderVenueList(venues, active) {
 
 function renderGlobalCourseList(venues, active) {
   const grouped = [...new Map(venues.map((item) => [`${item.teacher.id}:${item.course.id}`, { teacher: item.teacher, course: item.course, venues: venues.filter((row) => row.teacher.id === item.teacher.id && row.course.id === item.course.id) }])).values()];
-  return `<div class="course-map-list global-course-list">${grouped.map(({ teacher, course, venues: courseVenues }) => `<article class="map-course-card ${course.id === state.selectedCourse && courseVenues.some((venue) => venue.venue === active) ? 'selected' : ''}"><div class="map-course-head"><div><strong>${course.title}</strong><small class="course-teacher-meta"><button class="course-teacher-avatar photo-${teacher.photo}" data-action="profile" data-id="${teacher.id}" aria-label="查看${teacher.name}的资料"></button><span>${teacher.name} · ${course.duration}</span></small></div><em>¥${course.price}/节课</em></div><div class="map-course-venues">${courseVenues.map((venue) => `<button data-action="select-global-course-venue" data-course="${course.id}" data-venue="${venue.venue}" class="${course.id === state.selectedCourse && venue.venue === active ? 'selected' : ''}"><b>${venue.venue}</b><small>${venue.sessionTime}</small></button>`).join('')}</div></article>`).join('') || '<div class="empty">没有符合条件的课程</div>'}</div>`;
+  const orderedGroups = active ? [...grouped].sort((a, b) => Number(b.venues.some((venue) => venue.venue === active)) - Number(a.venues.some((venue) => venue.venue === active))) : grouped;
+  return `<div class="course-map-list global-course-list">${orderedGroups.map(({ teacher, course, venues: courseVenues }) => `<article class="map-course-card ${courseVenues.some((venue) => venue.venue === active) ? 'selected' : ''}"><div class="map-course-head"><div><strong>${course.title}</strong><small class="course-teacher-meta"><button class="course-teacher-avatar photo-${teacher.photo}" data-action="profile" data-id="${teacher.id}" aria-label="查看${teacher.name}的资料"></button><span>${teacher.name} · ${course.duration}</span></small></div><em>¥${course.price}/节课</em></div><div class="map-course-venues">${courseVenues.map((venue) => `<button data-action="select-global-course-venue" data-course="${course.id}" data-venue="${venue.venue}" class="${venue.venue === active ? 'selected' : ''}"><b>${venue.venue}</b><small>${venue.sessionTime}</small></button>`).join('')}</div></article>`).join('') || '<div class="empty">没有符合条件的课程</div>'}</div>`;
 }
 
 function renderTeacherCourseList(teacher, active) {
@@ -328,12 +329,20 @@ function bindDynamicMapResults() {
   const focusedTeacher = teachers.find((teacher) => teacher.id === state.mapTeacherId);
   app.querySelectorAll('[data-map-markers] [data-action="select-venue"], [data-map-results] [data-action="select-venue"], [data-map-results] [data-action="select-teacher-course-venue"], [data-map-results] [data-action="select-global-course-venue"]').forEach((element) => {
     element.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const fromMapMarker = Boolean(event.currentTarget.closest('[data-map-markers]'));
       state.activeVenue = event.currentTarget.dataset.venue;
       if (event.currentTarget.dataset.course) {
         state.selectedCourse = event.currentTarget.dataset.course;
         state.selectedVenue = event.currentTarget.dataset.venue;
+      } else if (fromMapMarker) {
+        const selectedRow = venueRows(state.mapCity).find((item) => item.venue === state.activeVenue);
+        if (selectedRow) {
+          state.selectedCourse = selectedRow.course.id;
+          state.selectedVenue = selectedRow.venue;
+        }
       }
-      refreshMapResults();
+      refreshMapResults({ revealActiveResult: fromMapMarker });
     });
   });
   app.querySelectorAll('[data-map-results] [data-action="open-course-from-map"]').forEach((element) => {
@@ -355,7 +364,17 @@ function bindDynamicMapResults() {
   });
 }
 
-function refreshMapResults() {
+function revealActiveMapResult() {
+  requestAnimationFrame(() => {
+    const list = app.querySelector('.global-course-list, .teacher-course-list');
+    const selected = list?.querySelector('.map-course-card.selected, .teacher-course-card.selected');
+    if (!list || !selected) return;
+    const targetTop = selected.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop;
+    list.scrollTo({ top: Math.max(0, targetTop - 8), behavior: 'auto' });
+  });
+}
+
+function refreshMapResults({ revealActiveResult = false } = {}) {
   const venues = venueRows(state.mapCity);
   const active = state.activeVenue || venues[0]?.venue || '';
   app.querySelectorAll('.map-filters [data-action="map-filter"]').forEach((button) => {
@@ -371,6 +390,7 @@ function refreshMapResults() {
   if (cityResults) cityResults.outerHTML = renderCitySearchResults() || '<div data-search-city-results></div>';
   stage.innerHTML = renderMapStage(venues, active, focusedTeacher);
   bindDynamicMapResults();
+  if (revealActiveResult) revealActiveMapResult();
 }
 
 function renderMapSheet() {
