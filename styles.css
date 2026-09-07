@@ -158,6 +158,9 @@
 .teacher-course-head strong,.teacher-course-head small,.map-course-head strong,.map-course-head small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .teacher-course-head strong,.map-course-head strong { color:#2b2d33; font-size:13px; line-height:16px; }
 .teacher-course-head small,.map-course-head small { margin-top:2px; color:#878a91; font-size:10px; }
+.map-course-head .course-teacher-meta { display:flex; align-items:center; gap:5px; overflow:visible; white-space:normal; }
+.course-teacher-avatar { width:18px; height:18px; flex:0 0 18px; padding:0; border:1px solid #fff; border-radius:50%; background-size:327% 218%; background-repeat:no-repeat; box-shadow:0 0 0 1px #e5e5e8; }
+.course-teacher-meta span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .teacher-course-head em,.map-course-head em { color:#7047f5; font-size:11px; font-style:normal; white-space:nowrap; }
 .teacher-course-head > span { color:#9b9da4; font-size:17px; }
 .teacher-course-venues,.map-course-venues { display:flex; gap:6px; padding:0 10px 9px; overflow-x:auto; border-top:1px solid #f0f0f2; }
