@@ -502,7 +502,7 @@ function renderProfileVenueDetail(teacher) {
   const total = venues.length;
   const index = total ? Math.min(state.profileVenueIndex, total - 1) : 0;
   const venue = venues[index] || { venue: '暂未设置上课地点', area: '', slots: '' };
-  return `<div class="profile-venue-detail"><button class="profile-venue-anchor" data-action="profile-venue-next" aria-label="切换上课地点，当前为${venue.venue}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg><small>上课地点 ${index + 1}/${total}</small><strong>${venue.venue}</strong><em>${venue.area} · ${venue.slots} 可约</em></button></div>`;
+  return `<div class="profile-venue-detail"><button class="profile-venue-anchor" data-action="profile-venue-next" aria-label="切换上课地点，当前为${venue.venue}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg><small>上课地点 · ${total} 处</small><strong>${venue.venue}</strong><em>${venue.area} · ${venue.slots} 可约</em></button></div>`;
 }
 
 function renderProfile() {
