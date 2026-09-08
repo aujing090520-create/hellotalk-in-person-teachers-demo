@@ -16,7 +16,7 @@ const people = [
   { name: '林霁', photo: 'p4', gender: '♀', city: '深圳市, 中国', distance: '5km', status: '7 分钟前活跃', intro: '想去：日本', tags: ['ISFJ', '火影忍者', '夏目友人帐', '堀与宫村', '王者荣耀'], newcomer: true, lang: 'CN  ⇄  JP' }
 ];
 
-const state = { city: '深圳', mapCity: '深圳', rootPage: 'partner', myRoute: 'courses', creatorPlacePage: false, vip: false, activeLanguage: '中文（简体）', sheet: false, cityMenu: false, sheetCityMenu: false, mapFilter: '全部', mapLanguage: '全部', mapQuery: '', activeVenue: null, mapTeacherId: null, profileId: null, profileRoute: 'profile', profileTab: 'archive', profileMore: false, courseFilter: 'all', courseOrigin: 'profile', selectedCourse: 'conversation', selectedVenue: '', selectedDate: '今天', selectedSlot: '19:00', bookingConfirmed: false, paymentSheet: false, paymentMethod: '支付宝', courseDelivery: '', courseDeliverySheet: false, creatorCity: '深圳', creatorSheet: '', creatorVenueQuery: '', creatorVenueResults: [], creatorPlaceHistory: [], courseType: '1v1', courseTitle: '', courseTags: [], courseLanguage: '', courseDuration: '', courseSessions: '', courseDescription: '', coursePrice: '', courseVenues: [], followed: false, toast: '', consoleScenario: '', consoleMode: 'discovery', uiLanguage: 'zh' };
+const state = { city: '深圳', mapCity: '深圳', rootPage: 'partner', myRoute: 'courses', creatorPlacePage: false, vip: false, activeLanguage: '中文（简体）', sheet: false, cityMenu: false, sheetCityMenu: false, mapFilter: '全部', mapLanguage: '全部', mapQuery: '', activeVenue: null, mapTeacherId: null, profileId: null, profileRoute: 'profile', profileTab: 'archive', profileMore: false, profileVenueIndex: 0, courseFilter: 'all', courseOrigin: 'profile', selectedCourse: 'conversation', selectedVenue: '', selectedDate: '今天', selectedSlot: '19:00', bookingConfirmed: false, paymentSheet: false, paymentMethod: '支付宝', courseDelivery: '', courseDeliverySheet: false, creatorCity: '深圳', creatorSheet: '', creatorVenueQuery: '', creatorVenueResults: [], creatorPlaceHistory: [], courseType: '1v1', courseTitle: '', courseTags: [], courseLanguage: '', courseDuration: '', courseSessions: '', courseDescription: '', coursePrice: '', courseVenues: [], followed: false, toast: '', consoleScenario: '', consoleMode: 'discovery', uiLanguage: 'zh' };
 const initialDemoState = JSON.parse(JSON.stringify(state));
 const app = document.querySelector('#app');
 
@@ -284,6 +284,24 @@ function renderStaticMapTiles(city) {
   return `<div class="static-map-tiles" style="--map-center-x:${centerX}px;--map-center-y:${centerY}px">${tiles.join('')}</div>`;
 }
 
+function renderVenueMapTiles(venue, city = state.city) {
+  const fallback = staticMapConfig[city] || staticMapConfig.深圳;
+  const [longitude, latitude] = venueCoordinates[venue] || [fallback.longitude, fallback.latitude];
+  const zoom = 15;
+  const center = tilePoint(longitude, latitude, zoom);
+  const tileX = Math.floor(center.x);
+  const tileY = Math.floor(center.y);
+  const centerX = 256 + (center.x - tileX) * 256;
+  const centerY = 256 + (center.y - tileY) * 256;
+  const tiles = [];
+  for (let y = -1; y <= 1; y += 1) {
+    for (let x = -1; x <= 1; x += 1) {
+      tiles.push(`<img src="https://tile.openstreetmap.org/${zoom}/${tileX + x}/${tileY + y}.png" alt="" />`);
+    }
+  }
+  return `<div class="static-map-tiles profile-venue-tiles" style="--map-center-x:${centerX}px;--map-center-y:${centerY}px">${tiles.join('')}</div>`;
+}
+
 function markerPosition(venue, city) {
   const config = staticMapConfig[city] || staticMapConfig.深圳;
   const [longitude, latitude] = venueCoordinates[venue] || [config.longitude, config.latitude];
@@ -463,10 +481,27 @@ function renderCourseVenueSection(teacher, venue) {
   return `<section class="course-venue-section"><div class="course-venue-section-head"><b>可选上课地点</b><button data-action="open-venue-map" data-id="${teacher.id}" data-venue="${venue.venue}">查看地图 ›</button></div><div class="course-venue-chips">${venues.map((item) => `<button data-action="select-course-venue" data-venue="${item.venue}" class="${item.venue === venue.venue ? 'selected' : ''}">${item.venue}<small>${item.area}</small></button>`).join('')}</div></section>`;
 }
 
+function renderProfileVenueHero(teacher) {
+  const venues = courseVenues(teacher);
+  const total = venues.length;
+  const index = total ? Math.min(state.profileVenueIndex, total - 1) : 0;
+  const venue = venues[index] || { venue: '暂未设置上课地点', area: '' };
+  return `<section class="profile-map-hero profile-venue-hero" aria-label="${teacher.name}的上课地点">
+    ${renderVenueMapTiles(venue.venue)}
+    <i class="profile-venue-marker" aria-hidden="true"></i>
+    <button class="map-nav-back" data-action="back-profile" aria-label="返回">‹</button>
+    <button class="map-nav-more" data-action="open-profile-more" aria-label="更多操作">•••</button>
+    ${total > 1 ? `<button class="profile-venue-nav previous" data-action="profile-venue-prev" aria-label="上一个上课地点">‹</button><button class="profile-venue-nav next" data-action="profile-venue-next" aria-label="下一个上课地点">›</button>` : ''}
+    <div class="profile-venue-caption"><span>上课地点</span><strong>${venue.venue}</strong><small>${venue.area}</small></div>
+    ${total > 1 ? `<div class="profile-venue-pagination" aria-label="共 ${total} 个上课地点"><b>${index + 1}</b><span>/</span><i>${total}</i></div>` : ''}
+    <small class="profile-map-attribution">© OpenStreetMap contributors</small>
+  </section>`;
+}
+
 function renderProfile() {
   const teacher = teacherForProfile();
   const course = selectedCourse();
-  return `<div class="screen ht-profile map-profile"><main class="profile-scroll"><section class="profile-map-hero"><button class="map-nav-back" data-action="back-profile" aria-label="返回">‹</button><button class="map-nav-more" data-action="open-profile-more" aria-label="更多操作">•••</button><button class="nearby-pill" data-action="nearby-teachers">♟ 566 人在附近</button></section>
+  return `<div class="screen ht-profile map-profile"><main class="profile-scroll">${renderProfileVenueHero(teacher)}
     <section class="map-profile-summary"><div class="map-profile-avatar photo-${teacher.photo}"><i>${flag(teacher.country)}</i></div><button class="profile-like" data-action="like-profile">♧ 97</button><div class="map-profile-name"><h1>${teacher.name} <span>♀24</span><b>VIP+</b><em>Lv 23</em></h1><p>@${teacher.id}<button data-action="copy-id" aria-label="复制用户 ID">▣</button></p></div><div class="map-profile-languages"><div><b>CN</b><b>ES</b><span>⇄</span><b>JP</b><b>KR</b><b>EN</b><b>PT</b><b>IT</b></div><small>中文　西班牙语　　日语　韩语　英语　葡萄牙语　意大利语</small></div><p class="map-profile-streak"><strong>30 天</strong> 连胜　加入 <strong>1819 天</strong></p><p class="map-profile-intro">Chinese 🌟 🌟 🌟 🌟 🌟<br />Korean 🌟 🌟 🌟 🌟 🌟<br />English 🌟 🌟 🌟　<a data-action="open-profile-more">更多</a></p></section>
     <section class="course-section inserted-course"><div class="course-section-head"><h2>和我一起上课</h2><button data-action="open-course-list">查看更多 <span>›</span></button></div><article class="course-card offline-map-card"><button class="course-card-summary" data-action="open-course-detail" aria-label="查看${course.title}"><div class="course-card-title"><strong>${course.title}</strong><span class="in-person-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg>线下课程</span></div><div class="course-card-body"><img src="${course.cover}" alt="${course.title}课程封面" /><div class="course-meta"><p><span>${courseIcon('mic')}${course.language}</span><em>${courseIcon('book')}${course.sessions} 节课</em></p><p><span>${courseIcon('clock')}${course.duration}</span></p><b>¥${course.price}/节课</b></div></div></button>${renderCourseVenueBlock(teacher)}</article><div class="course-pagination"><b></b><i></i></div></section>
     <nav class="profile-tabs"><button data-action="profile-tab" data-tab="archive" class="${state.profileTab === 'archive' ? 'selected' : ''}">个人档案</button><button data-action="profile-tab" data-tab="moments" class="${state.profileTab === 'moments' ? 'selected' : ''}">动态 63</button><button data-action="profile-tab" data-tab="reviews" class="${state.profileTab === 'reviews' ? 'selected' : ''}">评价</button></nav>${renderProfileTab(teacher)}</main>
@@ -714,7 +749,7 @@ function bindEvents() {
     if (action === 'sheet-city-menu') state.sheetCityMenu = !state.sheetCityMenu;
     if (action === 'select-city') { state.mapCity = event.currentTarget.dataset.city; state.sheetCityMenu = false; state.activeVenue = null; state.mapTeacherId = null; }
     if (action === 'select-search-city') { state.mapCity = event.currentTarget.dataset.city; state.sheetCityMenu = false; state.activeVenue = null; state.mapTeacherId = null; }
-    if (action === 'profile') { state.profileId = event.currentTarget.dataset.id; state.profileRoute = 'profile'; state.profileTab = 'archive'; state.profileMore = false; state.sheet = false; state.selectedCourse = 'conversation'; state.selectedVenue = courseVenues(teacherForProfile())[0]?.venue || ''; }
+    if (action === 'profile') { state.profileId = event.currentTarget.dataset.id; state.profileRoute = 'profile'; state.profileTab = 'archive'; state.profileVenueIndex = 0; state.profileMore = false; state.sheet = false; state.selectedCourse = 'conversation'; state.selectedVenue = courseVenues(teacherForProfile())[0]?.venue || ''; }
     if (action === 'back-profile') state.profileId = null;
     if (action === 'language') state.activeLanguage = event.currentTarget.dataset.language;
     if (action === 'map-filter') { state.mapFilter = event.currentTarget.dataset.filter; refreshMapResults(); return; }
@@ -775,7 +810,8 @@ function bindEvents() {
     if (action === 'follow') { state.followed = !state.followed; state.toast = state.followed ? '已关注对方' : '已取消关注'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'wish') { state.toast = '已打开礼物面板'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'like-profile') { state.toast = '已点赞对方资料'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
-    if (action === 'nearby-teachers') { state.toast = '已查看附近语伴'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
+    if (action === 'profile-venue-prev') { const total = courseVenues(teacherForProfile()).length; state.profileVenueIndex = (state.profileVenueIndex - 1 + total) % total; }
+    if (action === 'profile-venue-next') { const total = courseVenues(teacherForProfile()).length; state.profileVenueIndex = (state.profileVenueIndex + 1) % total; }
     if (action === 'copy-id') { state.toast = '用户 ID 已复制'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'translate-bio') { state.toast = '已翻译简介'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'tag') { state.toast = `已筛选相关兴趣`; setTimeout(() => { state.toast = ''; render(); }, 1800); }
