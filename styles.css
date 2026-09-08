@@ -385,9 +385,9 @@
 .map-nav-back,.map-nav-more { z-index:4; }
 .map-nav-back { left:16px; }
 .map-nav-more { right:14px; font-size:18px; letter-spacing:2px; }
-.profile-venue-detail { position:absolute; z-index:4; top:calc(56% - 42px); left:calc(50% + 17px); max-width:148px; }
-.profile-venue-anchor { display:flex; min-width:0; height:32px; align-items:center; gap:5px; padding:0 9px; border:1px solid rgba(255,255,255,.9); border-radius:16px; color:#383a42; background:rgba(255,255,255,.94); box-shadow:0 3px 9px rgba(43,42,67,.16); font-size:11px; }
-.profile-venue-anchor svg { flex:0 0 13px; width:13px; height:13px; fill:none; stroke:#7447f3; stroke-width:2.3; }.profile-venue-anchor strong { overflow:hidden; min-width:0; text-overflow:ellipsis; white-space:nowrap; font-weight:700; }.profile-venue-anchor small { flex:0 0 auto; padding-left:5px; border-left:1px solid #e5e3ea; color:#7447f3; font-size:10px; font-weight:700; }
+.profile-venue-detail { position:absolute; z-index:4; top:calc(56% - 40px); left:calc(50% + 17px); max-width:145px; }
+.profile-venue-anchor { display:flex; min-width:0; height:28px; align-items:center; gap:4px; padding:0 8px; border:1px solid rgba(255,255,255,.82); border-radius:14px; color:#383a42; background:rgba(255,255,255,.88); box-shadow:0 2px 6px rgba(43,42,67,.12); font-size:10px; }
+.profile-venue-anchor svg { flex:0 0 12px; width:12px; height:12px; fill:none; stroke:#7447f3; stroke-width:2.3; }.profile-venue-anchor strong { overflow:hidden; min-width:0; text-overflow:ellipsis; white-space:nowrap; font-weight:700; }.profile-venue-anchor small { display:grid; flex:0 0 22px; width:22px; height:18px; place-items:center; margin-left:1px; padding:0; border-radius:9px; color:#7047f5; background:#f0ecff; font-size:9px; font-weight:750; }
 .profile-venue-pagination { display:flex; gap:7px; align-items:center; }
 .profile-venue-pagination button { width:7px; height:7px; padding:0; border:0; border-radius:50%; background:#d5d6db; }.profile-venue-pagination button.selected { width:16px; border-radius:4px; background:#787a83; }
 .profile-map-attribution { position:absolute; z-index:4; right:7px; bottom:2px; color:rgba(40,43,47,.58); background:rgba(255,255,255,.65); font-size:7px; line-height:11px; }
