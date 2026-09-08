@@ -492,7 +492,7 @@ function renderProfileVenueHero(teacher) {
     ${systemStatus('profile-map-status')}
     <button class="map-nav-back" data-action="back-profile" aria-label="返回">‹</button>
     <button class="map-nav-more" data-action="open-profile-more" aria-label="更多操作">•••</button>
-    <div class="profile-venue-caption"><strong>${venue.venue}</strong><small>${venue.area}</small></div>
+    <div class="profile-venue-caption"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg>上课地点 ${index + 1}/${total}</span><strong>${venue.venue}</strong><small>${venue.area} · ${venue.slots} 可约</small></div>
     ${total > 1 ? `<div class="profile-venue-pagination" aria-label="共 ${total} 个上课地点">${venues.map((item, itemIndex) => `<button data-action="profile-venue-select" data-index="${itemIndex}" class="${itemIndex === index ? 'selected' : ''}" aria-label="切换至${item.venue}"></button>`).join('')}</div>` : ''}
     <small class="profile-map-attribution">© OpenStreetMap contributors</small>
   </section>`;
