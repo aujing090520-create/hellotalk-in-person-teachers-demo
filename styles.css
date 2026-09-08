@@ -398,7 +398,7 @@
 .profile-venue-pagination button { width:7px; height:7px; padding:0; border:0; border-radius:50%; background:#d5d6db; }.profile-venue-pagination button.selected { width:16px; border-radius:4px; background:#787a83; }
 .profile-map-attribution { position:absolute; z-index:4; left:7px; bottom:2px; color:rgba(40,43,47,.58); background:rgba(255,255,255,.65); font-size:7px; line-height:11px; }
 .map-profile-summary { position:relative; z-index:2; display:flex; align-items:center; gap:13px; margin:0; padding:16px 17px 17px; background:#fff; }
-.map-profile-avatar { position:relative; flex:0 0 62px; width:62px; height:62px; border:3px solid #ddf5ff; border-radius:50%; background-size:327% 218%; background-repeat:no-repeat; box-shadow:0 0 0 3px #5cc9ff,0 2px 7px rgba(0,0,0,.18); }
+.map-profile-avatar { position:relative; z-index:3; flex:0 0 62px; width:62px; height:62px; border:3px solid #ddf5ff; border-radius:50%; background-size:327% 218%; background-repeat:no-repeat; box-shadow:0 0 0 3px #5cc9ff,0 2px 7px rgba(0,0,0,.18); transform:translateY(-50px); }
 .map-profile-avatar .teacher-profile-mark { position:absolute; right:-6px; bottom:-5px; display:grid; width:20px; height:20px; place-items:center; border:2px solid #fff; border-radius:50%; color:#fff; background:linear-gradient(140deg,#7965ff,#3cc7ff); font-size:12px; font-style:normal; }
 .map-profile-name { min-width:0; padding-top:0; }
 .map-profile-name h1 { display:flex; align-items:center; gap:5px; margin:0; font-size:21px; line-height:25px; }
