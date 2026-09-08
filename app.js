@@ -492,6 +492,7 @@ function renderProfileVenueHero(teacher) {
     ${systemStatus('profile-map-status')}
     <button class="map-nav-back" data-action="back-profile" aria-label="返回">‹</button>
     <button class="map-nav-more" data-action="open-profile-more" aria-label="更多操作">•••</button>
+    ${renderProfileVenueDetail(teacher)}
     <small class="profile-map-attribution">© OpenStreetMap contributors</small>
   </section>`;
 }
@@ -510,7 +511,7 @@ function renderProfileVenueDetail(teacher) {
 function renderProfile() {
   const teacher = teacherForProfile();
   const course = selectedCourse();
-  return `<div class="screen ht-profile map-profile"><main class="profile-scroll">${renderProfileVenueHero(teacher)}${renderProfileVenueDetail(teacher)}
+  return `<div class="screen ht-profile map-profile"><main class="profile-scroll">${renderProfileVenueHero(teacher)}
     <section class="map-profile-summary"><div class="map-profile-avatar photo-${teacher.photo}"><i class="teacher-profile-mark">✦</i></div><div class="map-profile-name"><h1>${teacher.name} <span>♀24</span></h1><p class="map-profile-teaching">教学：中文</p><p class="map-profile-teacher"><i>✦</i>平台老师</p></div></section>
     <section class="course-section inserted-course"><div class="course-section-head"><h2>和我一起上课</h2><button data-action="open-course-list">查看更多 <span>›</span></button></div><article class="course-card offline-map-card"><button class="course-card-summary" data-action="open-course-detail" aria-label="查看${course.title}"><div class="course-card-title"><strong>${course.title}</strong><span class="in-person-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg>线下课程</span></div><div class="course-card-body"><img src="${course.cover}" alt="${course.title}课程封面" /><div class="course-meta"><p><span>${courseIcon('mic')}${course.language}</span><em>${courseIcon('book')}${course.sessions} 节课</em></p><p><span>${courseIcon('clock')}${course.duration}</span></p><b>¥${course.price}/节课</b></div></div></button>${renderCourseVenueBlock(teacher)}</article><div class="course-pagination"><b></b><i></i></div></section>
     <nav class="profile-tabs"><button data-action="profile-tab" data-tab="archive" class="${state.profileTab === 'archive' ? 'selected' : ''}">个人档案</button><button data-action="profile-tab" data-tab="moments" class="${state.profileTab === 'moments' ? 'selected' : ''}">动态 63</button><button data-action="profile-tab" data-tab="reviews" class="${state.profileTab === 'reviews' ? 'selected' : ''}">评价</button></nav>${renderProfileTab(teacher)}</main>
