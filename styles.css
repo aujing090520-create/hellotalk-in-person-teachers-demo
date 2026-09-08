@@ -429,8 +429,10 @@
 .map-profile .profile-actions .gift { color:#fff; background:#e900a7; font-size:19px; }
 
 /* Public teacher profile: reuse the established online-teacher information rhythm. */
-.teacher-archive { padding-top:10px !important; }
-.teacher-archive h3 { margin:0 0 9px; color:#22242a; font-size:16px; line-height:22px; }
+.teacher-archive { min-height:0; padding:0 16px 20px !important; }
+.teacher-profile-overview { padding:2px 16px 1px; background:#fff; }
+.teacher-profile-overview .teacher-self-intro { padding-bottom:13px; border-bottom:0; }
+.teacher-profile-overview h3 { margin:0 0 9px; color:#22242a; font-size:16px; line-height:22px; }
 .teacher-trust-stats { display:grid; grid-template-columns:repeat(3,1fr); margin:0 0 17px; padding:3px 0 16px; border-bottom:1px solid #f0f0f2; }
 .teacher-trust-stats > div { display:grid; gap:2px; padding-left:12px; border-left:1px solid #ededf0; }
 .teacher-trust-stats > div:first-child { padding-left:0; border-left:0; }
