@@ -501,18 +501,17 @@ function renderProfileVenueDetail(teacher) {
   const venues = courseVenues(teacher);
   const total = venues.length;
   const index = total ? Math.min(state.profileVenueIndex, total - 1) : 0;
-  const venue = venues[index] || { venue: '暂未设置上课地点', area: '', slots: '' };
-  return `<section class="profile-venue-detail" aria-label="当前上课地点">
-    <div class="profile-venue-detail-copy"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg>上课地点 ${index + 1}/${total}</span><strong>${venue.venue}</strong><small>${venue.area} · ${venue.slots} 可约</small></div>
-    ${total > 1 ? `<div class="profile-venue-pagination profile-venue-pagination-detail" aria-label="共 ${total} 个上课地点">${venues.map((item, itemIndex) => `<button data-action="profile-venue-select" data-index="${itemIndex}" class="${itemIndex === index ? 'selected' : ''}" aria-label="切换至${item.venue}"></button>`).join('')}</div>` : ''}
-  </section>`;
+  const venue = venues[index] || { venue: '暂未设置上课地点' };
+  return `<div class="profile-venue-detail"><button class="profile-venue-anchor" data-action="profile-venue-next" aria-label="切换上课地点，当前为${venue.venue}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg><strong>${venue.venue}</strong>${total > 1 ? `<small>${index + 1}/${total}</small>` : ''}</button></div>`;
 }
 
 function renderProfile() {
   const teacher = teacherForProfile();
   const course = selectedCourse();
+  const profileVenues = courseVenues(teacher);
+  const profileVenue = profileVenues[Math.min(state.profileVenueIndex, Math.max(profileVenues.length - 1, 0))] || {};
   return `<div class="screen ht-profile map-profile"><main class="profile-scroll">${renderProfileVenueHero(teacher)}
-    <section class="map-profile-summary"><div class="map-profile-avatar photo-${teacher.photo}"><i class="teacher-profile-mark">✦</i></div><div class="map-profile-name"><h1>${teacher.name} <span>♀24</span></h1><p class="map-profile-teaching">教学：中文</p><p class="map-profile-teacher"><i>✦</i>平台老师</p></div></section>
+    <section class="map-profile-summary"><div class="map-profile-avatar photo-${teacher.photo}"><i class="teacher-profile-mark">✦</i></div><div class="map-profile-name"><h1>${teacher.name} <span>♀24</span></h1><p class="map-profile-teaching">教学：中文</p><p class="map-profile-teacher"><i>✦</i>平台老师</p><p class="map-profile-venue-meta">⌖ ${profileVenue.area || ''} · ${profileVenue.slots || ''} 可约</p></div></section>
     <section class="course-section inserted-course"><div class="course-section-head"><h2>和我一起上课</h2><button data-action="open-course-list">查看更多 <span>›</span></button></div><article class="course-card offline-map-card"><button class="course-card-summary" data-action="open-course-detail" aria-label="查看${course.title}"><div class="course-card-title"><strong>${course.title}</strong><span class="in-person-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg>线下课程</span></div><div class="course-card-body"><img src="${course.cover}" alt="${course.title}课程封面" /><div class="course-meta"><p><span>${courseIcon('mic')}${course.language}</span><em>${courseIcon('book')}${course.sessions} 节课</em></p><p><span>${courseIcon('clock')}${course.duration}</span></p><b>¥${course.price}/节课</b></div></div></button>${renderCourseVenueBlock(teacher)}</article><div class="course-pagination"><b></b><i></i></div></section>
     <nav class="profile-tabs"><button data-action="profile-tab" data-tab="archive" class="${state.profileTab === 'archive' ? 'selected' : ''}">个人档案</button><button data-action="profile-tab" data-tab="moments" class="${state.profileTab === 'moments' ? 'selected' : ''}">动态 63</button><button data-action="profile-tab" data-tab="reviews" class="${state.profileTab === 'reviews' ? 'selected' : ''}">评价</button></nav>${renderProfileTab(teacher)}</main>
     <div class="profile-actions map-profile-actions"><button class="relationship" data-action="follow" aria-label="关注">♟</button><button class="primary" data-action="hi">聊天</button><button class="gift" data-action="wish" aria-label="预约日历">▣</button></div>${state.profileMore ? renderProfileMore() : ''}${state.sheet ? renderMapSheet() : ''}${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;

@@ -385,9 +385,9 @@
 .map-nav-back,.map-nav-more { z-index:4; }
 .map-nav-back { left:16px; }
 .map-nav-more { right:14px; font-size:18px; letter-spacing:2px; }
-.profile-venue-detail { position:absolute; z-index:4; right:15px; bottom:12px; left:15px; display:flex; min-height:58px; align-items:center; gap:12px; padding:9px 12px 10px; border:1px solid rgba(255,255,255,.88); border-radius:14px; background:rgba(255,255,255,.96); box-shadow:0 4px 15px rgba(37,40,50,.14); }
-.profile-venue-detail-copy { display:grid; min-width:0; gap:2px; }.profile-venue-detail-copy > span { display:flex; gap:4px; align-items:center; color:#7447f3; font-size:10px; font-weight:700; line-height:14px; }.profile-venue-detail-copy > span svg { width:13px; height:13px; fill:none; stroke:currentColor; stroke-width:2; }
-.profile-venue-detail-copy strong { overflow:hidden; color:#282a31; font-size:16px; line-height:21px; text-overflow:ellipsis; white-space:nowrap; }.profile-venue-detail-copy small { overflow:hidden; color:#85878e; font-size:11px; line-height:15px; text-overflow:ellipsis; white-space:nowrap; }
+.profile-venue-detail { position:absolute; z-index:4; top:calc(56% - 42px); left:calc(50% + 17px); max-width:148px; }
+.profile-venue-anchor { display:flex; min-width:0; height:32px; align-items:center; gap:5px; padding:0 9px; border:1px solid rgba(255,255,255,.9); border-radius:16px; color:#383a42; background:rgba(255,255,255,.94); box-shadow:0 3px 9px rgba(43,42,67,.16); font-size:11px; }
+.profile-venue-anchor svg { flex:0 0 13px; width:13px; height:13px; fill:none; stroke:#7447f3; stroke-width:2.3; }.profile-venue-anchor strong { overflow:hidden; min-width:0; text-overflow:ellipsis; white-space:nowrap; font-weight:700; }.profile-venue-anchor small { flex:0 0 auto; padding-left:5px; border-left:1px solid #e5e3ea; color:#7447f3; font-size:10px; font-weight:700; }
 .profile-venue-pagination { display:flex; gap:7px; align-items:center; }
 .profile-venue-pagination button { width:7px; height:7px; padding:0; border:0; border-radius:50%; background:#d5d6db; }.profile-venue-pagination button.selected { width:16px; border-radius:4px; background:#787a83; }
 .profile-map-attribution { position:absolute; z-index:4; right:7px; bottom:2px; color:rgba(40,43,47,.58); background:rgba(255,255,255,.65); font-size:7px; line-height:11px; }
@@ -397,7 +397,7 @@
 .map-profile-name { min-width:0; padding-top:0; }
 .map-profile-name h1 { display:flex; align-items:center; gap:5px; margin:0; font-size:21px; line-height:25px; }
 .map-profile-name h1 span { padding:2px 5px; border-radius:8px; color:#f042af; background:#fff0fa; font-size:12px; }
-.map-profile-name .map-profile-teaching { margin:5px 0 11px; color:#42444b; font-size:14px; }.map-profile-teacher { display:flex; align-items:center; gap:7px; margin:0; color:#353740; font-size:15px; font-weight:650; }.map-profile-teacher i { display:grid; width:20px; height:20px; place-items:center; border-radius:50%; color:#fff; background:linear-gradient(140deg,#7965ff,#3cc7ff); font-size:12px; font-style:normal; }
+.map-profile-name .map-profile-teaching { margin:5px 0 7px; color:#42444b; font-size:14px; }.map-profile-teacher { display:flex; align-items:center; gap:7px; margin:0; color:#353740; font-size:15px; font-weight:650; }.map-profile-teacher i { display:grid; width:20px; height:20px; place-items:center; border-radius:50%; color:#fff; background:linear-gradient(140deg,#7965ff,#3cc7ff); font-size:12px; font-style:normal; }.map-profile-venue-meta { margin:6px 0 0; color:#8a8c93; font-size:11px; line-height:15px; }
 .map-profile-languages > div { display:flex; align-items:center; gap:9px; white-space:nowrap; }
 .map-profile-languages b { padding-bottom:3px; border-bottom:3px solid #28c794; font-size:12px; }
 .map-profile-languages b:nth-of-type(n+2) { border-bottom-color:#d4d5da; }
