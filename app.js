@@ -489,11 +489,11 @@ function renderProfileVenueHero(teacher) {
   return `<section class="profile-map-hero profile-venue-hero" aria-label="${teacher.name}的上课地点">
     ${renderVenueMapTiles(venue.venue)}
     <i class="profile-venue-marker" aria-hidden="true"></i>
+    ${systemStatus('profile-map-status')}
     <button class="map-nav-back" data-action="back-profile" aria-label="返回">‹</button>
     <button class="map-nav-more" data-action="open-profile-more" aria-label="更多操作">•••</button>
-    ${total > 1 ? `<button class="profile-venue-nav previous" data-action="profile-venue-prev" aria-label="上一个上课地点">‹</button><button class="profile-venue-nav next" data-action="profile-venue-next" aria-label="下一个上课地点">›</button>` : ''}
-    <div class="profile-venue-caption"><span>上课地点</span><strong>${venue.venue}</strong><small>${venue.area}</small></div>
-    ${total > 1 ? `<div class="profile-venue-pagination" aria-label="共 ${total} 个上课地点"><b>${index + 1}</b><span>/</span><i>${total}</i></div>` : ''}
+    <div class="profile-venue-caption"><strong>${venue.venue}</strong><small>${venue.area}</small></div>
+    ${total > 1 ? `<div class="profile-venue-pagination" aria-label="共 ${total} 个上课地点">${venues.map((item, itemIndex) => `<button data-action="profile-venue-select" data-index="${itemIndex}" class="${itemIndex === index ? 'selected' : ''}" aria-label="切换至${item.venue}"></button>`).join('')}</div>` : ''}
     <small class="profile-map-attribution">© OpenStreetMap contributors</small>
   </section>`;
 }
@@ -502,7 +502,7 @@ function renderProfile() {
   const teacher = teacherForProfile();
   const course = selectedCourse();
   return `<div class="screen ht-profile map-profile"><main class="profile-scroll">${renderProfileVenueHero(teacher)}
-    <section class="map-profile-summary"><div class="map-profile-avatar photo-${teacher.photo}"><i>${flag(teacher.country)}</i></div><button class="profile-like" data-action="like-profile">♧ 97</button><div class="map-profile-name"><h1>${teacher.name} <span>♀24</span><b>VIP+</b><em>Lv 23</em></h1><p>@${teacher.id}<button data-action="copy-id" aria-label="复制用户 ID">▣</button></p></div><div class="map-profile-languages"><div><b>CN</b><b>ES</b><span>⇄</span><b>JP</b><b>KR</b><b>EN</b><b>PT</b><b>IT</b></div><small>中文　西班牙语　　日语　韩语　英语　葡萄牙语　意大利语</small></div><p class="map-profile-streak"><strong>30 天</strong> 连胜　加入 <strong>1819 天</strong></p><p class="map-profile-intro">Chinese 🌟 🌟 🌟 🌟 🌟<br />Korean 🌟 🌟 🌟 🌟 🌟<br />English 🌟 🌟 🌟　<a data-action="open-profile-more">更多</a></p></section>
+    <section class="map-profile-summary"><div class="map-profile-avatar photo-${teacher.photo}"><i class="teacher-profile-mark">✦</i></div><div class="map-profile-name"><h1>${teacher.name} <span>♀24</span></h1><p class="map-profile-teaching">教学：中文</p><p class="map-profile-teacher"><i>✦</i>平台老师</p></div></section>
     <section class="course-section inserted-course"><div class="course-section-head"><h2>和我一起上课</h2><button data-action="open-course-list">查看更多 <span>›</span></button></div><article class="course-card offline-map-card"><button class="course-card-summary" data-action="open-course-detail" aria-label="查看${course.title}"><div class="course-card-title"><strong>${course.title}</strong><span class="in-person-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg>线下课程</span></div><div class="course-card-body"><img src="${course.cover}" alt="${course.title}课程封面" /><div class="course-meta"><p><span>${courseIcon('mic')}${course.language}</span><em>${courseIcon('book')}${course.sessions} 节课</em></p><p><span>${courseIcon('clock')}${course.duration}</span></p><b>¥${course.price}/节课</b></div></div></button>${renderCourseVenueBlock(teacher)}</article><div class="course-pagination"><b></b><i></i></div></section>
     <nav class="profile-tabs"><button data-action="profile-tab" data-tab="archive" class="${state.profileTab === 'archive' ? 'selected' : ''}">个人档案</button><button data-action="profile-tab" data-tab="moments" class="${state.profileTab === 'moments' ? 'selected' : ''}">动态 63</button><button data-action="profile-tab" data-tab="reviews" class="${state.profileTab === 'reviews' ? 'selected' : ''}">评价</button></nav>${renderProfileTab(teacher)}</main>
     <div class="profile-actions map-profile-actions"><button class="relationship" data-action="follow" aria-label="关注">♟</button><button class="primary" data-action="hi">聊天</button><button class="gift" data-action="wish" aria-label="预约日历">▣</button></div>${state.profileMore ? renderProfileMore() : ''}${state.sheet ? renderMapSheet() : ''}${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
@@ -812,6 +812,7 @@ function bindEvents() {
     if (action === 'like-profile') { state.toast = '已点赞对方资料'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'profile-venue-prev') { const total = courseVenues(teacherForProfile()).length; state.profileVenueIndex = (state.profileVenueIndex - 1 + total) % total; }
     if (action === 'profile-venue-next') { const total = courseVenues(teacherForProfile()).length; state.profileVenueIndex = (state.profileVenueIndex + 1) % total; }
+    if (action === 'profile-venue-select') state.profileVenueIndex = Number(event.currentTarget.dataset.index);
     if (action === 'copy-id') { state.toast = '用户 ID 已复制'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'translate-bio') { state.toast = '已翻译简介'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'tag') { state.toast = `已筛选相关兴趣`; setTimeout(() => { state.toast = ''; render(); }, 1800); }
