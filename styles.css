@@ -400,10 +400,10 @@
 .map-profile-summary { position:relative; z-index:2; display:grid; grid-template-columns:62px minmax(0,1fr); align-items:center; column-gap:13px; margin:0; padding:16px 17px 17px; background:#fff; }
 .map-profile-avatar { position:relative; z-index:3; width:62px; height:62px; border:3px solid #ddf5ff; border-radius:50%; background-size:327% 218%; background-repeat:no-repeat; box-shadow:0 0 0 3px #5cc9ff,0 2px 7px rgba(0,0,0,.18); transform:translateY(-50px); }
 .map-profile-avatar .teacher-profile-mark { position:absolute; right:-6px; bottom:-5px; display:grid; width:20px; height:20px; place-items:center; border:2px solid #fff; border-radius:50%; color:#fff; background:linear-gradient(140deg,#7965ff,#3cc7ff); font-size:12px; font-style:normal; }
-.map-profile-name { min-width:0; padding-top:0; transform:translateY(-23px); }
+.map-profile-name { min-width:0; padding-top:0; transform:translateY(-16px); }
 .map-profile-name h1 { display:flex; align-items:center; gap:6px; margin:0; font-size:21px; line-height:26px; }
 .map-profile-name h1 span { padding:1px 5px; border-radius:7px; color:#f042af; background:#fff0fa; font-size:12px; line-height:18px; }
-.map-profile-meta { display:flex; align-items:center; gap:10px; margin-top:5px; transform:translateX(-16px); }
+.map-profile-meta { display:flex; align-items:center; gap:10px; margin-top:5px; transform:translateX(-75px); }
 .map-profile-name .map-profile-teaching { margin:0; color:#575960; font-size:14px; line-height:18px; }
 .map-profile-teacher { display:flex; align-items:center; gap:4px; margin:0; color:#454750; font-size:13px; font-weight:650; line-height:18px; }
 .map-profile-teacher i { display:grid; width:16px; height:16px; place-items:center; border-radius:50%; color:#fff; background:linear-gradient(140deg,#7965ff,#3cc7ff); font-size:10px; font-style:normal; }
