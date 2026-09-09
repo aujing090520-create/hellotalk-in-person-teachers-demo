@@ -430,9 +430,7 @@
 
 /* Public teacher profile: reuse the established online-teacher information rhythm. */
 .teacher-archive { min-height:0; padding:10px 16px 22px !important; }
-.teacher-profile-overview { position:relative; isolation:isolate; overflow:hidden; padding:0 16px; background:#fff; }
-.teacher-profile-overview > section { position:relative; z-index:1; }
-.teacher-illustration-watermark { position:absolute; z-index:0; right:-18px; bottom:-24px; width:138px; height:auto; opacity:.18; pointer-events:none; user-select:none; filter:saturate(.92); -webkit-mask-image:linear-gradient(90deg, transparent 0%, rgba(0,0,0,.55) 31%, #000 62%); mask-image:linear-gradient(90deg, transparent 0%, rgba(0,0,0,.55) 31%, #000 62%); }
+.teacher-profile-overview { padding:0 16px; background:#fff; }
 .teacher-profile-overview .teacher-self-intro { padding-bottom:10px; border-bottom:0; }
 .teacher-profile-overview h3 { margin:0 0 8px; color:#22242a; font-size:16px; line-height:22px; }
 .teacher-trust-stats { display:grid; grid-template-columns:repeat(3,1fr); margin:0 0 17px; padding:3px 0 16px; border-bottom:1px solid #f0f0f2; }
