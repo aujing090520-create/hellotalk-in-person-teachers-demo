@@ -463,7 +463,7 @@ function renderTeacherTrustStats() {
 }
 
 function renderTeacherOverview(teacher) {
-  return `<section class="teacher-profile-overview"><section class="teacher-types"><h3>教学类型</h3><div><span>FreeTalk</span><span>实用口语</span><span>旅行口语</span></div></section><section class="teacher-self-intro"><h3>老师自我介绍</h3><p>你好，我是 ${teacher.name}。在深圳开设一对一中文面授课，擅长把日常场景、旅行和工作沟通带入练习。我们可以先从你的学习目标聊起，再一起约定方便的上课地点。</p></section></section>`;
+  return `<section class="teacher-profile-overview"><img class="teacher-illustration-watermark" src="assets/teacher-watermark.png" alt="" aria-hidden="true" /><section class="teacher-types"><h3>教学类型</h3><div><span>FreeTalk</span><span>实用口语</span><span>旅行口语</span></div></section><section class="teacher-self-intro"><h3>老师自我介绍</h3><p>你好，我是 ${teacher.name}。在深圳开设一对一中文面授课，擅长把日常场景、旅行和工作沟通带入练习。我们可以先从你的学习目标聊起，再一起约定方便的上课地点。</p></section></section>`;
 }
 
 function renderTeacherArchive() {
