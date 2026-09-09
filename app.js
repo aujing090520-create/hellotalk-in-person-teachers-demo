@@ -466,10 +466,15 @@ function renderTeacherOverview(teacher) {
   return `<section class="teacher-profile-overview"><section class="teacher-types"><h3>教学类型</h3><div><span>FreeTalk</span><span>实用口语</span><span>旅行口语</span></div></section><section class="teacher-self-intro"><h3>老师自我介绍</h3><p>你好，我是 ${teacher.name}。在深圳开设一对一中文面授课，擅长把日常场景、旅行和工作沟通带入练习。我们可以先从你的学习目标聊起，再一起约定方便的上课地点。</p></section></section>`;
 }
 
+function renderTeacherArchive() {
+  const tags = (items) => items.map((item) => `<button data-action="tag">${item}</button>`).join('');
+  return `<section class="profile-tab-panel teacher-archive" aria-label="个人档案"><section class="profile-stats teacher-learning-stats"><div><b>▣ 加入 1557 天</b><span>▱ 2281 学习点数</span></div><hr /><div class="study-icons"><span>文A<small>1511</small></span><span>▱<small>113</small></span><span>Abc⌄<small>243</small></span><span>♟A<small>398</small></span><span>◖))<small>4</small></span><span>⟳<small>12</small></span></div></section><section class="archive-panel"><h3>兴趣爱好</h3><div class="interest-tags">${tags(['dance', 'music', 'food', 'sports', 'reading', 'painting', 'movie', 'languages'])}</div><h3>个人信息</h3><div class="archive-info-grid"><div><b>ENTJ</b><small>MBTI</small></div><div><b>♑</b><small>摩羯座</small></div><div><b>AB</b><small>血型</small></div></div><h3>想去的地方</h3><div class="interest-tags">${tags(['New Zealand', 'France', 'U.S.', 'U.K.', 'Pakistan', 'Netherlands'])}</div><h3>职业</h3><div class="interest-tags"><button data-action="tag">language teacher</button></div></section></section>`;
+}
+
 function renderProfileTab(teacher) {
   if (state.profileTab === 'moments') return `<section class="profile-tab-panel"><article class="moment-card"><div class="moment-author"><div class="mini-avatar photo-${teacher.photo}"></div><div><b>${teacher.name}</b><small>刚刚</small></div></div><p>本周在 ${state.city} 的面授课程开放预约，期待和大家见面。</p><button data-action="open-post">查看动态 <span>›</span></button></article></section>`;
   if (state.profileTab === 'reviews') return `<section class="profile-tab-panel teacher-reviews"><div class="review-summary"><b>学生评价（5）</b><span>好评率 100%</span></div><article><div class="review-head"><div class="mini-avatar photo-p3"></div><b>キノコ</b><span>★★★★★</span></div><p>Sarah 老师很亲切，面授时会根据我的进度调整练习，课程讲解也很清楚。</p><small>2026-08-18</small></article></section>`;
-  return `<section class="profile-tab-panel teacher-archive" aria-label="个人档案"></section>`;
+  return renderTeacherArchive();
 }
 
 function renderProfileMore() {

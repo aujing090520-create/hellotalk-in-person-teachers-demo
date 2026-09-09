@@ -416,7 +416,7 @@
 .map-profile-streak strong { color:#303239; }
 .map-profile-intro { margin:16px 0 0; color:#34363d; font-size:14px; line-height:20px; }
 .map-profile-intro a { color:#7047f5; cursor:pointer; }
-.map-profile .inserted-course { padding:17px 16px 9px; border-top:0; }
+.map-profile .inserted-course { padding:12px 16px 9px; border-top:0; }
 .map-profile .inserted-course .course-section-head { margin-bottom:10px; }
 .map-profile .inserted-course .course-card { border-radius:16px; }
 .map-profile .profile-tabs { justify-content:space-between; gap:0; padding:15px 16px 10px; }
@@ -429,21 +429,34 @@
 .map-profile .profile-actions .gift { color:#fff; background:#e900a7; font-size:19px; }
 
 /* Public teacher profile: reuse the established online-teacher information rhythm. */
-.teacher-archive { min-height:0; padding:0 16px 20px !important; }
-.teacher-profile-overview { padding:2px 16px 1px; background:#fff; }
-.teacher-profile-overview .teacher-self-intro { padding-bottom:13px; border-bottom:0; }
-.teacher-profile-overview h3 { margin:0 0 9px; color:#22242a; font-size:16px; line-height:22px; }
+.teacher-archive { min-height:0; padding:10px 16px 22px !important; }
+.teacher-profile-overview { padding:0 16px; background:#fff; }
+.teacher-profile-overview .teacher-self-intro { padding-bottom:10px; border-bottom:0; }
+.teacher-profile-overview h3 { margin:0 0 8px; color:#22242a; font-size:16px; line-height:22px; }
 .teacher-trust-stats { display:grid; grid-template-columns:repeat(3,1fr); margin:0 0 17px; padding:3px 0 16px; border-bottom:1px solid #f0f0f2; }
 .teacher-trust-stats > div { display:grid; gap:2px; padding-left:12px; border-left:1px solid #ededf0; }
 .teacher-trust-stats > div:first-child { padding-left:0; border-left:0; }
 .teacher-trust-stats strong { color:#25272d; font-size:19px; line-height:22px; }
 .teacher-trust-stats small { color:#989aa1; font-size:10px; line-height:14px; }
 .map-profile-summary .teacher-trust-stats { grid-column:1 / -1; margin:-13px 0 0; padding:12px 0 0; border-top:1px solid #f0f0f2; border-bottom:0; }
-.teacher-types { padding-bottom:17px; border-bottom:1px solid #f0f0f2; }
+.teacher-types { padding-bottom:11px; border-bottom:1px solid #f0f0f2; }
 .teacher-types > div { display:flex; gap:7px; overflow:hidden; }
 .teacher-types span { flex:0 0 auto; padding:6px 10px; border-radius:14px; color:#7d7f86; background:#f5f5f6; font-size:11px; }
-.teacher-self-intro { position:relative; padding:17px 0 15px; border-bottom:1px solid #f0f0f2; }
+.teacher-self-intro { position:relative; padding:12px 0 10px; border-bottom:1px solid #f0f0f2; }
 .teacher-self-intro p { max-height:80px; margin:0; overflow:hidden; color:#42444b; font-size:13px; line-height:20px; }
+.teacher-archive .profile-stats { padding:12px 13px; border-radius:14px; }
+.teacher-archive .profile-stats > div:first-child { font-size:12px; }
+.teacher-archive .profile-stats > div:first-child b { font-weight:650; }
+.teacher-archive .profile-stats hr { margin:11px 0 9px; }
+.teacher-archive .study-icons span { gap:4px; font-size:15px; }
+.teacher-archive .study-icons small { font-size:9px; }
+.teacher-archive .archive-panel h3 { margin:18px 0 9px; color:#25272d; font-size:16px; line-height:22px; }
+.teacher-archive .interest-tags { flex-wrap:wrap; gap:7px; }
+.teacher-archive .interest-tags button { min-width:0; padding:7px 10px; color:#777a81; background:#f5f5f6; font-size:11px; line-height:16px; }
+.archive-info-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.archive-info-grid > div { display:grid; min-height:62px; place-items:center; align-content:center; gap:3px; border-radius:12px; color:#85878e; background:#f5f5f6; }
+.archive-info-grid b { font-size:16px; line-height:20px; font-weight:600; }
+.archive-info-grid small { font-size:10px; line-height:14px; }
 .teacher-reviews { padding-top:10px !important; }
 .review-summary { display:flex; justify-content:space-between; margin-bottom:12px; color:#33353b; font-size:13px; }
 .review-summary span { color:#8b8d94; }
