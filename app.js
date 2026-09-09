@@ -840,7 +840,14 @@ function bindEvents() {
     if (action === 'open-profile-more') state.profileMore = true;
     if (action === 'close-profile-more') state.profileMore = false;
     if (action === 'profile-more-action') { state.profileMore = false; state.toast = event.currentTarget.dataset.label === '分享' ? '已打开分享面板' : `已执行：${event.currentTarget.dataset.label}`; setTimeout(() => { state.toast = ''; render(); }, 1800); }
-    if (action === 'profile-tab') state.profileTab = event.currentTarget.dataset.tab;
+    if (action === 'profile-tab') {
+      const currentScrollTop = app.querySelector('.profile-scroll')?.scrollTop || 0;
+      state.profileTab = event.currentTarget.dataset.tab;
+      render();
+      const restoredProfileScroll = app.querySelector('.profile-scroll');
+      if (restoredProfileScroll) restoredProfileScroll.scrollTop = currentScrollTop;
+      return;
+    }
     if (action === 'open-teacher-time') { state.courseOrigin = 'profile'; state.profileRoute = 'course-detail'; }
     if (action === 'open-course-list') { state.courseOrigin = 'profile'; state.profileRoute = 'course-list'; }
     if (action === 'filter-courses') state.courseFilter = event.currentTarget.dataset.filter;
