@@ -430,8 +430,9 @@
 
 /* Public teacher profile: reuse the established online-teacher information rhythm. */
 .teacher-archive { min-height:0; padding:10px 16px 22px !important; }
-.teacher-profile-overview { padding:0 16px; background:#fff; }
-.teacher-companion-watermark { position:absolute; z-index:0; top:-12px; right:-20px; display:block; width:246px; height:236px; opacity:.68; pointer-events:none; user-select:none; background-image:url('assets/teacher-companion-watermark.png'); background-repeat:no-repeat; background-size:302% auto; background-position:100% 52%; }
+.teacher-profile-overview { position:relative; z-index:3; padding:0 16px; background:transparent; }
+.teacher-profile-overview > section { position:relative; z-index:1; }
+.teacher-companion-watermark { position:absolute; z-index:0; top:-12px; right:-34px; display:block; width:246px; height:236px; opacity:.42; pointer-events:none; user-select:none; background-image:url('assets/teacher-companion-watermark.png'); background-repeat:no-repeat; background-size:302% auto; background-position:100% 52%; }
 .map-profile-summary > :not(.teacher-companion-watermark) { position:relative; z-index:1; }
 .teacher-profile-overview .teacher-self-intro { padding-bottom:10px; border-bottom:0; }
 .teacher-profile-overview h3 { margin:0 0 8px; color:#22242a; font-size:16px; line-height:22px; }
