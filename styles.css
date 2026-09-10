@@ -401,7 +401,14 @@
 .profile-map-attribution { position:absolute; z-index:4; left:7px; bottom:2px; color:rgba(40,43,47,.58); background:rgba(255,255,255,.65); font-size:7px; line-height:11px; }
 .map-profile-summary { position:relative; z-index:2; display:grid; grid-template-columns:62px minmax(0,1fr); align-items:center; column-gap:13px; margin:0; padding:16px 17px 17px; background:#fff; }
 .map-profile-avatar { position:relative; z-index:3; width:62px; height:62px; border:3px solid #ddf5ff; border-radius:50%; background-size:327% 218%; background-repeat:no-repeat; box-shadow:0 0 0 3px #5cc9ff,0 2px 7px rgba(0,0,0,.18); transform:translateY(-50px); }
-.map-profile-avatar .teacher-profile-mark { position:absolute; right:-6px; bottom:-5px; display:grid; width:20px; height:20px; place-items:center; border:2px solid #fff; border-radius:50%; color:#fff; background:linear-gradient(140deg,#7965ff,#3cc7ff); font-size:12px; font-style:normal; }
+.map-profile-avatar.teacher-credential-frame { border-color:#fff; box-shadow:0 0 0 2px #59c8ff,0 0 0 5px rgba(111,224,255,.20),0 3px 8px rgba(0,0,0,.16); overflow:visible; }
+.teacher-credential-ring { position:absolute; z-index:0; top:50%; left:50%; width:78px; height:78px; overflow:visible; pointer-events:none; transform:translate(-50%,-50%); }
+.teacher-credential-ring .credential-ring-cyan { fill:none; stroke:#67d3ff; stroke-width:1.5; }
+.teacher-credential-ring .credential-ring-violet { fill:none; stroke:#a583ff; stroke-width:.75; stroke-dasharray:1.1 2.3; }
+.teacher-credential-ring text { fill:#7562c8; font-family:Arial,sans-serif; font-size:7px; font-weight:700; letter-spacing:.6px; }
+.teacher-cap { position:absolute; z-index:3; top:-12px; right:-7px; display:grid; width:24px; height:24px; place-items:center; border-radius:9px; color:#6d4bf1; background:#fff; box-shadow:0 2px 6px rgba(90,67,184,.18); transform:rotate(7deg); }
+.teacher-cap svg { width:18px; height:18px; fill:#f3efff; stroke:#6d4bf1; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+.profile-country-flag { position:absolute; z-index:4; bottom:-5px; left:-6px; display:grid; width:18px; height:18px; place-items:center; overflow:hidden; padding:0; border:1.5px solid #fff; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.18); font-size:13px; font-style:normal; line-height:18px; }
 .map-profile-name { min-width:0; padding-top:0; transform:translateY(-16px); }
 .map-profile-name h1 { display:flex; align-items:center; gap:6px; margin:0; font-size:21px; line-height:26px; }
 .map-profile-name h1 span { padding:1px 5px; border-radius:7px; color:#f042af; background:#fff0fa; font-size:12px; line-height:18px; }
