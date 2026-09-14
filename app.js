@@ -78,6 +78,12 @@ function eligibleTeachers(city = state.city) {
 
 function showTeacherModule() { return eligibleTeachers().length > 3; }
 
+function teacherModuleTitle() {
+  if (state.uiLanguage === 'en') return `${state.city} ${interfaceCopy.en['面授老师']}`;
+  if (state.uiLanguage === 'ja') return `${state.city}の${interfaceCopy.ja['面授老师']}`;
+  return `${state.city}面授老师`;
+}
+
 function flag(code) { return ({ CN: '🇨🇳', US: '🇺🇸', JP: '🇯🇵', KR: '🇰🇷', ES: '🇪🇸', AU: '🇦🇺', IT: '🇮🇹' })[code] || '🌐'; }
 
 function courseIcon(name) {
@@ -101,8 +107,9 @@ function teacherRailItem(teacher) {
 function renderTeacherModule() {
   if (!showTeacherModule()) return '';
   const visible = eligibleTeachers();
-  return `<section class="teacher-module" aria-label="面授老师">
-    <div class="module-head"><strong>面授老师</strong><button data-action="open-sheet" class="more">更多 <span>›</span></button></div>
+  const title = teacherModuleTitle();
+  return `<section class="teacher-module" aria-label="${title}">
+    <div class="module-head"><strong>${title}</strong><button data-action="open-sheet" class="more">更多 <span>›</span></button></div>
     <div class="teacher-rail">${visible.map(teacherRailItem).join('')}</div>
   </section>`;
 }
