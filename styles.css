@@ -136,8 +136,9 @@
 .real-map { height:202px; position:relative; overflow:hidden; border-radius:12px; background:#e5e5e1; isolation:isolate; }
 .map-sheet:not(.focused-teacher) .real-map { height:142px; }
 .map-sheet.focused-teacher .real-map { height:218px; margin-top:10px; }
- .static-map-tiles { position:absolute; z-index:0; top:calc(50% - var(--map-center-y)); left:calc(50% - var(--map-center-x)); display:grid; width:768px; height:768px; grid-template-columns:repeat(3,256px); grid-template-rows:repeat(3,256px); pointer-events:none; }
- .static-map-tiles img { display:block; width:256px; height:256px; user-select:none; }
+.static-map-tiles { position:absolute; z-index:0; top:calc(50% - var(--map-center-y)); left:calc(50% - var(--map-center-x)); display:grid; width:768px; height:768px; grid-template-columns:repeat(3,256px); grid-template-rows:repeat(3,256px); pointer-events:none; }
+.static-map-tiles img { display:block; width:256px; height:256px; user-select:none; }
+.static-map-fallback { top:50%; left:50%; display:block; width:118%; height:118%; background:#f4f1ee url('assets/offline-course-map-texture.png') center / cover no-repeat; transform:translate(-50%,-50%); }
  .map-marker-layer { position:absolute; z-index:2; inset:0; pointer-events:none; }
  .real-map p { position:absolute; z-index:3; bottom:5px; left:10px; margin:0; padding:4px 7px; border-radius:5px; color:#575b63; background:rgba(255,255,255,.92); font-size:10px; pointer-events:none; }
  .map-attribution { position:absolute; z-index:3; right:6px; bottom:5px; color:rgba(41,44,48,.72); background:rgba(255,255,255,.76); font-size:8px; line-height:14px; pointer-events:none; }
@@ -378,6 +379,22 @@
 .map-profile .profile-scroll { height:100%; padding-bottom:75px; }
 .profile-map-hero { position:relative; height:205px; overflow:hidden; background:#e5e5e1; isolation:isolate; }
 .profile-map-hero::after { content:""; position:absolute; z-index:1; inset:0; pointer-events:none; background:linear-gradient(180deg,rgba(255,255,255,.29),rgba(255,255,255,.08) 48%,rgba(59,62,75,.09)); }
+.profile-teacher-hero { background:#eaf4ff url('assets/profile-teacher-credential-cover.png') center bottom / auto 86% no-repeat; }
+.profile-teacher-hero::after { background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.10)); }
+.profile-academic-ribbon { position:absolute; z-index:3; right:0; bottom:-1px; left:0; height:27px; pointer-events:none; }
+.profile-academic-ribbon svg { display:block; width:100%; height:100%; filter:drop-shadow(0 -1px 1px rgba(98,114,186,.10)); }
+.profile-academic-ribbon .ribbon-fill { fill:rgba(229,237,255,.90); }
+.profile-academic-ribbon .ribbon-gold { fill:none; stroke:rgba(216,173,91,.62); stroke-width:.75; }
+.profile-academic-ribbon .ribbon-line { fill:none; stroke:rgba(123,108,221,.52); stroke-width:1.15; }
+.profile-academic-ribbon .ribbon-laurel { fill:none; stroke:rgba(113,151,200,.52); stroke-width:1; stroke-linecap:round; }
+.profile-teacher-hero .profile-map-status { color:#242833; }
+.profile-teacher-hero .profile-map-status .system-tray svg,.profile-teacher-hero .profile-map-status .system-time svg { stroke:#242833; fill:#242833; }
+.profile-teacher-city { position:absolute; z-index:4; right:12px; bottom:14px; display:flex; align-items:center; gap:5px; padding:7px 9px 7px 10px; border:1px solid rgba(114,71,245,.18); border-radius:999px; color:#32353e; background:rgba(255,255,255,.94); box-shadow:0 4px 12px rgba(43,42,67,.14); font-size:13px; text-align:left; }
+.profile-teacher-city-icon { color:#7047f5; font-size:16px; }
+.profile-teacher-city b { font-size:13px; }
+.profile-teacher-city small { color:#787b85; font-size:10px; }
+.profile-teacher-city i { margin-left:1px; color:#7047f5; font-size:18px; font-style:normal; line-height:12px; }
+.profile-teacher-city:active { transform:scale(.97); box-shadow:0 1px 5px rgba(43,42,67,.15); }
 .profile-venue-tiles { z-index:0; filter:saturate(.63) brightness(1.13) contrast(.91); }
 .profile-venue-marker { position:absolute; z-index:3; top:56%; left:50%; width:25px; height:25px; border:4px solid #fff; border-radius:50% 50% 50% 4px; background:#7447f3; box-shadow:0 0 0 10px rgba(116,71,243,.16),0 3px 10px rgba(69,42,181,.38); transform:translate(-50%,-100%) rotate(-45deg); }
 .profile-venue-marker::after { content:""; position:absolute; top:7px; left:7px; width:7px; height:7px; border-radius:50%; background:#fff; }
@@ -400,8 +417,11 @@
 .profile-venue-pagination button { width:7px; height:7px; padding:0; border:0; border-radius:50%; background:#d5d6db; }.profile-venue-pagination button.selected { width:16px; border-radius:4px; background:#787a83; }
 .profile-map-attribution { position:absolute; z-index:4; left:7px; bottom:2px; color:rgba(40,43,47,.58); background:rgba(255,255,255,.65); font-size:7px; line-height:11px; }
 .map-profile-summary { position:relative; z-index:2; display:grid; grid-template-columns:62px minmax(0,1fr); align-items:center; column-gap:13px; margin:0; padding:16px 17px 17px; background:#fff; }
-.map-profile-avatar { position:relative; z-index:3; width:62px; height:62px; border:3px solid #ddf5ff; border-radius:50%; background-size:327% 218%; background-repeat:no-repeat; box-shadow:0 0 0 3px #5cc9ff,0 2px 7px rgba(0,0,0,.18); transform:translateY(-50px); }
-.map-profile-avatar .teacher-profile-mark { position:absolute; right:-6px; bottom:-5px; display:grid; width:20px; height:20px; place-items:center; border:2px solid #fff; border-radius:50%; color:#fff; background:linear-gradient(140deg,#7965ff,#3cc7ff); font-size:12px; font-style:normal; }
+.map-profile-avatar { position:relative; z-index:3; width:62px; height:62px; border:2px solid #fff; border-radius:50%; background-size:327% 218%; background-repeat:no-repeat; box-shadow:0 0 0 1.5px #79c9f7,0 2px 7px rgba(62,108,156,.18); transform:translateY(-50px); overflow:visible; }
+.map-profile-avatar::after { content:""; position:absolute; inset:2px; border:1px solid rgba(255,255,255,.68); border-radius:inherit; pointer-events:none; }
+.map-profile-avatar .flag { position:absolute; z-index:5; bottom:-5px; left:-6px; font-size:17px; line-height:1; filter:drop-shadow(0 1px 1px rgba(62,108,156,.18)); }
+.map-profile-avatar .teacher-cap { top:-10px; right:-8px; transform:scale(1.08); transform-origin:center; }
+.map-profile-avatar .teacher-location { right:-7px; bottom:-8px; transform:scale(1.08); transform-origin:center; }
 .map-profile-name { min-width:0; padding-top:0; transform:translateY(-23px); }
 .map-profile-name h1 { display:flex; align-items:center; gap:6px; margin:0; font-size:21px; line-height:26px; }
 .map-profile-name h1 span { padding:1px 5px; border-radius:7px; color:#f042af; background:#fff0fa; font-size:12px; line-height:18px; }
@@ -420,6 +440,7 @@
 .map-profile-intro a { color:#7047f5; cursor:pointer; }
 .map-profile .inserted-course { padding:12px 16px 9px; border-top:0; }
 .map-profile .inserted-course .course-section-head { margin-bottom:10px; }
+.map-profile .inserted-course .course-section-head h2 { font-size:18px; line-height:24px; }
 .map-profile .inserted-course .course-card { border-radius:16px; }
 .map-profile .profile-tabs { justify-content:space-between; gap:0; padding:15px 16px 10px; }
 .map-profile .profile-tabs button { min-width:0; padding:9px 20px; }
@@ -437,7 +458,7 @@
 .teacher-companion-watermark { position:absolute; z-index:0; top:-12px; right:-34px; display:block; width:246px; height:236px; opacity:.42; pointer-events:none; user-select:none; background-image:url('assets/teacher-companion-watermark.png'); background-repeat:no-repeat; background-size:302% auto; background-position:100% 52%; }
 .map-profile-summary > :not(.teacher-companion-watermark) { position:relative; z-index:1; }
 .teacher-profile-overview .teacher-self-intro { padding-bottom:10px; border-bottom:0; }
-.teacher-profile-overview h3 { margin:0 0 8px; color:#22242a; font-size:16px; line-height:22px; }
+.teacher-profile-overview h3 { margin:0 0 8px; color:#22242a; font-size:18px; line-height:24px; }
 .teacher-trust-stats { display:grid; grid-template-columns:repeat(3,1fr); margin:0 0 17px; padding:3px 0 16px; border-bottom:1px solid #f0f0f2; }
 .teacher-trust-stats > div { display:grid; gap:2px; padding-left:12px; border-left:1px solid #ededf0; }
 .teacher-trust-stats > div:first-child { padding-left:0; border-left:0; }
@@ -652,6 +673,17 @@
 .teacher-rail-item .flag { bottom:-4px; left:-5px; font-size:14px; }
 .teacher-rail-item .teacher-verify { right:-4px; bottom:-3px; width:16px; height:16px; border-width:1.5px; font-size:9px; }
 
+/* In-person teacher identity: a slim credential frame, graduation cap and venue pin. */
+.partner-home .teacher-rail-avatar { overflow:visible; border:2px solid #fff; box-shadow:0 0 0 1.5px #79c9f7, 0 2px 5px rgba(62,108,156,.12); }
+.partner-home .teacher-rail-avatar::after { content:""; position:absolute; inset:2px; border:1px solid rgba(255,255,255,.68); border-radius:inherit; pointer-events:none; }
+.partner-home .teacher-rail-avatar .teacher-verify { display:none; }
+.teacher-cap { position:absolute; z-index:4; top:-9px; right:-7px; display:grid; width:21px; height:18px; place-items:center; color:#4ab6ee; filter:drop-shadow(0 1px 1px rgba(44,143,205,.24)); }
+.teacher-cap svg { width:19px; height:17px; fill:#68c6f4; stroke:#318fc9; stroke-width:1.25; stroke-linecap:round; stroke-linejoin:round; }
+.teacher-cap svg path:nth-child(n+2) { fill:none; }
+.teacher-location { position:absolute; z-index:4; right:-6px; bottom:-7px; display:grid; width:18px; height:21px; place-items:center; color:#4ab6ee; filter:drop-shadow(0 1px 1px rgba(44,143,205,.3)); }
+.teacher-location svg { width:18px; height:21px; fill:#58bdf1; stroke:#2f91ca; stroke-width:1.45; stroke-linecap:round; stroke-linejoin:round; }
+.teacher-location svg circle { fill:#fff; stroke:none; }
+
 .partner-home .person-row { min-height:128px; gap:11px; padding:13px 15px 10px; border-bottom:0; }
 .partner-home .person-row::after { content:""; position:absolute; right:16px; bottom:0; left:91px; height:1px; background:#eeeeef; }
 .partner-home .person-side { width:64px; flex-basis:64px; }
@@ -691,7 +723,8 @@
 .in-person-badge { display:inline-flex; flex:0 0 auto; align-items:center; gap:2px; padding:3px 5px; border-radius:8px; color:#6244d9; background:#eeeaff; font-size:9px; font-weight:700; line-height:12px; }
 .in-person-badge svg,.venue-pin svg { width:11px; height:11px; stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; }
 .map-profile .course-card-body { gap:9px; }
-.map-profile .course-card-body img { width:92px; height:50px; flex-basis:92px; border-radius:8px; }
+.map-profile .offline-map-card .course-card-body img { order:2; width:78px; height:54px; flex-basis:78px; margin-left:auto; border-radius:8px; }
+.map-profile .offline-map-card .course-meta { flex:1; }
 .map-profile .course-meta p { gap:7px; margin-bottom:3px; font-size:10px; }
 .map-profile .course-meta p span,.map-profile .course-meta p em { display:inline-flex; align-items:center; gap:3px; }
 .map-profile .course-meta p em { margin-left:0; }
