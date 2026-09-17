@@ -16,9 +16,27 @@ const people = [
   { name: '林霁', photo: 'p4', gender: '♀', city: '深圳市, 中国', distance: '5km', status: '7 分钟前活跃', intro: '想去：日本', tags: ['ISFJ', '火影忍者', '夏目友人帐', '堀与宫村', '王者荣耀'], newcomer: true, lang: 'CN  ⇄  JP' }
 ];
 
-const state = { city: '深圳', mapCity: '深圳', rootPage: 'partner', myRoute: 'courses', creatorPlacePage: false, vip: false, activeLanguage: '中文（简体）', sheet: false, cityMenu: false, sheetCityMenu: false, mapFilter: '全部', mapLanguage: '全部', mapQuery: '', activeVenue: null, mapTeacherId: null, profileId: null, profileRoute: 'profile', profileTab: 'archive', profileMore: false, profileVenueIndex: 0, courseFilter: 'all', courseOrigin: 'profile', selectedCourse: 'conversation', selectedVenue: '', selectedDate: '今天', selectedSlot: '19:00', bookingConfirmed: false, paymentSheet: false, paymentMethod: '支付宝', courseDelivery: '', courseDeliverySheet: false, creatorCity: '深圳', creatorSheet: '', creatorVenueQuery: '', creatorVenueResults: [], creatorPlaceHistory: [], courseType: '1v1', courseTitle: '', courseTags: [], courseLanguage: '', courseDuration: '', courseSessions: '', courseDescription: '', coursePrice: '', courseVenues: [], followed: false, toast: '', consoleScenario: '', consoleMode: 'discovery', uiLanguage: 'zh' };
+const state = { city: '深圳', mapCity: '深圳', rootPage: 'partner', myRoute: 'courses', creatorPlacePage: false, vip: false, activeLanguage: '中文（简体）', sheet: false, cityMenu: false, sheetCityMenu: false, mapFilter: '全部', mapLanguage: '全部', mapQuery: '', activeVenue: null, mapTeacherId: null, profileId: null, profileRoute: 'profile', profileTab: 'archive', profileMore: false, profileVenueIndex: 0, profilePhotoIndex: null, profileScrollTop: 0, coursePicker: false, courseFilter: 'all', courseOrigin: 'profile', selectedCourse: 'conversation', selectedVenue: '', selectedDate: '今天', selectedSlot: '19:00', bookingConfirmed: false, paymentSheet: false, paymentMethod: '支付宝', courseDelivery: '', courseDeliverySheet: false, creatorCity: '深圳', creatorSheet: '', creatorVenueQuery: '', creatorVenueResults: [], creatorPlaceHistory: [], courseType: '1v1', courseTitle: '', courseTags: [], courseLanguage: '', courseDuration: '', courseSessions: '', courseDescription: '', coursePrice: '', coursePackSessions: '', coursePackPrice: '', courseFirstDiscount: '', courseVenues: [], followed: false, toast: '', consoleScenario: '', consoleMode: 'discovery', uiLanguage: 'zh' };
 const initialDemoState = JSON.parse(JSON.stringify(state));
 const app = document.querySelector('#app');
+
+function openTeacherProfile(id) {
+  const teacher = teachers.find((item) => item.id === id);
+  if (!teacher) return;
+  state.profileId = teacher.id;
+  state.profileRoute = 'profile';
+  state.profileTab = 'archive';
+  state.profileVenueIndex = 0;
+  state.profileMore = false;
+  state.profilePhotoIndex = null;
+  state.sheet = false;
+  state.selectedCourse = 'conversation';
+  state.selectedVenue = courseVenues(teacher)[0]?.venue || '';
+  render();
+}
+// The nearby-teacher rail uses this dedicated direct entry. It deliberately does
+// not share the generic action dispatcher used by cards, sheets and map markers.
+window.openTeacherProfile = openTeacherProfile;
 
 function resetDemoState() {
   Object.assign(state, JSON.parse(JSON.stringify(initialDemoState)));
@@ -30,15 +48,149 @@ const interfaceCopy = {
   ja: { '搜索课程、地点或老师': 'コース・場所・講師を検索', '搜索附近位置': '近くの場所を検索', '已选上课地点': '選択済みの場所', '可选授课地点': '選べる受講場所', '面授场所': '対面レッスンの場所', '面授地点': '対面レッスンの場所', '面授老师': '対面レッスン講師', '附近地点': '近くの場所', '最近搜索': '最近の検索', '我的课程': 'マイコース', '创建新课': '新しいコースを作成', '课程标题': 'コース名', '课程标签': 'コースタグ', '课程语言': 'レッスン言語', '课程时长': 'レッスン時間', '课程次数': '回数', '课程描述': 'コース紹介', '设定单价': '1回の料金', '授课方式': 'レッスン形式', '线下课程': '対面レッスン', '线上课程': 'オンラインレッスン', '可选上课地点': '選べる場所', '最多 3 处': '最大3か所', '搜索并选择地点': '場所を検索して選択', '课程预约与支付': '予約と支払い', '支付方式': '支払い方法', '立即预约': '今すぐ予約', '确认支付': '支払いを確認', '选择地点': '場所を選択', '查看地图': '地図を見る', '查看更多': 'もっと見る', '更多': 'もっと', '找语伴': '語学パートナー', '附近': '近く', '全部语言': 'すべての言語', '任意时间': 'いつでも', '今天可约': '今日予約可', '本周有课': '今週のレッスン', '有课城市': 'レッスンのある都市', '暂无相关课程': '該当するコースはありません', '中文（简体）': '中国語', '英语': '英語', '日语': '日本語', '韩语': '韓国語', '中文': '中国語', '全部': 'すべて', '今天': '今日', '周六': '土曜', '周日': '日曜', '课程介绍': 'コース紹介', '上课时间': 'レッスン時間', '上课次数': '回数', '返回': '戻る', '关闭': '閉じる', '提交创建': '作成して提出', '预览课程': 'プレビュー' }
 };
 
+// Interface chrome is intentionally separate from course, teacher and place data.
+// These phrases cover labels embedded in dynamic strings such as “深圳面授课程”.
+const interfacePhrases = {
+  '认证面授老师': { en: 'Verified In-person Teacher', ja: '認定対面レッスン講師' },
+  '面授老师': { en: 'In-person Teachers', ja: '対面レッスン講師' },
+  '面授课程': { en: 'In-person Courses', ja: '対面レッスン' },
+  '线下课程': { en: 'In-person Course', ja: '対面レッスン' },
+  '个人档案': { en: 'Profile', ja: 'プロフィール' },
+  '个人照片': { en: 'Photos', ja: '写真' },
+  '教学类型': { en: 'Teaching focus', ja: '指導カテゴリー' },
+  '老师自我介绍': { en: 'About the teacher', ja: '講師紹介' },
+  '课程列表': { en: 'Course list', ja: 'コース一覧' },
+  '课程详情': { en: 'Course details', ja: 'コース詳細' },
+  '课程介绍': { en: 'Course overview', ja: 'コース紹介' },
+  '可选上课地点': { en: 'Available locations', ja: '選べる受講場所' },
+  '可选地点': { en: 'Available locations', ja: '選べる場所' },
+  '上课地点': { en: 'Class location', ja: '受講場所' },
+  '上课时间': { en: 'Class time', ja: 'レッスン時間' },
+  '上课次数': { en: 'Sessions', ja: '回数' },
+  '单节课程': { en: 'Single session', ja: '単発レッスン' },
+  '首购专享': { en: 'First purchase', ja: '初回限定' },
+  '首购立省': { en: 'First purchase saves', ja: '初回限定割引' },
+  '首购每节省': { en: 'First-purchase savings per session', ja: '初回は1回あたり割引' },
+  '每节省': { en: 'Save per session', ja: '1回あたりお得' },
+  '课包优惠': { en: 'Package offer', ja: 'コースパック割引' },
+  '服务条款': { en: 'Terms of service', ja: '利用規約' },
+  '立即预约': { en: 'Book now', ja: '今すぐ予約' },
+  '预约老师': { en: 'Book teacher', ja: '講師を予約' },
+  '联系老师': { en: 'Contact teacher', ja: '講師に連絡' },
+  '返回老师资料': { en: 'Back to teacher profile', ja: '講師プロフィールへ戻る' },
+  '预约成功': { en: 'Booking confirmed', ja: '予約完了' },
+  '支付方式': { en: 'Payment method', ja: '支払い方法' },
+  '确认支付': { en: 'Confirm payment', ja: '支払いを確認' },
+  '支付宝': { en: 'Alipay', ja: 'Alipay' },
+  '微信': { en: 'WeChat Pay', ja: 'WeChat Pay' },
+  '课程预约与支付': { en: 'Booking & payment', ja: '予約と支払い' },
+  '查看老师时间': { en: 'View teacher availability', ja: '講師の空き時間を見る' },
+  '创建新课': { en: 'Create course', ja: '新しいコースを作成' },
+  '授课方式': { en: 'Delivery mode', ja: 'レッスン形式' },
+  '课程语言': { en: 'Lesson language', ja: 'レッスン言語' },
+  '课程时长': { en: 'Lesson length', ja: 'レッスン時間' },
+  '课程次数': { en: 'Sessions', ja: '回数' },
+  '课程描述': { en: 'Course description', ja: 'コース紹介' },
+  '设定单价': { en: 'Price per session', ja: '1回の料金' },
+  '提交创建': { en: 'Submit', ja: '作成して提出' },
+  '预览课程': { en: 'Preview course', ja: 'コースをプレビュー' },
+  '添加课程封面/预览视频': { en: 'Add course cover / preview video', ja: 'コースカバー／プレビュー動画を追加' },
+  '推荐上传2分钟内横屏视频': { en: 'Recommended: landscape video under 2 minutes', ja: '推奨：2分以内の横長動画' },
+  '选择要预约的课程': { en: 'Choose a course to book', ja: '予約するコースを選択' },
+  '可预约面授课程': { en: 'bookable in-person courses', ja: '予約可能な対面レッスン' },
+  '已为你保留课程名额': { en: 'Your course spot is reserved', ja: 'コース枠を確保しました' },
+  '面授场所': { en: 'Class locations', ja: '対面レッスンの場所' },
+  '搜索课程、地点或老师': { en: 'Search courses, places or teachers', ja: 'コース・場所・講師を検索' },
+  '搜索附近位置': { en: 'Search nearby locations', ja: '近くの場所を検索' },
+  '最近搜索': { en: 'Recent searches', ja: '最近の検索' },
+  '附近地点': { en: 'Nearby places', ja: '近くの場所' },
+  '找语伴': { en: 'Find Partners', ja: '語学パートナー' },
+  '付费陪练': { en: 'Paid practice', ja: '有料レッスン' },
+  '认真学习': { en: 'Study seriously', ja: 'しっかり学ぶ' },
+  '性别': { en: 'Gender', ja: '性別' },
+  '动态': { en: 'Moments', ja: 'モーメンツ' },
+  '评价': { en: 'Reviews', ja: 'レビュー' },
+  '兴趣爱好': { en: 'Interests', ja: '趣味' },
+  '个人信息': { en: 'Personal info', ja: 'プロフィール情報' },
+  '想去的地方': { en: 'Places to visit', ja: '行ってみたい場所' },
+  '职业': { en: 'Occupation', ja: '職業' },
+  '面授地点': { en: 'In-person locations', ja: '対面レッスンの場所' },
+  '查看更多': { en: 'See more', ja: 'もっと見る' },
+  '更多': { en: 'More', ja: 'もっと' },
+  '全部语言': { en: 'All languages', ja: 'すべての言語' },
+  '任意时间': { en: 'Any time', ja: 'いつでも' },
+  '今天可约': { en: 'Available today', ja: '今日予約可' },
+  '本周有课': { en: 'Classes this week', ja: '今週のレッスン' },
+  '暂无相关课程': { en: 'No matching courses', ja: '該当するコースはありません' }
+  , '西班牙语': { en: 'Spanish', ja: 'スペイン語' }
+  , '城市': { en: 'City', ja: '都市' }
+  , '语言课': { en: 'Language lesson', ja: '語学レッスン' }
+  , '教学：': { en: 'Teaches: ', ja: '指導：' }
+  , '上课(次)': { en: 'Lessons', ja: 'レッスン回数' }
+  , '学生(个)': { en: 'Students', ja: '受講者数' }
+  , '好评率': { en: 'Positive rating', ja: '高評価率' }
+  , '关注': { en: 'Follow', ja: 'フォロー' }
+  , '已关注': { en: 'Following', ja: 'フォロー中' }
+  , '聊天': { en: 'Chat', ja: 'チャット' }
+  , '分钟/节课': { en: 'min/session', ja: '分／回' }
+  , 'min/节课': { en: 'min/session', ja: '分／回' }
+  , '节课包': { en: '-session package', ja: '回パック' }
+  , '合计¥': { en: 'Total ¥', ja: '合計¥' }
+  , '今天 ': { en: 'Today ', ja: '今日 ' }
+  , '本周日': { en: 'This Sunday', ja: '今週日曜' }
+  , '周六 ': { en: 'Saturday ', ja: '土曜 ' }
+  , '周日 ': { en: 'Sunday ', ja: '日曜 ' }
+  , '时间管理': { en: 'Time management', ja: '時間管理' }
+  , '授课管理': { en: 'Course management', ja: 'レッスン管理' }
+  , '课时收入': { en: 'Lesson income', ja: 'レッスン収入' }
+  , '近期待上': { en: 'Upcoming classes', ja: '近日開講' }
+  , '暂无数据': { en: 'No data yet', ja: 'データがありません' }
+  , '在售课程': { en: 'Courses for sale', ja: '販売中コース' }
+  , '下架课程': { en: 'Unlisted courses', ja: '非公開コース' }
+  , '下架': { en: 'Unlist', ja: '非公開にする' }
+  , '编辑': { en: 'Edit', ja: '編集' }
+  , '推广': { en: 'Promote', ja: '宣伝' }
+  , '重新上架': { en: 'Relist', ja: '再公開' }
+  , '完善教学信息': { en: 'Complete teaching profile', ja: '講師情報を完成' }
+  , '视频介绍': { en: 'Video introduction', ja: '動画紹介' }
+  , '重新上传': { en: 'Upload again', ja: '再アップロード' }
+  , '教授语言': { en: 'Teaching languages', ja: '指導言語' }
+  , '同时会说': { en: 'Also speaks', ja: '話せる言語' }
+  , '个人介绍': { en: 'About me', ja: '自己紹介' }
+  , '教学经验': { en: 'Teaching experience', ja: '指導経験' }
+  , '教学资料': { en: 'Teaching materials', ja: '教材' }
+  , '获得证书': { en: 'Certificates', ja: '取得資格' }
+  , '证书图片': { en: 'Certificate image', ja: '資格証明書' }
+  , '学历背景': { en: 'Education', ja: '学歴' }
+  , '常用邮箱': { en: 'Email', ja: 'メールアドレス' }
+  , '手机号': { en: 'Phone number', ja: '携帯電話番号' }
+  , '确认提交': { en: 'Confirm submit', ja: '送信する' }
+  , '批量关课': { en: 'Close classes in bulk', ja: '一括休講' }
+  , '批量开课': { en: 'Open classes in bulk', ja: '一括開講' }
+  , '全部打开': { en: 'Open all', ja: 'すべて開く' }
+  , '保存时间表': { en: 'Save timetable', ja: '時間割を保存' }
+  , '请选择': { en: 'Please select', ja: '選択してください' }
+  , '暂不设置': { en: 'Not set now', ja: '今は設定しない' }
+};
+
 function localizeDemoUI() {
   const copy = interfaceCopy[state.uiLanguage];
   document.documentElement.lang = state.uiLanguage === 'ja' ? 'ja' : state.uiLanguage === 'en' ? 'en' : 'zh-CN';
   if (!copy) return;
+  const phrases = Object.entries(interfacePhrases)
+    .map(([source, localized]) => [source, localized[state.uiLanguage]])
+    .filter(([, localized]) => localized)
+    .sort(([left], [right]) => right.length - left.length);
   const replace = (value) => {
     const leading = value.match(/^\s*/)?.[0] || '';
     const trailing = value.match(/\s*$/)?.[0] || '';
     const content = value.trim();
-    return Object.hasOwn(copy, content) ? `${leading}${copy[content]}${trailing}` : value;
+    if (Object.hasOwn(copy, content)) return `${leading}${copy[content]}${trailing}`;
+    // Only replace multi-character interface phrases inside dynamic labels.
+    // Names, venue names and course titles are intentionally left as authored data.
+    let localized = content;
+    phrases.forEach(([source, target]) => { localized = localized.replaceAll(source, target); });
+    return localized === content ? value : `${leading}${localized}${trailing}`;
   };
   const walker = document.createTreeWalker(app, NodeFilter.SHOW_TEXT);
   const nodes = [];
@@ -65,7 +217,7 @@ function applyConsoleScenario(scenario) {
     'search-chinese': () => { state.consoleMode = 'search'; state.rootPage = 'partner'; state.sheet = true; state.mapCity = '深圳'; state.mapQuery = '中文会话'; state.mapLanguage = '中文'; state.consoleScenario = '中文会话'; },
     'search-empty': () => { state.consoleMode = 'search'; state.rootPage = 'partner'; state.sheet = true; state.mapCity = '广州'; state.mapQuery = '日语面授'; state.mapLanguage = '日语'; state.consoleScenario = '日语面授 · 当前城无结果'; },
     'teacher-payment': () => { state.consoleMode = 'booking'; state.profileId = 'sarah'; state.profileRoute = 'course-detail'; state.selectedCourse = 'conversation'; state.selectedVenue = '南山慢咖啡'; state.selectedDate = '今天'; state.selectedSlot = '19:00'; state.paymentMethod = '支付宝'; state.paymentSheet = true; state.consoleScenario = '课程预约与支付'; },
-    'creator-offline': () => { state.consoleMode = 'creator'; state.rootPage = 'mine'; state.myRoute = 'create'; state.creatorCity = '深圳'; state.courseDelivery = '线下课程'; state.courseTitle = '一对一中文面授'; state.courseTags = ['日常会话', '发音纠正']; state.courseLanguage = '中文'; state.courseDuration = '50 分钟/节'; state.courseSessions = '2 节'; state.courseDescription = '适合想提升日常中文表达的学习者。'; state.coursePrice = '50'; state.courseVenues = shenzhenPlaces; state.consoleScenario = '完整线下课程'; },
+    'creator-offline': () => { state.consoleMode = 'creator'; state.rootPage = 'mine'; state.myRoute = 'create'; state.creatorCity = '深圳'; state.courseDelivery = '线下课程'; state.courseTitle = '一对一中文面授'; state.courseTags = ['日常会话', '发音纠正']; state.courseLanguage = '中文'; state.courseDuration = '50 分钟/节'; state.courseSessions = '2 节'; state.courseDescription = '适合想提升日常中文表达的学习者。'; state.coursePrice = '50'; state.coursePackSessions = '2'; state.coursePackPrice = '90'; state.courseFirstDiscount = '10'; state.courseVenues = shenzhenPlaces; state.consoleScenario = '完整线下课程'; },
     'creator-search': () => { state.consoleMode = 'creator'; state.rootPage = 'mine'; state.myRoute = 'create'; state.creatorPlacePage = true; state.creatorCity = '深圳'; state.courseDelivery = '线下课程'; state.creatorVenueQuery = '咖啡'; state.creatorVenueResults = [{ name: '南山慢咖啡', district: '南山区', address: '南山大道 88 号' }]; state.creatorPlaceHistory = [{ name: '南山慢咖啡', district: '南山区', address: '南山大道 88 号', city: '深圳' }, { name: '华侨城创意文化园', district: '南山区', address: '恩平街 1 号', city: '深圳' }]; state.consoleScenario = '地点搜索记录'; }
   };
   presets[scenario]?.();
@@ -96,12 +248,12 @@ function courseIcon(name) {
 }
 
 function avatar(person, size = 'medium', teacher = false) {
-  return `<button class="avatar ${size} photo-${person.photo} ${teacher ? 'teacher-avatar' : ''}" data-action="${teacher ? 'profile' : 'noop'}" data-id="${person.id || ''}" aria-label="${teacher ? `查看${person.name}的资料` : person.name}">${teacher ? `<i class="flag">${flag(person.country)}</i><b class="teacher-verify">✓</b>` : ''}</button>`;
+  return `<button type="button" class="avatar ${size} photo-${person.photo} ${teacher ? 'teacher-avatar' : ''}" data-action="${teacher ? 'profile' : 'noop'}" data-id="${person.id || ''}" aria-label="${teacher ? `查看${person.name}的资料` : person.name}">${teacher ? `<i class="flag">${flag(person.country)}</i><b class="teacher-verify">✓</b>` : ''}</button>`;
 }
 
 function teacherRailItem(teacher) {
   const labels = { sarah: '中文', david: '英语', yuki: '日语', minji: '韩语', lucas: '西班牙语' };
-  return `<button class="teacher-rail-item" data-action="profile" data-id="${teacher.id}" aria-label="查看${teacher.name}的资料"><span class="avatar small teacher-rail-avatar photo-${teacher.photo}"><i class="flag">${flag(teacher.country)}</i><i class="teacher-cap" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m2.5 9.5 9.5-5 9.5 5-9.5 5z"></path><path d="M6.5 11.6v4.1c2.8 2.4 8.2 2.4 11 0v-4.1"></path><path d="M21.5 9.5v6"></path></svg></i><b class="teacher-location" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s6-5.6 6-11a6 6 0 0 0-12 0c0 5.4 6 11 6 11Z"></path><circle cx="12" cy="10" r="2.1"></circle></svg></b></span><b>${teacher.name}</b><small>${labels[teacher.id] || '语言课'}</small></button>`;
+  return `<button type="button" class="teacher-rail-item" data-action="profile" data-id="${teacher.id}" aria-label="查看${teacher.name}的资料"><span class="avatar small teacher-rail-avatar photo-${teacher.photo}"><i class="flag">${flag(teacher.country)}</i><i class="teacher-cap" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m2.5 9.5 9.5-5 9.5 5-9.5 5z"></path><path d="M6.5 11.6v4.1c2.8 2.4 8.2 2.4 11 0v-4.1"></path><path d="M21.5 9.5v6"></path></svg></i><b class="teacher-location" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s6-5.6 6-11a6 6 0 0 0-12 0c0 5.4 6 11 6 11Z"></path><circle cx="12" cy="10" r="2.1"></circle></svg></b></span><b>${teacher.name}</b><small>${labels[teacher.id] || '语言课'}</small></button>`;
 }
 
 function renderTeacherModule() {
@@ -160,7 +312,7 @@ function momentsIcon(name) {
 function renderMomentsHome() {
   const teacher = teachers.find((item) => item.id === 'sarah');
   const course = teacherCourses(teacher)[0];
-  return `<div class="screen moments-home"><div class="moments-island" aria-hidden="true"></div>${systemStatus('moments-status')}<nav class="moments-top moments-native-toolbar"><button class="moments-rank" aria-label="榜单">${momentsIcon('rank')}</button><button class="moments-target" aria-label="目标">${momentsIcon('target')}</button><label class="moments-search">${momentsIcon('search')}<span>绕口令挑战</span></label><button class="moments-bell" aria-label="通知">${momentsIcon('bell')}<b>3</b></button><button class="moments-write" aria-label="发布动态">${momentsIcon('write')}</button></nav><nav class="moments-tabs"><button>最新</button><button>推荐</button><button>互助</button><button>自拍⌄</button><button class="selected">♛ 附近</button><button>关注<i></i></button><button class="moments-filter" aria-label="筛选">${momentsIcon('filter')}</button></nav><main class="moments-scroll"><article class="moment-post"><header class="moment-head"><span class="moment-avatar photo-${teacher.photo}"><i>${flag(teacher.country)}</i></span><div><h1>${teacher.name}<mark>✓</mark><em>认证面授老师</em></h1><p>CN　⇄　JP　EN</p></div><button class="moment-more" aria-label="更多">•••</button><time>刚刚</time></header><p class="moment-copy">这周在深圳开设一对一中文面授课。<br />想更自然地开口说中文，欢迎来一起练习。</p><button class="shared-course-card" data-action="open-post-course" aria-label="查看${course.title}"><img src="${course.cover}" alt="${course.title}" /><div><b>${course.title}</b><p><span>${courseIcon('mic')}${course.language}</span><span>${courseIcon('book')}${course.sessions} 节课</span></p><p><span>${courseIcon('clock')}${course.duration}</span></p><strong>¥${course.price}/节课</strong></div><i>›</i></button><div class="shared-course-locations"><span>⌖ 可选地点：${course.venues.map((venue) => venue.venue).join('、')}</span></div><footer class="moment-foot"><span>⌖ 深圳市，南山区</span><div><button>♡ 12</button><button>◯ 3</button><button>↗</button></div></footer></article></main>${renderBottomTab('moments')}${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
+  return `<div class="screen moments-home"><div class="moments-island" aria-hidden="true"></div>${systemStatus('moments-status')}<nav class="moments-top moments-native-toolbar"><button class="moments-rank" aria-label="榜单">${momentsIcon('rank')}</button><button class="moments-target" aria-label="目标">${momentsIcon('target')}</button><label class="moments-search">${momentsIcon('search')}<span>绕口令挑战</span></label><button class="moments-bell" aria-label="通知">${momentsIcon('bell')}<b>3</b></button><button class="moments-write" aria-label="发布动态">${momentsIcon('write')}</button></nav><nav class="moments-tabs"><button>最新</button><button>推荐</button><button>互助</button><button>自拍⌄</button><button class="selected">♛ 附近</button><button>关注<i></i></button><button class="moments-filter" aria-label="筛选">${momentsIcon('filter')}</button></nav><main class="moments-scroll"><article class="moment-post"><header class="moment-head"><span class="moment-avatar photo-${teacher.photo}"><i>${flag(teacher.country)}</i></span><div><h1>${teacher.name}<mark>✓</mark><em>认证面授老师</em></h1><p>CN　⇄　JP　EN</p></div><button class="moment-more" aria-label="更多">•••</button><time>刚刚</time></header><p class="moment-copy">这周在深圳开设一对一中文面授课。<br />想更自然地开口说中文，欢迎来一起练习。</p><button class="shared-course-card" data-action="open-post-course" aria-label="查看${course.title}"><img src="${course.cover}" alt="${course.title}" /><div><b>${course.title}</b><p><span>${courseIcon('mic')}${course.language}</span><span>${courseIcon('book')}${course.sessions} 节课</span></p><p><span>${courseIcon('clock')}${course.duration}</span></p><strong>${courseOfferText(course)}${course.firstDiscount ? ` · 首购减¥${course.firstDiscount}` : ''}</strong></div><i>›</i></button><div class="shared-course-locations"><span>⌖ 可选地点：${course.venues.map((venue) => venue.venue).join('、')}</span></div><footer class="moment-foot"><span>⌖ 深圳市，南山区</span><div><button>♡ 12</button><button>◯ 3</button><button>↗</button></div></footer></article></main>${renderBottomTab('moments')}${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
 }
 
 function renderBottomTab(active = 'partner') {
@@ -303,18 +455,18 @@ function renderMapMarkers(venues, active) {
 }
 
 function renderVenueList(venues, active) {
-  return `<div class="venue-list">${venues.map((item) => `<button data-action="select-venue" data-venue="${item.venue}" class="venue-card ${item.venue === active ? 'selected' : ''}"><span class="venue-dot"></span><div><strong>${item.course.title}</strong><b>${item.venue}</b><small>${state.mapTeacherId ? item.sessionTime : `${item.teacher.name} · ${item.sessionTime}`}</small></div><em>¥${item.course.price}/节课</em></button>`).join('') || '<div class="empty">没有符合条件的课程</div>'}</div>`;
+  return `<div class="venue-list">${venues.map((item) => `<button data-action="select-venue" data-venue="${item.venue}" class="venue-card ${item.venue === active ? 'selected' : ''}"><span class="venue-dot"></span><div><strong>${item.course.title}</strong><b>${item.venue}</b><small>${state.mapTeacherId ? item.sessionTime : `${item.teacher.name} · ${item.sessionTime}`}</small></div><em>${courseOfferText(item.course)}</em></button>`).join('') || '<div class="empty">没有符合条件的课程</div>'}</div>`;
 }
 
 function renderGlobalCourseList(venues, active) {
   const grouped = [...new Map(venues.map((item) => [`${item.teacher.id}:${item.course.id}`, { teacher: item.teacher, course: item.course, venues: venues.filter((row) => row.teacher.id === item.teacher.id && row.course.id === item.course.id) }])).values()];
   const orderedGroups = active ? [...grouped].sort((a, b) => Number(b.venues.some((venue) => venue.venue === active)) - Number(a.venues.some((venue) => venue.venue === active))) : grouped;
-  return `<div class="course-map-list global-course-list">${orderedGroups.map(({ teacher, course, venues: courseVenues }) => `<article class="map-course-card ${courseVenues.some((venue) => venue.venue === active) ? 'selected' : ''}"><div class="map-course-head"><div><strong>${course.title}</strong><small class="course-teacher-meta"><button class="course-teacher-avatar photo-${teacher.photo}" data-action="profile" data-id="${teacher.id}" aria-label="查看${teacher.name}的资料"></button><span>${teacher.name} · ${course.duration}</span></small></div><em>¥${course.price}/节课</em></div><div class="map-course-venues">${courseVenues.map((venue) => `<button data-action="select-global-course-venue" data-course="${course.id}" data-venue="${venue.venue}" class="${venue.venue === active ? 'selected' : ''}"><b>${venue.venue}</b><small>${venue.sessionTime}</small></button>`).join('')}</div></article>`).join('') || '<div class="empty">没有符合条件的课程</div>'}</div>`;
+  return `<div class="course-map-list global-course-list">${orderedGroups.map(({ teacher, course, venues: courseVenues }) => `<article class="map-course-card ${courseVenues.some((venue) => venue.venue === active) ? 'selected' : ''}"><div class="map-course-head"><div><strong>${course.title}</strong><small class="course-teacher-meta"><button class="course-teacher-avatar photo-${teacher.photo}" data-action="profile" data-id="${teacher.id}" aria-label="查看${teacher.name}的资料"></button><span>${teacher.name} · ${course.duration}</span></small></div><em>${courseOfferText(course)}</em></div><div class="map-course-venues">${courseVenues.map((venue) => `<button data-action="select-global-course-venue" data-course="${course.id}" data-venue="${venue.venue}" class="${venue.venue === active ? 'selected' : ''}"><b>${venue.venue}</b><small>${venue.sessionTime}</small></button>`).join('')}</div></article>`).join('') || '<div class="empty">没有符合条件的课程</div>'}</div>`;
 }
 
 function renderTeacherCourseList(teacher, active) {
   const courses = teacherCourses(teacher);
-  return `<div class="teacher-course-list"><p>课程与可选上课地点</p>${courses.map((course) => `<article class="teacher-course-card ${course.id === state.selectedCourse ? 'selected' : ''}"><button class="teacher-course-head" data-action="open-course-from-map" data-course="${course.id}"><div><strong>${course.title}</strong><small>${course.sessions} 节课 · ${course.duration}</small></div><em>¥${course.price}/节课</em><span>›</span></button><div class="teacher-course-venues">${course.venues.map((venue) => `<button data-action="select-teacher-course-venue" data-course="${course.id}" data-venue="${venue.venue}" class="${course.id === state.selectedCourse && venue.venue === active ? 'selected' : ''}"><b>${venue.venue}</b><small>${course.id === 'weekend' ? course.schedule : venue.slots}</small></button>`).join('')}</div></article>`).join('')}</div>`;
+  return `<div class="teacher-course-list"><p>课程与可选上课地点</p>${courses.map((course) => `<article class="teacher-course-card ${course.id === state.selectedCourse ? 'selected' : ''}"><button class="teacher-course-head" data-action="open-course-from-map" data-course="${course.id}"><div><strong>${course.title}</strong><small>${course.sessions} 节课 · ${course.duration}</small></div><em>${courseOfferText(course)}</em><span>›</span></button><div class="teacher-course-venues">${course.venues.map((venue) => `<button data-action="select-teacher-course-venue" data-course="${course.id}" data-venue="${venue.venue}" class="${course.id === state.selectedCourse && venue.venue === active ? 'selected' : ''}"><b>${venue.venue}</b><small>${course.id === 'weekend' ? course.schedule : venue.slots}</small></button>`).join('')}</div></article>`).join('')}</div>`;
 }
 
 function renderMapStage(venues, active, focusedTeacher) {
@@ -431,20 +583,71 @@ function teacherCourses(teacher, city = state.city) {
   const weekendVenues = (teacher.weekendCityCourses?.[city] || venues).slice(0, 3);
   const primary = profileCourse(teacher, venues[0]);
   const courses = [
-    { id: 'conversation', ...primary, venues, description: `在真实场景中练习 ${primary.language}，适合希望开口交流的学习者。`, times: '2 次', schedule: '今天 19:00', cover: 'assets/course-cover-reference.png' },
-    { id: 'weekend', ...primary, venues: weekendVenues, title: `${primary.language} 周末面授会话课`, sessions: 3, duration: '60 min/节课', price: primary.price + 20, description: `围绕日常话题展开面授会话练习。`, times: '3 次', schedule: '周六 14:00', cover: 'assets/course-cover-reference.png' }
+    { id: 'conversation', ...primary, sessions: 1, firstDiscount: 10, venues, description: `在真实场景中练习 ${primary.language}，适合希望开口交流的学习者。`, times: '1 次', schedule: '今天 19:00', cover: 'assets/course-cover-reference.png' },
+    { id: 'weekend', ...primary, venues: weekendVenues, title: `${primary.language} 周末面授会话课`, sessions: 2, duration: '60 min/节课', pack: { sessions: 2, price: primary.price * 2 - 10 }, description: `围绕日常话题展开面授会话练习。`, times: '2 次', schedule: '周六 14:00', cover: 'assets/course-cover-reference.png' }
   ];
   return teacher.cityCourseCount?.[city] === 1 ? courses.slice(0, 1) : courses;
 }
 
 function selectedCourse() { return teacherCourses(teacherForProfile()).find((item) => item.id === state.selectedCourse) || teacherCourses(teacherForProfile())[0]; }
 
+function coursePricing(course) {
+  const sessions = Number(course?.pack?.sessions) || Number(course?.sessions) || 1;
+  const regularTotal = (Number(course?.price) || 0) * sessions;
+  const packTotal = Number(course?.pack?.price) || regularTotal;
+  const firstDiscount = sessions === 1 ? Math.min(Math.max(Number(course?.firstDiscount) || 0, 0), packTotal) : 0;
+  const finalTotal = packTotal - firstDiscount;
+  return { sessions, regularTotal, packTotal, firstDiscount, finalTotal, unitPrice: finalTotal / sessions };
+}
+
+function courseOfferText(course) {
+  const pricing = coursePricing(course);
+  return pricing.sessions > 1 ? `${pricing.sessions} 节课包 ¥${pricing.finalTotal}` : `¥${pricing.finalTotal}/节课`;
+}
+
+function courseVenueLabel(course) {
+  const venues = course.venues || [];
+  if (!venues.length) return '暂未设置上课地点';
+  return venues.length > 1 ? `${venues[0].venue}等 ${venues.length} 处` : venues[0].venue;
+}
+
+function renderCoursePrice(course) {
+  const pricing = coursePricing(course);
+  const isPackage = pricing.sessions > 1;
+  const unitPrice = Number.isInteger(pricing.unitPrice) ? pricing.unitPrice : pricing.unitPrice.toFixed(1);
+  const regularUnitPrice = Number.isInteger(pricing.regularTotal / pricing.sessions) ? pricing.regularTotal / pricing.sessions : (pricing.regularTotal / pricing.sessions).toFixed(1);
+  if (isPackage) return `<div class="course-package-price course-package-price--bundle"><div class="course-bundle-offer"><i>${pricing.sessions} 节课包</i><span>每节省¥${Math.round((pricing.regularTotal - pricing.finalTotal) / pricing.sessions)}</span></div><div class="course-bundle-price"><b>¥${unitPrice}/节</b><del>¥${regularUnitPrice}/节</del><em>合计¥${pricing.finalTotal}</em></div></div>`;
+  return `<div class="course-package-price"><b>¥${pricing.finalTotal}/节</b>${pricing.firstDiscount ? `<del>¥${pricing.packTotal}/节</del><i class="first-purchase-badge">首购专享</i>` : ''}</div>`;
+}
+
 function renderTeacherTrustStats() {
   return `<section class="teacher-trust-stats" aria-label="老师教学数据"><div><strong>257</strong><small>上课(次)</small></div><div><strong>28</strong><small>学生(个)</small></div><div><strong>96%</strong><small>好评率</small></div></section>`;
 }
 
+function teacherLifestylePhotoClass(teacher, index) {
+  return teacher.id === 'sarah' ? `teacher-lifestyle-photo sarah-lifestyle-${index}` : `photo-${teacher.photo} portrait-shot-${index}`;
+}
+
+function renderTeacherPortraitShowcase(teacher) {
+  const labels = ['日常照片', '备课时刻', '课堂留影'];
+  return `<section class="teacher-portrait-showcase" aria-label="${teacher.name}的个人照片"><h3>个人照片</h3><div class="teacher-showcase-grid">${labels.map((label, index) => `<button class="teacher-showcase-photo" data-action="open-profile-photo" data-photo-index="${index}" aria-label="查看${teacher.name}的${label}"><span class="teacher-showcase-image ${teacherLifestylePhotoClass(teacher, index)}"></span></button>`).join('')}</div></section>`;
+}
+
+function renderProfilePhotoViewer(teacher) {
+  if (state.profilePhotoIndex === null) return '';
+  const index = Math.max(0, Math.min(Number(state.profilePhotoIndex) || 0, 2));
+  const labels = ['日常照片', '备课时刻', '课堂留影'];
+  return `<div class="profile-photo-viewer" role="dialog" aria-modal="true" aria-label="${teacher.name}的${labels[index]}"><button class="profile-photo-scrim" data-action="close-profile-photo" aria-label="关闭大图"></button><section class="profile-photo-stage"><button class="profile-photo-close" data-action="close-profile-photo" aria-label="关闭">×</button><div class="profile-photo-large ${teacherLifestylePhotoClass(teacher, index)}" role="img" aria-label="${teacher.name}的${labels[index]}"></div><p>${teacher.name} · ${labels[index]} <span>${index + 1}/3</span></p></section></div>`;
+}
+
+function renderProfileCoursePicker(teacher) {
+  if (!state.coursePicker) return '';
+  const courses = teacherCourses(teacher);
+  return `<div class="profile-course-picker" role="dialog" aria-modal="true" aria-label="选择预约课程"><button class="profile-course-picker-scrim" data-action="close-profile-course-picker" aria-label="关闭"></button><section class="profile-course-picker-panel"><i class="profile-course-picker-handle" aria-hidden="true"></i><header><strong>选择要预约的课程</strong><button data-action="close-profile-course-picker" aria-label="关闭">×</button></header><p>${teacher.name} 有 ${courses.length} 门可预约面授课程</p><div class="profile-course-picker-list">${courses.map((course) => `<button class="profile-course-picker-item" data-action="select-profile-course" data-course="${course.id}"><img src="${course.cover}" alt="" /><span><b>${course.title}</b><small>${course.language} · ${course.sessions} 节课 · ${course.duration}</small><em>${courseOfferText(course)}${course.firstDiscount ? ` · 首购减¥${course.firstDiscount}` : ''}</em></span><i>›</i></button>`).join('')}</div></section></div>`;
+}
+
 function renderTeacherOverview(teacher) {
-  return `<section class="teacher-profile-overview"><section class="teacher-types"><h3>教学类型</h3><div><span>FreeTalk</span><span>实用口语</span><span>旅行口语</span></div></section><section class="teacher-self-intro"><h3>老师自我介绍</h3><p>你好，我是 ${teacher.name}。在深圳开设一对一中文面授课，擅长把日常场景、旅行和工作沟通带入练习。我们可以先从你的学习目标聊起，再一起约定方便的上课地点。</p></section><section class="teacher-portrait-showcase" aria-label="${teacher.name}的个人形象照片"><h3>老师风采</h3><div class="teacher-showcase-photo photo-${teacher.photo}" role="img" aria-label="${teacher.name}的个人形象照片"></div></section></section>`;
+  return `<section class="teacher-profile-overview"><section class="teacher-types"><h3>教学类型</h3><div><span>FreeTalk</span><span>实用口语</span><span>旅行口语</span></div></section><section class="teacher-self-intro"><h3>老师自我介绍</h3><p>你好，我是 ${teacher.name}。在深圳开设一对一中文面授课，擅长把日常场景、旅行和工作沟通带入练习。我们可以先从你的学习目标聊起，再一起约定方便的上课地点。</p></section>${renderTeacherPortraitShowcase(teacher)}</section>`;
 }
 
 function renderTeacherArchive() {
@@ -467,7 +670,7 @@ function renderCourseVenueBlock(teacher) {
   const venues = courseVenues(teacher);
   const venue = currentVenue(teacher);
   const venueLabel = venues.length > 1 ? `${venue.venue}等 ${venues.length} 处` : venue.venue;
-  return `<div class="course-venue-inline"><span><i class="venue-pin" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg></i>${venueLabel}</span><button data-action="open-venue-map" data-id="${teacher.id}" data-venue="${venue.venue}">地图 ›</button></div>`;
+  return `<div class="course-venue-inline"><button data-action="open-venue-map" data-id="${teacher.id}" data-venue="${venue.venue}" aria-label="查看${venueLabel}的上课地点"><i class="venue-pin" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg></i><span>${venueLabel}</span><b aria-hidden="true">›</b></button></div>`;
 }
 
 function renderCourseVenueSection(teacher, venue) {
@@ -497,42 +700,55 @@ function renderProfileVenueDetail(teacher) {
 function renderProfile() {
   const teacher = teacherForProfile();
   const course = selectedCourse();
+  const courses = teacherCourses(teacher);
+  const pricing = coursePricing(course);
+  const isPackage = pricing.sessions > 1;
   return `<div class="screen ht-profile map-profile"><main class="profile-scroll">${renderProfileVenueHero(teacher)}
     <section class="map-profile-summary"><div class="map-profile-avatar teacher-profile-avatar photo-${teacher.photo}"><i class="flag">${flag(teacher.country)}</i><i class="teacher-cap" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m2.5 9.5 9.5-5 9.5 5-9.5 5z"></path><path d="M6.5 11.6v4.1c2.8 2.4 8.2 2.4 11 0v-4.1"></path><path d="M21.5 9.5v6"></path></svg></i><b class="teacher-location" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s6-5.6 6-11a6 6 0 0 0-12 0c0 5.4 6 11 6 11Z"></path><circle cx="12" cy="10" r="2.1"></circle></svg></b></div><div class="map-profile-name"><h1>${teacher.name} <span>♀24</span></h1><div class="map-profile-meta"><p class="map-profile-teaching">教学：中文</p><p class="map-profile-teacher"><i>✦</i>认证面授老师</p></div></div>${renderTeacherTrustStats()}<i class="teacher-companion-watermark" aria-hidden="true"></i></section>${renderTeacherOverview(teacher)}
-    <section class="course-section inserted-course"><div class="course-section-head"><h2>${state.city}面授课程</h2><button data-action="open-course-list">查看更多 <span>›</span></button></div><article class="course-card offline-map-card"><button class="course-card-summary" data-action="open-course-detail" aria-label="查看${course.title}"><div class="course-card-title"><strong>${course.title}</strong><span class="in-person-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg>线下课程</span></div><div class="course-card-body"><img src="${course.cover}" alt="${course.title}课程封面" /><div class="course-meta"><p><span>${courseIcon('mic')}${course.language}</span><em>${courseIcon('book')}${course.sessions} 节课</em></p><p><span>${courseIcon('clock')}${course.duration}</span></p><b>¥${course.price}/节课</b></div></div></button>${renderCourseVenueBlock(teacher)}</article><div class="course-pagination"><b></b><i></i></div></section>
+    <section class="course-section inserted-course"><div class="course-section-head"><h2>${state.city}面授课程</h2><button data-action="open-course-list">查看更多 <span>›</span></button></div><div class="profile-course-carousel ${state.courseSlideDirection ? `slide-${state.courseSlideDirection}` : ''}"><article class="course-card offline-map-card"><button class="course-card-summary ${isPackage ? '' : 'course-card-summary--single'}" data-action="open-course-detail" aria-label="查看${course.title}"><div class="course-card-title"><strong>${course.title}</strong><span class="in-person-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg>线下课程</span></div><div class="course-card-body"><img src="${course.cover}" alt="${course.title}课程封面" /><div class="course-meta">${isPackage ? `<p class="course-meta-line"><span>${courseIcon('mic')}${course.language}</span><em>${courseIcon('clock')}${course.duration}</em></p>` : `<p class="course-meta-line"><span>${courseIcon('mic')}${course.language}</span></p><p class="course-meta-line"><em>${courseIcon('clock')}${course.duration}</em></p>`}${renderCoursePrice(course)}</div></div></button>${renderCourseVenueBlock(teacher)}</article></div><div class="course-pagination" aria-label="切换其他课程">${courses.map((item, index) => `<button type="button" class="${item.id === course.id ? 'active' : ''}" data-action="select-profile-course-page" data-course="${item.id}" aria-label="切换到第 ${index + 1} 门课程"></button>`).join('')}</div></section>
     <nav class="profile-tabs"><button data-action="profile-tab" data-tab="archive" class="${state.profileTab === 'archive' ? 'selected' : ''}">个人档案</button><button data-action="profile-tab" data-tab="moments" class="${state.profileTab === 'moments' ? 'selected' : ''}">动态 63</button><button data-action="profile-tab" data-tab="reviews" class="${state.profileTab === 'reviews' ? 'selected' : ''}">评价</button></nav>${renderProfileTab(teacher)}</main>
-    <div class="profile-actions map-profile-actions"><button class="relationship" data-action="follow" aria-label="关注">♟</button><button class="primary" data-action="hi">聊天</button><button class="gift" data-action="wish" aria-label="预约日历">▣</button></div>${state.profileMore ? renderProfileMore() : ''}${state.sheet ? renderMapSheet() : ''}${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
+    <div class="profile-actions map-profile-actions"><button class="relationship ${state.followed ? 'followed' : ''}" data-action="follow" aria-label="${state.followed ? '已关注' : '关注'}">${state.followed ? '已关注' : '关注'}</button><button class="primary" data-action="${state.bookingConfirmed ? 'consult-teacher' : 'open-profile-booking'}">${state.bookingConfirmed ? '咨询' : '预约老师'}</button></div>${renderProfilePhotoViewer(teacher)}${renderProfileCoursePicker(teacher)}${state.profileMore ? renderProfileMore() : ''}${state.sheet ? renderMapSheet() : ''}${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
 }
 
 function renderCourseList() {
   const teacher = teacherForProfile();
   const courses = teacherCourses(teacher);
   const visibleCourses = state.courseFilter === 'all' ? courses : courses.filter((course) => course.id === 'conversation');
-  return `<div class="screen course-list-page"><header class="detail-nav"><button data-action="back-to-profile" aria-label="返回">‹</button><strong>课程列表</strong><button data-action="share-course" aria-label="分享">⌑</button></header><main class="detail-scroll"><div class="course-list-filter"><button class="${state.courseFilter === 'all' ? 'selected' : ''}" data-action="filter-courses" data-filter="all">全部</button><button class="${state.courseFilter === 'short' ? 'selected' : ''}" data-action="filter-courses" data-filter="short">${courses[0].duration.replace('/节课', '')}</button></div>${visibleCourses.map((course) => `<button class="course-list-item" data-action="select-course" data-course="${course.id}"><img src="${course.cover}" alt="" /><div><b>${course.title}</b><p>▮ ${course.sessions} 节课　◷ ${course.duration}</p><small>⌖ ${course.venues.map((venue) => venue.venue).join(' · ')}</small><strong>¥${course.price}/节课</strong></div><span>›</span></button>`).join('')}</main>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
+  return `<div class="screen course-list-page"><header class="detail-nav"><button data-action="back-to-profile" aria-label="返回">‹</button><strong>课程列表</strong><button data-action="share-course" aria-label="分享">⌑</button></header><main class="detail-scroll"><div class="course-list-filter"><button class="${state.courseFilter === 'all' ? 'selected' : ''}" data-action="filter-courses" data-filter="all">全部</button><button class="${state.courseFilter === 'short' ? 'selected' : ''}" data-action="filter-courses" data-filter="short">${courses[0].duration.replace('/节课', '')}</button></div>${visibleCourses.map((course) => `<button class="course-list-item" data-action="select-course" data-course="${course.id}"><img src="${course.cover}" alt="" /><div><b>${course.title}</b><p>${courseIcon('mic')}${course.language}<em>${courseIcon('clock')}${course.duration}</em></p><small>⌖ ${courseVenueLabel(course)}</small>${renderCoursePrice(course)}</div><span>›</span></button>`).join('')}</main>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
 }
 
 function renderPaymentSheet(course) {
   const methods = [{ name: '支付宝', icon: '支', type: 'alipay' }, { name: '微信', icon: '●', type: 'wechat' }];
-  return `<div class="payment-layer" aria-label="支付方式"><button class="payment-scrim" data-action="close-payment" aria-label="关闭支付方式"></button><section class="payment-sheet"><div class="payment-handle"></div><header><strong>支付方式</strong><button data-action="close-payment" aria-label="关闭">×</button></header><div class="payment-methods">${methods.map((method) => `<button data-action="select-payment" data-method="${method.name}" class="${state.paymentMethod === method.name ? 'selected' : ''}"><span class="payment-icon ${method.type}">${method.icon}</span><b>${method.name}</b><i>${state.paymentMethod === method.name ? '✓' : ''}</i></button>`).join('')}</div><button class="payment-confirm" data-action="confirm-payment">确认支付 ¥${course.price * course.sessions}</button></section></div>`;
+  const pricing = coursePricing(course);
+  return `<div class="payment-layer" aria-label="支付方式"><button class="payment-scrim" data-action="close-payment" aria-label="关闭支付方式"></button><section class="payment-sheet"><div class="payment-handle"></div><header><strong>支付方式</strong><button data-action="close-payment" aria-label="关闭">×</button></header><div class="payment-price-note"><span>${pricing.sessions} 节课包 ¥${pricing.packTotal}</span>${pricing.firstDiscount ? `<b>首购立减 ¥${pricing.firstDiscount}</b>` : ''}</div><div class="payment-methods">${methods.map((method) => `<button data-action="select-payment" data-method="${method.name}" class="${state.paymentMethod === method.name ? 'selected' : ''}"><span class="payment-icon ${method.type}">${method.icon}</span><b>${method.name}</b><i>${state.paymentMethod === method.name ? '✓' : ''}</i></button>`).join('')}</div><button class="payment-confirm" data-action="confirm-payment">确认支付 ¥${pricing.finalTotal}</button></section></div>`;
 }
 
 function renderCourseDetail() {
   const teacher = teacherForProfile();
   const course = selectedCourse();
   const venue = currentVenue(teacher);
-  return `<div class="screen course-detail-page"><header class="detail-nav overlay"><button data-action="back-from-course-detail" aria-label="返回">‹</button><div class="course-owner" data-action="back-to-profile"><span class="mini-avatar photo-${teacher.photo}"></span><b>${teacher.name}</b></div><button data-action="share-course" aria-label="分享">⌑</button></header><main class="detail-scroll"><img class="course-hero" src="${course.cover}" alt="${course.title}课程封面" /><section class="course-detail-main"><h1>${course.title}</h1><button class="course-teacher-row" data-action="back-to-profile"><span class="mini-avatar photo-${teacher.photo}"></span><div><b>${teacher.name}</b><small>● ${course.language}</small></div><span>›</span></button><button class="course-info-row" data-action="course-info"><span>◉</span><div><b>课程介绍</b><small>${course.description}</small></div><i>›</i></button>${renderCourseVenueSection(teacher, venue)}<button class="course-info-row" data-action="course-info"><span>◷</span><div><b>上课时间</b><small>${course.duration} · ${course.schedule}</small></div><i>›</i></button><button class="course-info-row" data-action="course-info"><span>▮</span><div><b>上课次数</b><small>${course.times}</small></div><i>›</i></button><p class="service-tip">购买可查看 <button data-action="support">服务条款</button></p></section></main><div class="booking-bar"><div><b>¥${course.price * course.sessions}</b><small>¥${course.price}/节课</small></div><button data-action="open-booking">立即预约</button></div>${state.sheet ? renderMapSheet() : ''}${state.paymentSheet ? renderPaymentSheet(course) : ''}${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
+  const pricing = coursePricing(course);
+  const isPackage = pricing.sessions > 1;
+  const unitPrice = Number.isInteger(pricing.unitPrice) ? pricing.unitPrice : pricing.unitPrice.toFixed(1);
+  const savings = pricing.regularTotal - pricing.finalTotal;
+  const pricingCard = isPackage
+    ? `<section class="course-pricing-card course-pricing-card--bundle"><p class="course-pricing-ribbon">${pricing.sessions} 节课包 · 原价 ¥${pricing.regularTotal}</p><div class="course-pricing-panel"><div class="course-pricing-copy"><small>${pricing.sessions} 节课包</small><p><b>¥${pricing.finalTotal}</b><del>¥${pricing.regularTotal}</del><span>约¥${unitPrice}/节</span></p><em>每节省¥${Math.round(savings / pricing.sessions)}</em></div><i class="course-pricing-tag">课包优惠</i></div></section>`
+    : `<section class="course-pricing-card course-pricing-card--single"><p class="course-pricing-ribbon">单节原价 ¥${pricing.packTotal}</p><div class="course-pricing-panel"><div class="course-pricing-copy"><small>单节课程</small><p><b>¥${pricing.finalTotal}/节</b><del>¥${pricing.packTotal}/节</del></p><em>首购立省¥${pricing.firstDiscount}</em></div><i class="course-pricing-tag">首购专享</i></div></section>`;
+  const bookingNote = isPackage ? `${pricing.sessions} 节课包 · 约¥${unitPrice}/节` : pricing.firstDiscount ? '首购专享价' : '单节课程';
+  return `<div class="screen course-detail-page"><header class="detail-nav overlay"><button data-action="back-from-course-detail" aria-label="返回">‹</button><div class="course-owner" data-action="back-to-profile"><span class="mini-avatar photo-${teacher.photo}"></span><b>${teacher.name}</b></div><button data-action="share-course" aria-label="分享">⌑</button></header><main class="detail-scroll"><img class="course-hero" src="${course.cover}" alt="${course.title}课程封面" /><section class="course-detail-main"><h1>${course.title}</h1><button class="course-teacher-row" data-action="back-to-profile"><span class="mini-avatar photo-${teacher.photo}"></span><div><b>${teacher.name}</b><small>● ${course.language}</small></div><span>›</span></button>${pricingCard}<button class="course-info-row" data-action="course-info"><span>◉</span><div><b>课程介绍</b><small>${course.description}</small></div><i>›</i></button>${renderCourseVenueSection(teacher, venue)}<button class="course-info-row" data-action="course-info"><span>◷</span><div><b>上课时间</b><small>${course.duration} · ${course.schedule}</small></div><i>›</i></button><button class="course-info-row" data-action="course-info"><span>▮</span><div><b>上课次数</b><small>${course.times}</small></div><i>›</i></button><p class="service-tip">购买可查看 <button data-action="support">服务条款</button></p></section></main><div class="booking-bar"><div><b>¥${pricing.finalTotal}</b><small>${bookingNote}</small></div><button data-action="open-booking">立即预约</button></div>${state.sheet ? renderMapSheet() : ''}${state.paymentSheet ? renderPaymentSheet(course) : ''}${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
 }
 
 function renderBooking() {
   const teacher = teacherForProfile();
   const course = selectedCourse();
   const venue = currentVenue(teacher);
-  if (state.bookingConfirmed) return `<div class="screen booking-page"><header class="detail-nav"><button data-action="back-to-course-detail" aria-label="返回">‹</button><strong>预约成功</strong><span></span></header><main class="booking-success"><div>✓</div><h1>已为你保留课程名额</h1><p>${course.title}<br />${venue.venue} · ${state.selectedDate} ${state.selectedSlot}</p><button data-action="back-to-profile" class="booking-confirm">返回老师资料</button></main></div>`;
-  return `<div class="screen booking-page"><header class="detail-nav"><button data-action="back-to-course-detail" aria-label="返回">‹</button><strong>确认预约</strong><span></span></header><main class="detail-scroll booking-main"><section><h2>${course.title}</h2><p>${venue.venue} · ${venue.area}</p></section><section class="booking-venue"><h3>上课地点</h3><div class="booking-chips">${course.venues.map((item) => `<button data-action="select-course-venue" data-venue="${item.venue}" class="${item.venue === venue.venue ? 'selected' : ''}">${item.venue}</button>`).join('')}</div><button class="booking-map-link" data-action="open-venue-map" data-id="${teacher.id}" data-venue="${venue.venue}">在地图中查看 ›</button></section><section><h3>选择日期</h3><div class="booking-chips">${['今天', '明天', '周六'].map((date) => `<button data-action="select-date" data-date="${date}" class="${date === state.selectedDate ? 'selected' : ''}">${date}</button>`).join('')}</div></section><section><h3>选择时间</h3><div class="booking-chips">${['14:00', '16:00', '19:00'].map((slot) => `<button data-action="select-slot" data-slot="${slot}" class="${slot === state.selectedSlot ? 'selected' : ''}">${slot}</button>`).join('')}</div></section><section class="booking-summary"><b>课程金额</b><strong>¥${course.price * course.sessions}</strong><small>${course.sessions} 节课 · ¥${course.price}/节课</small></section></main><div class="booking-bar"><div><b>¥${course.price * course.sessions}</b><small>已选 ${state.selectedDate} ${state.selectedSlot}</small></div><button data-action="confirm-booking">确认预约</button></div>${state.sheet ? renderMapSheet() : ''}</div>`;
+  const pricing = coursePricing(course);
+  if (state.bookingConfirmed) return `<div class="screen booking-page"><header class="detail-nav"><button data-action="back-to-course-detail" aria-label="返回">‹</button><strong>预约成功</strong><span></span></header><main class="booking-success"><div>✓</div><h1>已为你保留课程名额</h1><p>${course.title}<br />${venue.venue} · ${state.selectedDate} ${state.selectedSlot}</p><button data-action="contact-teacher" class="booking-confirm">联系老师</button></main>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
+  return `<div class="screen booking-page"><header class="detail-nav"><button data-action="back-to-course-detail" aria-label="返回">‹</button><strong>确认预约</strong><span></span></header><main class="detail-scroll booking-main"><section><h2>${course.title}</h2><p>${venue.venue} · ${venue.area}</p></section><section class="booking-venue"><h3>上课地点</h3><div class="booking-chips">${course.venues.map((item) => `<button data-action="select-course-venue" data-venue="${item.venue}" class="${item.venue === venue.venue ? 'selected' : ''}">${item.venue}</button>`).join('')}</div><button class="booking-map-link" data-action="open-venue-map" data-id="${teacher.id}" data-venue="${venue.venue}">在地图中查看 ›</button></section><section><h3>选择日期</h3><div class="booking-chips">${['今天', '明天', '周六'].map((date) => `<button data-action="select-date" data-date="${date}" class="${date === state.selectedDate ? 'selected' : ''}">${date}</button>`).join('')}</div></section><section><h3>选择时间</h3><div class="booking-chips">${['14:00', '16:00', '19:00'].map((slot) => `<button data-action="select-slot" data-slot="${slot}" class="${slot === state.selectedSlot ? 'selected' : ''}">${slot}</button>`).join('')}</div></section><section class="booking-summary"><b>课包金额</b><strong>¥${pricing.packTotal}</strong><small>${pricing.sessions} 节课包 · 单节 ¥${course.price}</small>${pricing.firstDiscount ? `<p>首购优惠 <em>-¥${pricing.firstDiscount}</em></p><div><b>实付</b><strong>¥${pricing.finalTotal}</strong></div>` : ''}</section></main><div class="booking-bar"><div><b>¥${pricing.finalTotal}</b><small>已选 ${state.selectedDate} ${state.selectedSlot}</small></div><button data-action="confirm-booking">确认预约</button></div>${state.sheet ? renderMapSheet() : ''}</div>`;
 }
 
 const creatorCourses = [
-  { title: '一对一中文面授', meta: '¥50/50 分钟　共2次课', total: '¥100', cover: 'assets/course-cover-reference.png', live: true },
+  { title: '一对一中文面授', meta: '2 节课包 ¥90　首购再减 ¥10', total: '¥80', cover: 'assets/course-cover-reference.png', live: true },
   { title: '中文周末会话课', meta: '¥70/60 分钟　共1次课', total: '¥70', cover: 'assets/course-cover-reference.png', live: true },
   { title: '中文发音练习', meta: '¥0/15 分钟　共1次课', total: '¥0', cover: 'assets/course-cover-reference.png', live: false },
   { title: '城市生活会话', meta: '¥200/30 分钟　共1次课', total: '¥200', cover: 'assets/course-cover-reference.png', live: false }
@@ -638,6 +854,12 @@ function renderCreatorSheet() {
     const key = `course${sheet[0].toUpperCase()}${sheet.slice(1)}`;
     return `<div class="delivery-sheet-mask" data-action="close-creator-sheet"><section class="delivery-sheet" role="dialog" aria-modal="true" aria-label="选择课程信息" onclick="event.stopPropagation()"><i class="sheet-handle"></i><header><strong>${{ type: '课程类型', language: '课程语言', duration: '课程时长', sessions: '课程次数' }[sheet]}</strong>${close}</header>${presets[sheet].map((value) => option(value, value, state[key] === value)).join('')}</section></div>`;
   }
+  if (sheet === 'pack') {
+    return `<div class="delivery-sheet-mask" data-action="close-creator-sheet"><section class="delivery-sheet creator-input-sheet" role="dialog" aria-modal="true" aria-label="设置课包优惠" onclick="event.stopPropagation()"><i class="sheet-handle"></i><header><strong>设置课包优惠</strong>${close}</header><p class="creator-pricing-note">填写课包次数和课包总价；不填写则按单节价格售卖。</p><label>课包次数<input data-creator-input="coursePackSessions" inputmode="numeric" value="${state.coursePackSessions}" placeholder="例如：2" /></label><label>课包总价<input data-creator-input="coursePackPrice" inputmode="decimal" value="${state.coursePackPrice}" placeholder="例如：90" /></label><button class="creator-sheet-confirm" data-action="close-creator-sheet">完成</button></section></div>`;
+  }
+  if (sheet === 'first-discount') {
+    return `<div class="delivery-sheet-mask" data-action="close-creator-sheet"><section class="delivery-sheet creator-input-sheet" role="dialog" aria-modal="true" aria-label="设置首购优惠" onclick="event.stopPropagation()"><i class="sheet-handle"></i><header><strong>设置首购优惠</strong>${close}</header><p class="creator-pricing-note">新学员首购可立减，支持与课包价叠加。</p><label>首购立减金额<input data-creator-input="courseFirstDiscount" inputmode="decimal" value="${state.courseFirstDiscount}" placeholder="例如：10" /></label><button class="creator-sheet-confirm" data-action="close-creator-sheet">完成</button></section></div>`;
+  }
   const field = sheet === 'title' ? 'courseTitle' : sheet === 'description' ? 'courseDescription' : 'coursePrice';
   const meta = sheet === 'title' ? ['课程标题', '例如：一对一中文面授'] : sheet === 'description' ? ['课程描述', '介绍课程内容、适合的学习者'] : ['设定单价', '请输入每节课程的价格'];
   const input = sheet === 'description' ? `<textarea data-creator-input="${field}" placeholder="${meta[1]}">${state[field]}</textarea>` : `<input data-creator-input="${field}" ${sheet === 'price' ? 'inputmode="decimal"' : ''} value="${state[field]}" placeholder="${meta[1]}" />`;
@@ -648,7 +870,9 @@ function renderCreateCourse() {
   const offline = state.courseDelivery === '线下课程';
   const title = creatorValue(state.courseTitle, '请输入课程标题');
   const tags = state.courseTags.length ? state.courseTags.join('、') : '请选择';
-  return `<div class="screen creator-form-page"><header class="creator-form-nav">${systemStatus('creator-status creator-form-status')}<div class="creator-nav-row">${creatorBack()}<strong>创建新课</strong><span></span></div></header><main class="creator-form-scroll"><button class="creator-cover" data-action="creator-toast"><i>+</i><span>添加课程封面/预览视频<br />推荐上传2分钟内横屏视频</span></button><button class="creator-field single" data-action="open-creator-sheet" data-sheet="type"><small>课程类型</small><b>${state.courseType}</b>${formChevron()}</button><button class="creator-field single" data-action="open-creator-sheet" data-sheet="delivery"><small>授课方式</small><b class="${state.courseDelivery ? '' : 'placeholder'}">${creatorValue(state.courseDelivery)}</b>${formChevron()}</button>${offline ? `<button class="creator-field single creator-venue-field" data-action="open-creator-place"><small>可选授课地点 <i>最多 3 处</i></small><b class="${state.courseVenues.length ? '' : 'placeholder'}">${state.courseVenues.length ? `已选 ${state.courseVenues.length} 处` : '搜索并选择地点'}</b>${formChevron()}</button>` : ''}<button class="creator-field title-field" data-action="open-creator-sheet" data-sheet="title"><span><small>课程标题</small><b class="${state.courseTitle ? '' : 'placeholder'}">${title}</b></span><em>修改</em></button><section class="creator-field-group"><button data-action="open-creator-sheet" data-sheet="tags"><small>课程标签</small><b class="${state.courseTags.length ? '' : 'placeholder'}">${tags}</b>${formChevron()}</button><button data-action="open-creator-sheet" data-sheet="language"><small>课程语言</small><b class="${state.courseLanguage ? '' : 'placeholder'}">${creatorValue(state.courseLanguage)}</b>${formChevron()}</button><button data-action="open-creator-sheet" data-sheet="duration"><small>课程时长</small><b class="${state.courseDuration ? '' : 'placeholder'}">${creatorValue(state.courseDuration)}</b>${formChevron()}</button><button data-action="open-creator-sheet" data-sheet="sessions"><small>课程次数</small><b class="${state.courseSessions ? '' : 'placeholder'}">${creatorValue(state.courseSessions)}</b>${formChevron()}</button></section><button class="creator-field single" data-action="open-creator-sheet" data-sheet="description"><small>课程描述</small><b class="${state.courseDescription ? '' : 'placeholder'}">${creatorValue(state.courseDescription, '请输入内容')}</b>${formChevron()}</button><button class="creator-field single" data-action="open-creator-sheet" data-sheet="price"><small>设定单价</small><b class="${state.coursePrice ? '' : 'placeholder'}">${creatorValue(state.coursePrice, '0')}</b><em>¥</em></button><div class="creator-form-actions"><button data-action="preview-course">预览课程</button><button data-action="submit-course">提交创建</button></div></main>${renderCreatorSheet()}</div>`;
+  const packValue = state.coursePackSessions && state.coursePackPrice ? `${state.coursePackSessions} 节 ¥${state.coursePackPrice}` : '暂不设置';
+  const firstDiscountValue = state.courseFirstDiscount ? `立减 ¥${state.courseFirstDiscount}` : '暂不设置';
+  return `<div class="screen creator-form-page"><header class="creator-form-nav">${systemStatus('creator-status creator-form-status')}<div class="creator-nav-row">${creatorBack()}<strong>创建新课</strong><span></span></div></header><main class="creator-form-scroll"><button class="creator-cover" data-action="creator-toast"><i>+</i><span>添加课程封面/预览视频<br />推荐上传2分钟内横屏视频</span></button><button class="creator-field single" data-action="open-creator-sheet" data-sheet="type"><small>课程类型</small><b>${state.courseType}</b>${formChevron()}</button><button class="creator-field single" data-action="open-creator-sheet" data-sheet="delivery"><small>授课方式</small><b class="${state.courseDelivery ? '' : 'placeholder'}">${creatorValue(state.courseDelivery)}</b>${formChevron()}</button>${offline ? `<button class="creator-field single creator-venue-field" data-action="open-creator-place"><small>可选授课地点 <i>最多 3 处</i></small><b class="${state.courseVenues.length ? '' : 'placeholder'}">${state.courseVenues.length ? `已选 ${state.courseVenues.length} 处` : '搜索并选择地点'}</b>${formChevron()}</button>` : ''}<button class="creator-field title-field" data-action="open-creator-sheet" data-sheet="title"><span><small>课程标题</small><b class="${state.courseTitle ? '' : 'placeholder'}">${title}</b></span><em>修改</em></button><section class="creator-field-group"><button data-action="open-creator-sheet" data-sheet="tags"><small>课程标签</small><b class="${state.courseTags.length ? '' : 'placeholder'}">${tags}</b>${formChevron()}</button><button data-action="open-creator-sheet" data-sheet="language"><small>课程语言</small><b class="${state.courseLanguage ? '' : 'placeholder'}">${creatorValue(state.courseLanguage)}</b>${formChevron()}</button><button data-action="open-creator-sheet" data-sheet="duration"><small>课程时长</small><b class="${state.courseDuration ? '' : 'placeholder'}">${creatorValue(state.courseDuration)}</b>${formChevron()}</button><button data-action="open-creator-sheet" data-sheet="sessions"><small>课程次数</small><b class="${state.courseSessions ? '' : 'placeholder'}">${creatorValue(state.courseSessions)}</b>${formChevron()}</button></section><button class="creator-field single" data-action="open-creator-sheet" data-sheet="description"><small>课程描述</small><b class="${state.courseDescription ? '' : 'placeholder'}">${creatorValue(state.courseDescription, '请输入内容')}</b>${formChevron()}</button><section class="creator-field-group creator-pricing-fields"><button data-action="open-creator-sheet" data-sheet="price"><small>设定单价</small><b class="${state.coursePrice ? '' : 'placeholder'}">${creatorValue(state.coursePrice, '0')}</b><em>¥</em></button><button data-action="open-creator-sheet" data-sheet="pack"><small>课包优惠 <i>可选</i></small><b class="${state.coursePackPrice ? '' : 'placeholder'}">${packValue}</b>${formChevron()}</button><button data-action="open-creator-sheet" data-sheet="first-discount"><small>首购优惠 <i>可与课包价叠加</i></small><b class="${state.courseFirstDiscount ? '' : 'placeholder'}">${firstDiscountValue}</b>${formChevron()}</button></section><div class="creator-form-actions"><button data-action="preview-course">预览课程</button><button data-action="submit-course">提交创建</button></div></main>${renderCreatorSheet()}</div>`;
 }
 
 function renderCreatorPlacePage() {
@@ -683,7 +907,30 @@ function render() {
   else if (state.profileRoute === 'course-detail') app.innerHTML = renderCourseDetail();
   else if (state.profileRoute === 'booking') app.innerHTML = renderBooking();
   else app.innerHTML = renderProfile();
+  if (state.profileId && state.profileRoute === 'profile' && state.profileScrollTop > 0) {
+    const profileScroll = app.querySelector('.profile-scroll');
+    if (profileScroll) profileScroll.scrollTop = state.profileScrollTop;
+    state.profileScrollTop = 0;
+  }
   localizeDemoUI();
+  const singleCourseMeta = app.querySelector('.course-card-summary--single .course-meta');
+  if (singleCourseMeta) {
+    const metaLines = singleCourseMeta.querySelectorAll('.course-meta-line');
+    const languageLine = metaLines[0];
+    const durationLine = metaLines[1];
+    const firstPurchaseBadge = singleCourseMeta.querySelector('.first-purchase-badge');
+    if (languageLine && durationLine) {
+      const duration = durationLine.querySelector('em');
+      if (duration) languageLine.append(duration);
+      durationLine.remove();
+    }
+    if (languageLine && firstPurchaseBadge) {
+      const promotionLine = document.createElement('p');
+      promotionLine.className = 'course-meta-promo';
+      promotionLine.append(firstPurchaseBadge);
+      languageLine.after(promotionLine);
+    }
+  }
   bindEvents();
   syncCreatorConsole();
 }
@@ -710,7 +957,9 @@ function syncCreatorConsole() {
     expected = `课程详情显示可选地点；点击立即预约后，以 ${state.paymentMethod} 为默认选中项打开支付半窗。`;
   } else if (state.consoleMode === 'creator') {
     title = '线下课程与地点';
-    parameters = `<label>课程所在城市<select data-console-field="creatorCity">${cityOptions}</select></label><label>授课方式<select data-console-field="courseDelivery">${options(['线上课程', '线下课程'], state.courseDelivery || '线下课程')}</select></label><div class="console-metric"><span>课程字段<b>${creatorMissingFields().length ? `待补 ${creatorMissingFields().length} 项` : '可提交'}</b></span><span>可选地点<b>${state.courseVenues.length}/3 处</b></span></div>`;
+    const packLabel = state.coursePackSessions && state.coursePackPrice ? `${state.coursePackSessions} 节 ¥${state.coursePackPrice}` : '未设置';
+    const firstOfferLabel = state.courseFirstDiscount ? `立减 ¥${state.courseFirstDiscount}` : '未设置';
+    parameters = `<label>课程所在城市<select data-console-field="creatorCity">${cityOptions}</select></label><label>授课方式<select data-console-field="courseDelivery">${options(['线上课程', '线下课程'], state.courseDelivery || '线下课程')}</select></label><div class="console-metric"><span>课程字段<b>${creatorMissingFields().length ? `待补 ${creatorMissingFields().length} 项` : '可提交'}</b></span><span>可选地点<b>${state.courseVenues.length}/3 处</b></span><span>课包优惠<b>${packLabel}</b></span><span>首购优惠<b>${firstOfferLabel}</b></span></div>`;
     expected = state.creatorPlacePage ? `已进入地点搜索，保留“咖啡”的搜索记录与最近搜索；用户可继续搜索并选择地点。` : `线下课程最多可选 3 个地点；保存的地点仅影响该课程，不影响找语伴页面。`;
   } else {
     const count = eligibleTeachers(state.city).length;
@@ -745,8 +994,30 @@ function bindEvents() {
     if (action === 'sheet-city-menu') state.sheetCityMenu = !state.sheetCityMenu;
     if (action === 'select-city') { state.mapCity = event.currentTarget.dataset.city; state.sheetCityMenu = false; state.activeVenue = null; state.mapTeacherId = null; }
     if (action === 'select-search-city') { state.mapCity = event.currentTarget.dataset.city; state.sheetCityMenu = false; state.activeVenue = null; state.mapTeacherId = null; }
-    if (action === 'profile') { state.profileId = event.currentTarget.dataset.id; state.profileRoute = 'profile'; state.profileTab = 'archive'; state.profileVenueIndex = 0; state.profileMore = false; state.sheet = false; state.selectedCourse = 'conversation'; state.selectedVenue = courseVenues(teacherForProfile())[0]?.venue || ''; }
-    if (action === 'back-profile') state.profileId = null;
+    if (action === 'profile') {
+      openTeacherProfile(event.currentTarget.dataset.id);
+      return;
+    }
+    if (action === 'profile-course-next' || action === 'profile-course-prev') {
+      const courses = teacherCourses(teacherForProfile());
+      const index = Math.max(0, courses.findIndex((course) => course.id === state.selectedCourse));
+      const nextIndex = (index + (action === 'profile-course-next' ? 1 : -1) + courses.length) % courses.length;
+      state.selectedCourse = courses[nextIndex].id;
+      state.selectedVenue = courses[nextIndex].venues[0]?.venue || '';
+    }
+    if (action === 'select-profile-course-page') {
+      const scrollTop = app.querySelector('.profile-scroll')?.scrollTop || 0;
+      const course = teacherCourses(teacherForProfile()).find((item) => item.id === event.currentTarget.dataset.course);
+      state.selectedCourse = course?.id || state.selectedCourse;
+      state.selectedVenue = course?.venues[0]?.venue || '';
+      state.courseSlideDirection = 'jump';
+      render();
+      const profileScroll = app.querySelector('.profile-scroll');
+      if (profileScroll) profileScroll.scrollTop = scrollTop;
+      state.courseSlideDirection = '';
+      return;
+    }
+    if (action === 'back-profile') { state.profileId = null; state.profilePhotoIndex = null; state.coursePicker = false; }
     if (action === 'language') state.activeLanguage = event.currentTarget.dataset.language;
     if (action === 'map-filter') { state.mapFilter = event.currentTarget.dataset.filter; refreshMapResults(); return; }
     if (action === 'map-language') { state.mapLanguage = event.currentTarget.dataset.language; refreshMapResults(); return; }
@@ -754,7 +1025,19 @@ function bindEvents() {
     if (action === 'select-teacher-course-venue') { state.selectedCourse = event.currentTarget.dataset.course; state.selectedVenue = event.currentTarget.dataset.venue; state.activeVenue = event.currentTarget.dataset.venue; refreshMapResults(); return; }
     if (action === 'select-global-course-venue') { state.selectedCourse = event.currentTarget.dataset.course; state.selectedVenue = event.currentTarget.dataset.venue; state.activeVenue = event.currentTarget.dataset.venue; refreshMapResults(); return; }
     if (action === 'open-course-from-map') { state.selectedCourse = event.currentTarget.dataset.course; state.selectedVenue = state.activeVenue || selectedCourse().venues[0]?.venue || ''; state.sheet = false; state.profileRoute = 'course-detail'; }
-    if (action === 'open-venue-map') { state.mapCity = state.city; state.mapTeacherId = event.currentTarget.dataset.id; state.selectedVenue = event.currentTarget.dataset.venue; state.activeVenue = event.currentTarget.dataset.venue; state.mapFilter = '全部'; state.mapQuery = ''; state.sheet = true; }
+    if (action === 'open-venue-map') {
+      event.preventDefault();
+      event.stopPropagation();
+      state.mapCity = state.city;
+      state.mapTeacherId = event.currentTarget.dataset.id;
+      state.selectedVenue = event.currentTarget.dataset.venue;
+      state.activeVenue = event.currentTarget.dataset.venue;
+      state.mapFilter = '全部';
+      state.mapQuery = '';
+      state.sheet = true;
+      render();
+      return;
+    }
     if (action === 'open-teacher-certification') { state.toast = '认证面授老师：已完成平台教师认证，可开设线下面授课程'; setTimeout(() => { state.toast = ''; render(); }, 2400); }
     if (action === 'clear-map-teacher') { state.mapTeacherId = null; state.activeVenue = null; render(); return; }
     if (action === 'hi') { state.toast = '已向对方打招呼'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
@@ -805,6 +1088,23 @@ function bindEvents() {
     if (action === 'creator-toast') { state.toast = '该功能已保留入口'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'open-post-course') { state.profileId = 'sarah'; state.profileRoute = 'course-detail'; state.courseOrigin = 'moments'; state.selectedCourse = 'conversation'; state.selectedVenue = teacherCourses(teachers.find((item) => item.id === 'sarah'))[0].venues[0]?.venue || ''; }
     if (action === 'follow') { state.followed = !state.followed; state.toast = state.followed ? '已关注对方' : '已取消关注'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
+    if (action === 'open-profile-booking') {
+      const courses = teacherCourses(teacherForProfile());
+      state.courseOrigin = 'profile';
+      if (courses.length > 1) state.coursePicker = true;
+      else { state.selectedCourse = courses[0]?.id || state.selectedCourse; state.selectedVenue = courses[0]?.venues[0]?.venue || ''; state.profileRoute = 'course-detail'; }
+    }
+    if (action === 'close-profile-course-picker') { state.coursePicker = false; render(); return; }
+    if (action === 'select-profile-course') {
+      const course = teacherCourses(teacherForProfile()).find((item) => item.id === event.currentTarget.dataset.course);
+      state.selectedCourse = course?.id || state.selectedCourse;
+      state.selectedVenue = course?.venues[0]?.venue || '';
+      state.coursePicker = false;
+      state.courseOrigin = 'profile';
+      state.profileRoute = 'course-detail';
+    }
+    if (action === 'consult-teacher') { state.toast = '已进入咨询'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
+    if (action === 'contact-teacher') { state.toast = '视为进入老师聊天页'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'wish') { state.toast = '已打开礼物面板'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'like-profile') { state.toast = '已点赞对方资料'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'profile-venue-prev') { const total = courseVenues(teacherForProfile()).length; state.profileVenueIndex = (state.profileVenueIndex - 1 + total) % total; }
@@ -816,6 +1116,8 @@ function bindEvents() {
     if (action === 'open-post') { state.toast = '已打开动态详情'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'open-profile-more') state.profileMore = true;
     if (action === 'close-profile-more') state.profileMore = false;
+    if (action === 'open-profile-photo') { state.profilePhotoIndex = Number(event.currentTarget.dataset.photoIndex); render(); return; }
+    if (action === 'close-profile-photo') { state.profilePhotoIndex = null; render(); return; }
     if (action === 'profile-more-action') { state.profileMore = false; state.toast = event.currentTarget.dataset.label === '分享' ? '已打开分享面板' : `已执行：${event.currentTarget.dataset.label}`; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'profile-tab') {
       const currentScrollTop = app.querySelector('.profile-scroll')?.scrollTop || 0;
@@ -825,10 +1127,10 @@ function bindEvents() {
       if (restoredProfileScroll) restoredProfileScroll.scrollTop = currentScrollTop;
       return;
     }
-    if (action === 'open-teacher-time') { state.courseOrigin = 'profile'; state.profileRoute = 'course-detail'; }
-    if (action === 'open-course-list') { state.courseOrigin = 'profile'; state.profileRoute = 'course-list'; }
+    if (action === 'open-teacher-time') { state.profileScrollTop = app.querySelector('.profile-scroll')?.scrollTop || 0; state.courseOrigin = 'profile'; state.profileRoute = 'course-detail'; }
+    if (action === 'open-course-list') { state.profileScrollTop = app.querySelector('.profile-scroll')?.scrollTop || 0; state.courseOrigin = 'profile'; state.profileRoute = 'course-list'; }
     if (action === 'filter-courses') state.courseFilter = event.currentTarget.dataset.filter;
-    if (action === 'open-course-detail') { state.courseOrigin = 'profile'; state.profileRoute = 'course-detail'; }
+    if (action === 'open-course-detail') { state.profileScrollTop = app.querySelector('.profile-scroll')?.scrollTop || 0; state.courseOrigin = 'profile'; state.profileRoute = 'course-detail'; }
     if (action === 'select-course') { state.selectedCourse = event.currentTarget.dataset.course; state.courseOrigin = 'course-list'; state.profileRoute = 'course-detail'; }
     if (action === 'back-to-profile') { state.profileRoute = 'profile'; state.profileMore = false; }
     if (action === 'back-from-course-detail') { if (state.courseOrigin === 'moments') { state.profileId = null; state.rootPage = 'moments'; } else state.profileRoute = state.courseOrigin === 'course-list' ? 'course-list' : 'profile'; }
