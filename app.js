@@ -171,6 +171,113 @@ const interfacePhrases = {
   , '保存时间表': { en: 'Save timetable', ja: '時間割を保存' }
   , '请选择': { en: 'Please select', ja: '選択してください' }
   , '暂不设置': { en: 'Not set now', ja: '今は設定しない' }
+  , '试听课': { en: 'Trial lesson', ja: '体験レッスン' }
+  , '试听课售价': { en: 'Trial lesson price', ja: '体験レッスン料金' }
+  , '试听课状态': { en: 'Trial lesson status', ja: '体験レッスンの状態' }
+  , '试听课购买与观看': { en: 'Trial lesson purchase and viewing', ja: '体験レッスンの購入と視聴' }
+  , '已解锁': { en: 'Unlocked', ja: '視聴可能' }
+  , '已购买试听课': { en: 'Trial lesson purchased', ja: '体験レッスンを購入済み' }
+  , '试听课已解锁': { en: 'Trial lesson unlocked', ja: '体験レッスンを視聴可能にしました' }
+  , '购买成功': { en: 'Purchase complete', ja: '購入完了' }
+  , '立即购买': { en: 'Buy now', ja: '今すぐ購入' }
+  , '查看视频': { en: 'Watch video', ja: '動画を見る' }
+  , '点击查看视频': { en: 'Tap to watch video', ja: 'タップして動画を見る' }
+  , '购买后立即观看': { en: 'Watch immediately after purchase', ja: '購入後すぐに視聴可能' }
+  , '购买后立即观看，随时回看': { en: 'Watch immediately after purchase, anytime', ja: '購入後すぐに視聴でき、いつでも見返せます' }
+  , '已解锁，点击播放课程': { en: 'Unlocked, tap to play', ja: '視聴可能です。タップして再生' }
+  , '可直接观看视频': { en: 'Ready to watch', ja: 'すぐに動画を視聴できます' }
+  , '视频时长': { en: 'Video duration', ja: '動画時間' }
+  , '观看方式': { en: 'Viewing method', ja: '視聴方法' }
+  , '课程视频已就绪': { en: 'Course video is ready', ja: 'コース動画の準備ができました' }
+  , '点击下方按钮开始播放': { en: 'Tap the button below to start', ja: '下のボタンをタップして再生' }
+  , '现在可以开始观看课程视频': { en: 'You can start watching now', ja: 'コース動画を視聴できます' }
+  , '上传试听视频': { en: 'Upload trial video', ja: '体験レッスン動画をアップロード' }
+  , '支持横屏视频，建议 2–20 分钟': { en: 'Landscape video, 2–20 minutes recommended', ja: '横長動画対応・2〜20分推奨' }
+  , '试听课无需设置线下地点，用户购买后即可观看。': { en: 'Trial lessons do not need an in-person location. Learners can watch after purchase.', ja: '体験レッスンは対面場所の設定が不要です。購入後すぐに視聴できます。' }
+  , '我的课程': { en: 'My courses', ja: 'マイコース' }
+  , '课程分类': { en: 'Course category', ja: 'コース分類' }
+  , '线下课': { en: 'In-person', ja: '対面レッスン' }
+  , '在售课程': { en: 'Courses for sale', ja: '販売中コース' }
+  , '下架课程': { en: 'Unlisted courses', ja: '非公開コース' }
+  , '暂无线下课': { en: 'No in-person courses', ja: '対面レッスンはありません' }
+  , '暂无试听课': { en: 'No trial lessons', ja: '体験レッスンはありません' }
+  , '暂无下架线下课': { en: 'No unlisted in-person courses', ja: '非公開の対面レッスンはありません' }
+  , '暂无下架试听课': { en: 'No unlisted trial lessons', ja: '非公開の体験レッスンはありません' }
+  , '暂无课程，创建新课后将在此展示': { en: 'No courses yet. Create a course to show it here.', ja: 'コースはまだありません。新しいコースを作成するとここに表示されます。' }
+  , '重新上架课程': { en: 'Relist course', ja: 'コースを再公開' }
+  , '删除课程': { en: 'Delete course', ja: 'コースを削除' }
+  , '保存': { en: 'Save', ja: '保存' }
+  , '课程形式': { en: 'Course format', ja: 'コース形式' }
+  , '选择课程形式': { en: 'Select course format', ja: 'コース形式を選択' }
+  , '在可选地点与老师面对面上课': { en: 'Meet the teacher at a selected location', ja: '選択した場所で講師と対面受講' }
+  , '老师上传视频，购买后立即观看': { en: 'Teacher-uploaded video, watch after purchase', ja: '講師が動画をアップロード。購入後すぐに視聴可能' }
+  , '可选授课地点': { en: 'Available teaching locations', ja: '選べるレッスン場所' }
+  , '每日可授课时段': { en: 'Available time slots', ja: '受講可能時間帯' }
+  , '请选择可授课时段': { en: 'Select available time slots', ja: '受講可能時間帯を選択' }
+  , '设置可授课时段': { en: 'Set available time slots', ja: '受講可能時間帯を設定' }
+  , '暂未设置可授课时段': { en: 'No available time slots set', ja: '受講可能時間帯は未設定です' }
+  , '每组可设置适用星期与时间范围；学员预约时仅展示匹配的可约时段。': { en: 'Set weekdays and time ranges for each slot. Learners only see matching times when booking.', ja: '各時間帯に曜日と時間範囲を設定できます。予約時は該当する時間帯のみ表示されます。' }
+  , '添加时段': { en: 'Add time slot', ja: '時間帯を追加' }
+  , '完成': { en: 'Done', ja: '完了' }
+  , '选择售卖方案': { en: 'Select sales plan', ja: '販売プランを選択' }
+  , '售卖方案': { en: 'Sales plan', ja: '販売プラン' }
+  , '不设优惠': { en: 'No discount', ja: '割引なし' }
+  , '按单节原价售卖': { en: 'Sell at the regular per-session price', ja: '通常の1回料金で販売' }
+  , '首购优惠': { en: 'First-purchase offer', ja: '初回購入割引' }
+  , '仅单节课首购享优惠价': { en: 'Discounted price for the first single-session purchase', ja: '単発レッスンの初回購入限定価格' }
+  , '课包售卖': { en: 'Package sale', ja: 'パック販売' }
+  , '按多节课设置打包最终售价': { en: 'Set one final price for multiple sessions', ja: '複数回の最終パック料金を設定' }
+  , '设置课包售价': { en: 'Set package price', ja: 'パック料金を設定' }
+  , '设置课包节数和最终总售价；原价按单节原价自动计算。': { en: 'Set sessions and final package price. The regular price is calculated from the per-session price.', ja: '回数と最終パック料金を設定します。通常価格は1回料金から自動計算されます。' }
+  , '课包节数': { en: 'Package sessions', ja: 'パック回数' }
+  , '课包最终售价': { en: 'Final package price', ja: 'パック最終料金' }
+  , '设置首购售价': { en: 'Set first-purchase price', ja: '初回購入価格を設定' }
+  , '仅适用于单节课首购；填写用户实际支付的最终售价。': { en: 'For first single-session purchases only. Enter the final amount paid by the learner.', ja: '単発レッスンの初回購入のみ対象です。ユーザーが支払う最終価格を入力します。' }
+  , '首购最终售价': { en: 'First-purchase final price', ja: '初回購入の最終価格' }
+  , '单节原价': { en: 'Regular price per session', ja: '1回の通常価格' }
+  , '请输入': { en: 'Enter amount', ja: '入力してください' }
+  , '有效课程单价': { en: 'Valid course price', ja: '有効なコース料金' }
+  , '至少 1 个可选地点': { en: 'At least one available location', ja: '選べる場所を1つ以上設定' }
+  , '至少 1 个可授课时段': { en: 'At least one available time slot', ja: '受講可能時間帯を1つ以上設定' }
+  , '请设置首购最终售价': { en: 'Set the first-purchase final price', ja: '初回購入の最終価格を設定してください' }
+  , '单节原价需高于首购实际售价，请重新设置': { en: 'The regular per-session price must be higher than the first-purchase price.', ja: '1回の通常価格は初回購入価格より高く設定してください。' }
+  , '请设置课包节数和最终售价': { en: 'Set package sessions and final price', ja: 'パック回数と最終料金を設定してください' }
+  , '单节原价需高于课包实际单节售价，请重新设置': { en: 'The regular per-session price must be higher than the package per-session price.', ja: '1回の通常価格はパックの1回あたり料金より高く設定してください。' }
+  , '待购买': { en: 'Not purchased', ja: '未購入' }
+  , '已购买': { en: 'Purchased', ja: '購入済み' }
+  , '视频页': { en: 'Video page', ja: '動画ページ' }
+  , '课程售价': { en: 'Course price', ja: 'コース料金' }
+  , '购买状态': { en: 'Purchase status', ja: '購入状況' }
+  , '当前页面': { en: 'Current page', ja: '現在の画面' }
+  , '未购买': { en: 'Not purchased', ja: '未購入' }
+  , '学习课堂': { en: 'Learning class', ja: '学習レッスン' }
+  , '第 1 节': { en: 'Lesson 1', ja: '第1回' }
+  , '发音训练 · Pronunciation': { en: 'Pronunciation training', ja: '発音トレーニング' }
+  , '中文声调与口型': { en: 'Chinese tones and mouth shapes', ja: '中国語の声調と口の形' }
+  , '跟随老师，听辨并模仿四个声调': { en: 'Follow the teacher to hear and imitate four tones', ja: '講師と一緒に四声を聞き分けてまねしましょう' }
+  , '真人老师讲解': { en: 'Teacher instruction', ja: '講師による解説' }
+  , '发音示范': { en: 'Pronunciation demo', ja: '発音デモ' }
+  , '课后跟读': { en: 'Post-class repetition', ja: 'レッスン後の音読' }
+  , '验证场景': { en: 'Test scenarios', ja: '検証シナリオ' }
+  , '当前场景参数': { en: 'Current scenario parameters', ja: '現在のシナリオ設定' }
+  , '界面语言': { en: 'Interface language', ja: '表示言語' }
+  , '重置为默认场景': { en: 'Reset to default scenario', ja: '標準シナリオにリセット' }
+  , '预期结果': { en: 'Expected result', ja: '期待する結果' }
+  , '线下课程、时段与地点': { en: 'In-person courses, time slots and locations', ja: '対面コース・時間帯・場所' }
+  , '我的课程': { en: 'My courses', ja: 'マイコース' }
+  , '课程所在城市': { en: 'Course city', ja: 'コースの都市' }
+  , '课程字段': { en: 'Course fields', ja: 'コース項目' }
+  , '实际售价': { en: 'Actual sale price', ja: '実際の販売価格' }
+  , '有课程': { en: 'Has courses', ja: 'コースあり' }
+  , '暂无课程': { en: 'No courses', ja: 'コースなし' }
+  , '待设置': { en: 'Not set', ja: '未設定' }
+  , '未设置': { en: 'Not set', ja: '未設定' }
+  , '可提交': { en: 'Ready to submit', ja: '送信可能' }
+  , '待补': { en: 'Missing', ja: '未入力' }
+  , '个时段': { en: ' time slots', ja: '件の時間帯' }
+  , '搜索范围与筛选': { en: 'Search scope and filters', ja: '検索範囲とフィルター' }
+  , '预约与支付': { en: 'Booking and payment', ja: '予約と支払い' }
+  , '模块展示条件': { en: 'Module display conditions', ja: 'モジュール表示条件' }
 };
 
 function localizeDemoUI() {
@@ -200,6 +307,32 @@ function localizeDemoUI() {
     ['placeholder', 'aria-label'].forEach((attribute) => {
       if (element.hasAttribute(attribute)) element.setAttribute(attribute, replace(element.getAttribute(attribute)));
     });
+  });
+}
+
+function localizeConsoleUI() {
+  const copy = interfaceCopy[state.uiLanguage];
+  const panel = document.querySelector('.qa-panel');
+  if (!copy || !panel) return;
+  const phrases = Object.entries(interfacePhrases)
+    .map(([source, localized]) => [source, localized[state.uiLanguage]])
+    .filter(([, localized]) => localized)
+    .sort(([left], [right]) => right.length - left.length);
+  const replace = (value) => {
+    const leading = value.match(/^\s*/)?.[0] || '';
+    const trailing = value.match(/\s*$/)?.[0] || '';
+    const content = value.trim();
+    if (Object.hasOwn(copy, content)) return `${leading}${copy[content]}${trailing}`;
+    let localized = content;
+    phrases.forEach(([source, target]) => { localized = localized.replaceAll(source, target); });
+    return localized === content ? value : `${leading}${localized}${trailing}`;
+  };
+  const walker = document.createTreeWalker(panel, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach((node) => { node.nodeValue = replace(node.nodeValue); });
+  panel.querySelectorAll('[aria-label]').forEach((element) => {
+    element.setAttribute('aria-label', replace(element.getAttribute('aria-label') || ''));
   });
 }
 
@@ -1175,6 +1308,7 @@ function syncCreatorConsole() {
   if (name) name.textContent = state.consoleScenario || title;
   if (parameterSurface) parameterSurface.innerHTML = parameters;
   if (expectation) expectation.innerHTML = `<b>预期结果</b><span>${expected}</span>`;
+  localizeConsoleUI();
 }
 
 function saveCreatorScroll() {
