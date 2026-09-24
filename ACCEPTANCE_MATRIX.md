@@ -1,14 +1,16 @@
-| Area | Source | Required Checks | Result | Evidence |
-| --- | --- | --- | --- | --- |
-| Product goal | FR-001 / FR-002 | 当前城市面授老师入口不干扰普通语伴列表 | PASS | 深圳展示横滑模块；广州隐藏模块 |
-| Business flow | FR-002–FR-006 | 供给门槛、VIP 平权、地图抽屉、空筛选状态齐全 | PASS | Demo 数据：深圳 5 位、广州 3 位；侧栏可切换 VIP |
-| Page completeness | `partner.home.default` / `profile.public.default` | 附近页、HT 公共 Profile、课程列表/详情/预约、地图抽屉均存在 | PASS | 头像进入 Profile；原生 Profile 结构内新增课程区 |
-| Navigation | FR-003 / FR-004 | 头像跳转、返回、更多打开/关闭、课程列表/详情/预约回退、城市切换重复可用 | PASS | Playwright 11:16–11:18 完整课程预约回路 |
-| Interaction | FR-004 / FR-005 | 搜索、筛选、地图标记与场所卡联动 | PASS | 地图抽屉展示 6 个深圳场所及筛选按钮 |
-| Visual system | HelloTalk design system | 375x812、紧凑列表、紫色主操作、白色底部抽屉 | PASS | `styles.css` tokens and mobile canvas |
-| Motion and feedback | Motion guidelines | 抽屉从底部短动效出现，reduced-motion 下无位移动画 | PASS | `.map-sheet` / `prefers-reduced-motion` |
-| Robustness | Playwright + build | 构建通过、无 favicon 404、城市菜单不串层 | PASS | `npm run build`; 11:18 Profile Tab 状态 |
+| Area | PRD V1.1 source | Required checks | Evidence surface |
+| --- | --- | --- | --- |
+| Teacher profile | FR-001 | 认证面授身份、城市信息、个人照片、试听课位于面授课程上方；预约后主操作切为咨询 | 老师 Profile |
+| Course cards & pricing | FR-002 / FR-006 | 列表、Profile、详情字段一致；单节首购价与课包总价/单节均价语义准确；无优惠不显示划线价 | Profile、课程列表、详情页 |
+| Offline booking | FR-003 / FR-010 | 日期切换后仅显示该日期配置的时段；无时段不可继续支付；成功页可联系老师 | 课程详情 → 确认预约 → 支付 |
+| Trial purchase & playback | FR-004 / FR-005 / FR-015 | 未购买可支付；购买后卡片、详情直接进入视频页；视频页包含返回、播放/暂停和进度示意 | 试听课卡片、详情、视频页 |
+| Nearby teachers & map | FR-013 / FR-014 | 仅展示认证且在售面授老师；同城数量不足 4 隐藏；地图支持城市、筛选、搜索、地点与老师联动 | 找语伴页、地图抽屉 |
+| My courses & lifecycle | FR-007 / FR-012 / FR-016 | 有课/无课预设正确；线下课/试听课 Tab；上架、下架、重新上架、删除影响对应列表 | 我的课程、编辑课程 |
+| Course creation & edit | FR-008 / FR-009 / FR-011 | 仅线下课/试听课；线下课必须地点+时段；地点最多 3 处；售价校验阻止不合理提交 | 创建/编辑课程 |
+| Feedback & accessibility | 全局 | 页面操作有可见反馈；返回链路不回到无关顶部；桌面验证以 375×812 移动画布为准 | 全流程 |
 
-## 已知待接入
+## 本轮验证边界
 
-- 场所审核、课程有效期、精确地理权限及后端数据契约仍待确认。
+- 本地静态检查：`node --check app.js`、`git diff --check`。
+- 发布后需按上表截取主流程画布并回传至《附近认证老师-面授课程与试听课 PRD V1.1》。
+- 场所审核、课程有效期、精确地理权限及真实后端数据契约不属于本 Demo。

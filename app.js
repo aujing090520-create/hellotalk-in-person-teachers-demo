@@ -719,14 +719,14 @@ function teacherCourses(teacher, city = state.city) {
   const weekendVenues = (teacher.weekendCityCourses?.[city] || venues).slice(0, 3);
   const primary = { ...profileCourse(teacher, venues[0]), format: 'offline' };
   const courses = [
-    { id: 'conversation', ...primary, sessions: 1, firstDiscount: 10, venues, description: `在真实场景中练习 ${primary.language}，适合希望开口交流的学习者。`, times: '1 次', schedule: '今天 19:00', cover: 'assets/course-cover-reference.png' },
-    { id: 'weekend', ...primary, venues: weekendVenues, title: `${primary.language} 周末面授会话课`, sessions: 2, duration: '60 min/节课', pack: { sessions: 2, price: primary.price * 2 - 10 }, description: `围绕日常话题展开面授会话练习。`, times: '2 次', schedule: '周六 14:00', cover: 'assets/course-cover-reference.png' },
+    { id: 'conversation', ...primary, sessions: 1, firstDiscount: 10, venues, availability: ['周一至周五 14:00–18:00', '周六、周日 10:00–12:00'], description: `在真实场景中练习 ${primary.language}，适合希望开口交流的学习者。`, times: '1 次', schedule: '周一至周五 14:00–18:00', cover: 'assets/course-cover-reference.png' },
+    { id: 'weekend', ...primary, venues: weekendVenues, title: `${primary.language} 周末面授会话课`, sessions: 2, duration: '60 min/节课', pack: { sessions: 2, price: primary.price * 2 - 10 }, availability: ['周六、周日 10:00–12:00'], description: `围绕日常话题展开面授会话练习。`, times: '2 次', schedule: '周六、周日 10:00–12:00', cover: 'assets/course-cover-reference.png' },
     { id: 'trial-video', format: 'trial', title: `${primary.language} 发音试听课`, language: primary.language, sessions: 1, duration: '18 分钟', price: 6, venues: [], description: '通过一节短视频试听，了解老师的授课方式和发音训练方法。', times: '购买后立即观看', schedule: '购买后立即观看', cover: 'assets/course-cover-reference.png' }
   ];
   const offlineCourses = teacher.cityCourseCount?.[city] === 1 ? courses.slice(0, 1) : courses.slice(0, 2);
   return [...offlineCourses, courses[2]]
     .filter((course) => state.courseLifecycle[course.id] !== 'deleted')
-    .map((course) => ({ ...course, live: state.courseLifecycle[course.id] !== 'offline' }));
+    .map((course) => ({ ...course, status: state.courseLifecycle[course.id] || 'live', live: state.courseLifecycle[course.id] !== 'offline' }));
 }
 
 function resetCourseDraft() {
@@ -758,7 +758,7 @@ function openCourseEditor(courseId, fallbackTitle = '') {
   const sourceVenues = course.venues || [];
   state.editingCourseId = course.id || course.title;
   state.courseFormat = isTrial ? 'trial' : 'offline';
-  state.courseDelivery = isTrial ? '线上课程' : '线下课程';
+  state.courseDelivery = '线下课程';
   state.courseTitle = course.title;
   state.courseTags = isTrial ? ['发音纠正'] : ['日常会话'];
   state.courseLanguage = course.language || '中文';
@@ -932,8 +932,10 @@ function renderCourseDetail() {
   const pricingCard = isTrial && state.trialPurchased
     ? `<section class="trial-unlocked-card"><b>已购买试听课</b><span>点击下方按钮开始播放</span></section>`
     : isPackage
-    ? `<section class="course-pricing-card course-pricing-card--bundle"><p class="course-pricing-ribbon">${pricing.sessions} 节课包 · 原价 ¥${pricing.regularTotal}</p><div class="course-pricing-panel"><div class="course-pricing-copy"><small>${pricing.sessions} 节课包</small><p><b>¥${pricing.finalTotal}</b><del>¥${pricing.regularTotal}</del><span>约¥${unitPrice}/节</span></p><em>每节省¥${Math.round(savings / pricing.sessions)}</em></div><i class="course-pricing-tag">课包优惠</i></div></section>`
-    : `<section class="course-pricing-card course-pricing-card--single"><p class="course-pricing-ribbon">单节原价 ¥${pricing.packTotal}</p><div class="course-pricing-panel"><div class="course-pricing-copy"><small>单节课程</small><p><b>¥${pricing.finalTotal}/节</b><del>¥${pricing.packTotal}/节</del></p><em>首购立省¥${pricing.firstDiscount}</em></div><i class="course-pricing-tag">首购专享</i></div></section>`;
+    ? `<section class="course-pricing-card course-pricing-card--bundle"><p class="course-pricing-ribbon">${pricing.sessions} 节课包${savings ? ` · 原价 ¥${pricing.regularTotal}` : ''}</p><div class="course-pricing-panel"><div class="course-pricing-copy"><small>${pricing.sessions} 节课包</small><p><b>¥${pricing.finalTotal}</b>${savings ? `<del>¥${pricing.regularTotal}</del>` : ''}<span>约¥${unitPrice}/节</span></p>${savings ? `<em>每节省¥${Math.round(savings / pricing.sessions)}</em>` : ''}</div>${savings ? '<i class="course-pricing-tag">课包优惠</i>' : ''}</div></section>`
+    : pricing.firstDiscount
+      ? `<section class="course-pricing-card course-pricing-card--single"><p class="course-pricing-ribbon">单节原价 ¥${pricing.packTotal}</p><div class="course-pricing-panel"><div class="course-pricing-copy"><small>单节课程</small><p><b>¥${pricing.finalTotal}/节</b><del>¥${pricing.packTotal}/节</del></p><em>首购立省¥${pricing.firstDiscount}</em></div><i class="course-pricing-tag">首购专享</i></div></section>`
+      : `<section class="course-pricing-card course-pricing-card--single"><p class="course-pricing-ribbon">单节课程</p><div class="course-pricing-panel"><div class="course-pricing-copy"><small>单节售价</small><p><b>¥${pricing.finalTotal}/节</b></p></div></div></section>`;
   const bookingNote = isPackage ? `${pricing.sessions} 节课包 · 约¥${unitPrice}/节` : pricing.firstDiscount ? '首购专享价' : '单节课程';
   return `<div class="screen course-detail-page"><header class="detail-nav overlay"><button data-action="back-from-course-detail" aria-label="返回">‹</button><div class="course-owner" data-action="back-to-profile"><span class="mini-avatar photo-${teacher.photo}"></span><b>${teacher.name}</b></div><button data-action="share-course" aria-label="分享">⌑</button></header><main class="detail-scroll"><div class="${isTrial ? 'trial-detail-hero' : ''}"><img class="course-hero" src="${course.cover}" alt="${course.title}课程封面" />${isTrial ? `<span class="trial-hero-play">${state.trialPurchased ? '▶' : '▶'}</span>` : ''}</div><section class="course-detail-main"><h1>${course.title}</h1><button class="course-teacher-row" data-action="back-to-profile"><span class="mini-avatar photo-${teacher.photo}"></span><div><b>${teacher.name}</b><small>● ${course.language}</small></div><span>›</span></button>${isTrial ? (state.trialPurchased ? pricingCard : `<section class="trial-watch-note"><b>试听课</b><span>购买后立即观看，随时回看</span></section>`) : pricingCard}<button class="course-info-row" data-action="course-info"><span>◉</span><div><b>课程介绍</b><small>${course.description}</small></div><i>›</i></button>${isTrial ? '' : renderCourseVenueSection(teacher, venue)}<button class="course-info-row" data-action="course-info"><span>◷</span><div><b>${isTrial ? '观看方式' : '上课时间'}</b><small>${isTrial ? (state.trialPurchased ? '已解锁，点击播放课程' : '购买后立即观看') : `${course.duration} · ${course.schedule}`}</small></div><i>›</i></button><button class="course-info-row" data-action="course-info"><span>▮</span><div><b>${isTrial ? '视频时长' : '上课次数'}</b><small>${isTrial ? course.duration : course.times}</small></div><i>›</i></button>${state.trialPurchased && isTrial ? '<div class="trial-video-ready-card"><span>▶</span><b>课程视频已就绪</b><small>点击下方按钮开始播放</small></div>' : ''}<p class="service-tip">购买可查看 <button data-action="support">服务条款</button></p></section></main><div class="booking-bar"><div><b>${isTrial && state.trialPurchased ? '已解锁' : `¥${pricing.finalTotal}`}</b><small>${isTrial && state.trialPurchased ? '可直接观看视频' : isTrial ? '购买后立即观看' : bookingNote}</small></div><button data-action="${isTrial && state.trialPurchased ? 'play-trial' : 'open-booking'}">${isTrial && state.trialPurchased ? '查看视频' : isTrial ? '立即购买' : '立即预约'}</button></div>${state.sheet ? renderMapSheet() : ''}${state.paymentSheet ? renderPaymentSheet(course) : ''}${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
 }
@@ -943,9 +945,25 @@ function renderBooking() {
   const course = selectedCourse();
   const venue = currentVenue(teacher);
   const pricing = coursePricing(course);
+  const bookingDays = bookingAvailability(course);
+  const activeDay = bookingDays.find((item) => item.label === state.selectedDate) || bookingDays[0];
+  const activeSlots = activeDay?.slots || [];
   if (course.format === 'trial' && state.bookingConfirmed) return `<div class="screen booking-page"><header class="detail-nav"><button data-action="back-to-course-detail" aria-label="返回">‹</button><strong>购买成功</strong><span></span></header><main class="booking-success"><div>✓</div><h1>试听课已解锁</h1><p>${course.title}<br />现在可以开始观看课程视频</p><button data-action="play-trial" class="booking-confirm">查看视频</button></main>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
   if (state.bookingConfirmed) return `<div class="screen booking-page"><header class="detail-nav"><button data-action="back-to-course-detail" aria-label="返回">‹</button><strong>预约成功</strong><span></span></header><main class="booking-success"><div>✓</div><h1>已为你保留课程名额</h1><p>${course.title}<br />${venue.venue} · ${state.selectedDate} ${state.selectedSlot}</p><button data-action="contact-teacher" class="booking-confirm">联系老师</button></main>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
-  return `<div class="screen booking-page"><header class="detail-nav"><button data-action="back-to-course-detail" aria-label="返回">‹</button><strong>确认预约</strong><span></span></header><main class="detail-scroll booking-main"><section><h2>${course.title}</h2><p>${venue.venue} · ${venue.area}</p></section><section class="booking-venue"><h3>上课地点</h3><div class="booking-chips">${course.venues.map((item) => `<button data-action="select-course-venue" data-venue="${item.venue}" class="${item.venue === venue.venue ? 'selected' : ''}">${item.venue}</button>`).join('')}</div><button class="booking-map-link" data-action="open-venue-map" data-id="${teacher.id}" data-venue="${venue.venue}">在地图中查看 ›</button></section><section><h3>选择日期</h3><div class="booking-chips">${['今天', '明天', '周六'].map((date) => `<button data-action="select-date" data-date="${date}" class="${date === state.selectedDate ? 'selected' : ''}">${date}</button>`).join('')}</div></section><section><h3>选择时间</h3><div class="booking-chips">${['14:00', '16:00', '19:00'].map((slot) => `<button data-action="select-slot" data-slot="${slot}" class="${slot === state.selectedSlot ? 'selected' : ''}">${slot}</button>`).join('')}</div></section><section class="booking-summary"><b>课包金额</b><strong>¥${pricing.packTotal}</strong><small>${pricing.sessions} 节课包 · 单节 ¥${course.price}</small>${pricing.firstDiscount ? `<p>首购优惠 <em>-¥${pricing.firstDiscount}</em></p><div><b>实付</b><strong>¥${pricing.finalTotal}</strong></div>` : ''}</section></main><div class="booking-bar"><div><b>¥${pricing.finalTotal}</b><small>已选 ${state.selectedDate} ${state.selectedSlot}</small></div><button data-action="confirm-booking">确认预约</button></div>${state.sheet ? renderMapSheet() : ''}</div>`;
+  return `<div class="screen booking-page"><header class="detail-nav"><button data-action="back-to-course-detail" aria-label="返回">‹</button><strong>确认预约</strong><span></span></header><main class="detail-scroll booking-main"><section><h2>${course.title}</h2><p>${venue.venue} · ${venue.area}</p></section><section class="booking-venue"><h3>上课地点</h3><div class="booking-chips">${course.venues.map((item) => `<button data-action="select-course-venue" data-venue="${item.venue}" class="${item.venue === venue.venue ? 'selected' : ''}">${item.venue}</button>`).join('')}</div><button class="booking-map-link" data-action="open-venue-map" data-id="${teacher.id}" data-venue="${venue.venue}">在地图中查看 ›</button></section><section><h3>选择日期</h3><div class="booking-chips">${bookingDays.map((item) => `<button data-action="select-date" data-date="${item.label}" class="${item.label === activeDay?.label ? 'selected' : ''}">${item.label}</button>`).join('')}</div></section><section><h3>选择时间</h3><div class="booking-chips">${activeSlots.length ? activeSlots.map((slot) => `<button data-action="select-slot" data-slot="${slot}" class="${slot === state.selectedSlot ? 'selected' : ''}">${slot}</button>`).join('') : '<p class="booking-empty-slots">该日期暂无可预约时段</p>'}</div></section><section class="booking-summary"><b>${pricing.sessions > 1 ? '课包金额' : '课程金额'}</b><strong>¥${pricing.finalTotal}</strong><small>${pricing.sessions > 1 ? `${pricing.sessions} 节课包 · 约¥${pricing.unitPrice}/节` : '单节课程'}</small>${pricing.firstDiscount ? `<p>首购优惠 <em>-¥${pricing.firstDiscount}</em></p>` : ''}</section></main><div class="booking-bar"><div><b>¥${pricing.finalTotal}</b><small>${activeSlots.length ? `已选 ${activeDay.label} ${state.selectedSlot}` : '请选择有可约时段的日期'}</small></div><button data-action="confirm-booking" ${activeSlots.length ? '' : 'disabled'}>确认预约</button></div>${state.sheet ? renderMapSheet() : ''}${state.paymentSheet ? renderPaymentSheet(course) : ''}</div>`;
+}
+
+function bookingAvailability(course) {
+  const dayLabels = { 1: '周一', 2: '周二', 3: '周三', 4: '周四', 5: '周五', 6: '周六', 7: '周日' };
+  const slotsByDay = new Map();
+  (course.availability || []).forEach((value) => {
+    const { days, start, end } = availabilitySlot(value);
+    const startHour = Number(start.slice(0, 2));
+    const endHour = Number(end.slice(0, 2));
+    const slots = Array.from({ length: Math.max(endHour - startHour, 0) }, (_, index) => `${String(startHour + index).padStart(2, '0')}:00`);
+    days.forEach((day) => slotsByDay.set(day, [...new Set([...(slotsByDay.get(day) || []), ...slots]) ]));
+  });
+  return [...slotsByDay.entries()].sort(([a], [b]) => a - b).map(([day, slots]) => ({ label: dayLabels[day], slots }));
 }
 
 function renderTrialVideo() {
@@ -999,14 +1017,14 @@ function creatorProfileCourseCard(course) {
   const regularUnitPrice = Number.isInteger(pricing.regularTotal / pricing.sessions) ? pricing.regularTotal / pricing.sessions : (pricing.regularTotal / pricing.sessions).toFixed(1);
   const price = isTrial
     ? `<p class="creator-sale-price"><b>¥${pricing.finalTotal}</b></p>`
-    : `<p class="creator-sale-price">${pricing.hasDiscount ? `<s>¥${regularUnitPrice}/节</s>` : ''}<b>¥${unitPrice}/节</b></p>`;
+    : `<p class="creator-sale-price">${pricing.regularTotal > pricing.finalTotal ? `<s>¥${regularUnitPrice}/节</s>` : ''}<b>¥${unitPrice}/节</b></p>`;
   const meta = isPackage
     ? `<p class="course-meta-line"><span>${courseIcon('mic')}${course.language}</span><em>${courseIcon('clock')}${course.duration}</em></p>`
     : `<p class="course-meta-line"><span>${courseIcon('mic')}${course.language}</span></p><p class="course-meta-line"><em>${courseIcon('clock')}${isTrial ? '购买后立即观看' : course.duration}</em></p>`;
   const badge = isTrial
     ? '<span class="trial-course-badge">试听课</span>'
     : `<span class="in-person-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg>线下课程</span>`;
-  const footer = course.live === false
+  const footer = course.status === 'offline'
     ? `<div class="course-venue-inline creator-offline-inline">${isTrial ? '' : `<span>可选地点：${course.venues.map((venue) => venue.venue).join('、')}</span>`}<div class="creator-offline-inline-actions"><button data-action="relist-course" data-course-id="${course.id}" aria-label="重新上架课程">${creatorIcon('archive')}</button><button class="creator-offline-delete" data-action="prepare-delete-course" data-course-id="${course.id}" aria-label="删除课程"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5"/></svg></button></div></div>`
     : `<div class="course-venue-inline">${isTrial ? '' : `<span>可选地点：${course.venues.map((venue) => venue.venue).join('、')}</span>`}<button data-action="edit-course" data-course-id="${course.id}">编辑 ›</button></div>`;
   return `<article class="course-card ${isTrial ? 'trial-course-card' : 'offline-map-card'} creator-profile-course-card"><button class="course-card-summary ${isPackage ? '' : 'course-card-summary--single'}" data-action="edit-course" data-course-id="${course.id}" aria-label="编辑${course.title}"><div class="course-card-title"><strong>${course.title}</strong>${badge}</div><div class="course-card-body">${isTrial ? `<div class="trial-cover"><img src="${course.cover}" alt="" /><i>▶</i><small>${course.duration}</small></div>` : `<img src="${course.cover}" alt="${course.title}课程封面" />`}<div class="course-meta">${meta}${price}</div></div></button>${footer}</article>`;
@@ -1016,8 +1034,8 @@ function renderMyCourses() {
   const hasCourses = state.creatorCourseState === '有课程';
   const allTeacherCourses = hasCourses ? teacherCourses(teachers.find((teacher) => teacher.id === 'sarah')) : [];
   const matchesCategory = (course) => state.courseManageType === 'all' || course.format === state.courseManageType;
-  const onSale = allTeacherCourses.filter((course) => course.live && matchesCategory(course));
-  const offline = allTeacherCourses.filter((course) => !course.live && matchesCategory(course));
+  const onSale = allTeacherCourses.filter((course) => course.status === 'live' && matchesCategory(course));
+  const offline = allTeacherCourses.filter((course) => course.status === 'offline' && matchesCategory(course));
   const filterTabs = [
     ['offline', '线下课'],
     ['trial', '试听课']
@@ -1174,7 +1192,7 @@ function renderCreatorSheet() {
 }
 
 function renderCreateCourse() {
-  const offline = state.courseDelivery === '线下课程';
+  const offline = state.courseFormat === 'offline';
   const isTrial = state.courseFormat === 'trial';
   const editing = Boolean(state.editingCourseId);
   const title = creatorValue(state.courseTitle, '请输入课程标题');
@@ -1319,13 +1337,12 @@ function saveCreatorScroll() {
 function creatorMissingFields() {
   const fields = [];
   if (!state.courseTitle.trim()) fields.push('课程标题');
-  if (!state.courseDelivery) fields.push('授课方式');
   if (!state.courseLanguage) fields.push('课程语言');
   if (state.courseFormat !== 'trial' && !state.courseDuration) fields.push('课程时长');
   if (state.courseFormat !== 'trial' && !state.courseSessions) fields.push('课程次数');
   if (!(Number(state.coursePrice) > 0)) fields.push('有效课程单价');
-  if (state.courseFormat !== 'trial' && state.courseDelivery === '线下课程' && !state.courseVenues.length) fields.push('至少 1 个可选地点');
-  if (state.courseFormat !== 'trial' && state.courseDelivery === '线下课程' && !state.courseAvailability.length) fields.push('至少 1 个可授课时段');
+  if (state.courseFormat !== 'trial' && !state.courseVenues.length) fields.push('至少 1 个可选地点');
+  if (state.courseFormat !== 'trial' && !state.courseAvailability.length) fields.push('至少 1 个可授课时段');
   return fields;
 }
 
@@ -1460,7 +1477,7 @@ function bindEvents() {
     if (action === 'select-creator-option') {
       saveCreatorScroll();
       const { field, value } = event.currentTarget.dataset;
-      if (field === 'format') { state.courseFormat = value; state.courseDelivery = value === 'trial' ? '线上课程' : '线下课程'; if (value === 'trial') state.courseVenues = []; state.creatorSheet = ''; }
+      if (field === 'format') { state.courseFormat = value; state.courseDelivery = '线下课程'; if (value === 'trial') state.courseVenues = []; state.creatorSheet = ''; }
       else if (field === 'delivery') { state.courseDelivery = value; if (value === '线上课程') state.courseVenues = []; state.creatorSheet = ''; }
       else if (field === 'sales-mode') {
         state.courseSalesMode = value;
@@ -1599,16 +1616,29 @@ function bindEvents() {
     if (action === 'share-course') { state.toast = '已打开分享面板'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'course-info') { state.toast = '已展开课程说明'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'support') { state.toast = '已打开服务条款'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
-    if (action === 'open-booking') { state.paymentSheet = true; state.paymentMethod = '支付宝'; }
+    if (action === 'open-booking') {
+      const availability = bookingAvailability(selectedCourse());
+      const firstDay = availability[0];
+      state.selectedDate = firstDay?.label || '';
+      state.selectedSlot = firstDay?.slots[0] || '';
+      state.bookingConfirmed = false;
+      state.profileRoute = selectedCourse()?.format === 'trial' ? 'course-detail' : 'booking';
+      state.paymentSheet = selectedCourse()?.format === 'trial';
+      state.paymentMethod = '支付宝';
+    }
     if (action === 'play-trial') { state.trialPlaying = true; state.profileRoute = 'trial-video'; }
     if (action === 'toggle-trial-video') state.trialPlaying = !state.trialPlaying;
     if (action === 'select-course-venue') state.selectedVenue = event.currentTarget.dataset.venue;
-    if (action === 'select-date') state.selectedDate = event.currentTarget.dataset.date;
+    if (action === 'select-date') {
+      state.selectedDate = event.currentTarget.dataset.date;
+      const selectedDay = bookingAvailability(selectedCourse()).find((item) => item.label === state.selectedDate);
+      state.selectedSlot = selectedDay?.slots[0] || '';
+    }
     if (action === 'select-slot') state.selectedSlot = event.currentTarget.dataset.slot;
     if (action === 'close-payment') state.paymentSheet = false;
     if (action === 'select-payment') state.paymentMethod = event.currentTarget.dataset.method;
     if (action === 'confirm-payment') { state.paymentSheet = false; state.profileRoute = 'booking'; state.bookingConfirmed = true; if (selectedCourse()?.format === 'trial') state.trialPurchased = true; }
-    if (action === 'confirm-booking') state.bookingConfirmed = true;
+    if (action === 'confirm-booking' && state.selectedSlot) state.paymentSheet = true;
     render();
   }));
   const mapInput = app.querySelector('[data-action="map-search"]');
