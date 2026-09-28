@@ -360,8 +360,12 @@ function applyConsoleScenario(scenario) {
   render();
 }
 
+function hasLiveOfflineCourse(teacher, city = state.city) {
+  return teacherCourses(teacher, city).some((course) => course.format === 'offline' && course.live && course.venues.length > 0);
+}
+
 function eligibleTeachers(city = state.city) {
-  return teachers.filter((teacher) => Array.isArray(teacher.cityCourses[city]) && teacher.cityCourses[city].length > 0);
+  return teachers.filter((teacher) => hasLiveOfflineCourse(teacher, city));
 }
 
 function showTeacherModule() { return eligibleTeachers().length > 3; }
@@ -475,7 +479,7 @@ function venueRows(city = state.city) {
   const todayOnly = state.mapFilter === '今天可约';
   const weekOnly = state.mapFilter === '本周有课';
   return eligibleTeachers(city).filter((teacher) => !state.mapTeacherId || teacher.id === state.mapTeacherId).flatMap((teacher) => {
-    const courses = state.mapTeacherId ? teacherCourses(teacher, city) : teacherCourses(teacher, city);
+    const courses = teacherCourses(teacher, city).filter((course) => course.format === 'offline' && course.live);
     return courses.flatMap((course) => course.venues.map((venue) => ({ ...venue, teacher, course, sessionTime: course.id === 'weekend' ? course.schedule : venue.slots })));
   }).filter((item) => {
     const text = normalizeSearch(`${item.venue}${item.teacher.name}${item.area}${item.course.title}${item.course.language}`);
