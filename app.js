@@ -16,7 +16,7 @@ const people = [
   { name: '林霁', photo: 'p4', gender: '♀', city: '深圳市, 中国', distance: '5km', status: '7 分钟前活跃', intro: '想去：日本', tags: ['ISFJ', '火影忍者', '夏目友人帐', '堀与宫村', '王者荣耀'], newcomer: true, lang: 'CN  ⇄  JP' }
 ];
 
-const state = { city: '深圳', mapCity: '深圳', rootPage: 'partner', myRoute: 'courses', creatorPlacePage: false, vip: false, activeLanguage: '中文（简体）', sheet: false, cityMenu: false, sheetCityMenu: false, mapFilter: '全部', mapLanguage: '全部', mapQuery: '', activeVenue: null, mapTeacherId: null, profileId: null, profileRoute: 'profile', profileTab: 'archive', profileMore: false, profileVenueIndex: 0, profilePhotoIndex: null, profileScrollTop: 0, creatorScrollTop: 0, coursePicker: false, courseFilter: 'all', courseManageType: 'offline', creatorCourseState: '有课程', courseOrigin: 'profile', selectedCourse: 'conversation', selectedVenue: '', selectedDate: '今天', selectedSlot: '19:00', bookingConfirmed: false, trialPurchased: false, trialPlaying: false, paymentSheet: false, paymentMethod: '支付宝', courseDelivery: '线下课程', courseDeliverySheet: false, courseFormat: 'offline', creatorCity: '深圳', creatorSheet: '', creatorVenueQuery: '', creatorVenueResults: [], creatorPlaceHistory: [], courseType: '1v1', editingCourseId: '', courseLifecycle: {}, courseTitle: '', courseTags: [], courseLanguage: '', courseDuration: '', courseSessions: '', courseDescription: '', coursePrice: '', courseSalesMode: 'none', coursePackSessions: '', coursePackPrice: '', courseFirstDiscount: '', courseVenues: [], courseAvailability: [], followed: false, toast: '', consoleScenario: '', consoleMode: 'discovery', uiLanguage: 'zh' };
+const state = { city: '深圳', mapCity: '深圳', rootPage: 'partner', myRoute: 'courses', creatorPlacePage: false, vip: false, activeLanguage: '中文（简体）', sheet: false, cityMenu: false, sheetCityMenu: false, mapFilter: '全部', mapLanguage: '全部', activeVenue: null, mapTeacherId: null, profileId: null, profileRoute: 'profile', profileTab: 'archive', profileMore: false, profileVenueIndex: 0, profilePhotoIndex: null, profileScrollTop: 0, creatorScrollTop: 0, coursePicker: false, courseFilter: 'all', courseManageType: 'offline', creatorCourseState: '有课程', courseOrigin: 'profile', selectedCourse: 'conversation', selectedVenue: '', selectedDate: '今天', selectedSlot: '19:00', bookingConfirmed: false, trialPurchased: false, trialPlaying: false, paymentSheet: false, paymentMethod: '支付宝', courseDelivery: '线下课程', courseDeliverySheet: false, courseFormat: 'offline', creatorCity: '深圳', creatorSheet: '', creatorVenueQuery: '', creatorVenueResults: [], creatorPlaceHistory: [], courseType: '1v1', editingCourseId: '', courseLifecycle: {}, courseTitle: '', courseTags: [], courseLanguage: '', courseDuration: '', courseSessions: '', courseDescription: '', coursePrice: '', courseSalesMode: 'none', coursePackSessions: '', coursePackPrice: '', courseFirstDiscount: '', courseVenues: [], courseAvailability: [], followed: false, toast: '', consoleScenario: '', consoleMode: 'discovery', uiLanguage: 'zh' };
 const initialDemoState = JSON.parse(JSON.stringify(state));
 const app = document.querySelector('#app');
 
@@ -346,9 +346,8 @@ function applyConsoleScenario(scenario) {
   const presets = {
     'partner-visible': () => { state.consoleMode = 'discovery'; state.city = '深圳'; state.consoleScenario = '展示条件满足'; },
     'partner-hidden': () => { state.consoleMode = 'discovery'; state.city = '广州'; state.consoleScenario = '展示条件不满足'; },
-    'search-japanese': () => { state.consoleMode = 'search'; state.rootPage = 'partner'; state.sheet = true; state.mapCity = '深圳'; state.mapQuery = '日语面授'; state.mapLanguage = '日语'; state.consoleScenario = '日语面授 · 跨城'; },
-    'search-chinese': () => { state.consoleMode = 'search'; state.rootPage = 'partner'; state.sheet = true; state.mapCity = '深圳'; state.mapQuery = '中文会话'; state.mapLanguage = '中文'; state.consoleScenario = '中文会话'; },
-    'search-empty': () => { state.consoleMode = 'search'; state.rootPage = 'partner'; state.sheet = true; state.mapCity = '广州'; state.mapQuery = '日语面授'; state.mapLanguage = '日语'; state.consoleScenario = '日语面授 · 当前城无结果'; },
+    'map-japanese': () => { state.consoleMode = 'map'; state.rootPage = 'partner'; state.sheet = true; state.mapCity = '深圳'; state.mapLanguage = '日语'; state.consoleScenario = '日语面授 · 跨城'; },
+    'map-empty': () => { state.consoleMode = 'map'; state.rootPage = 'partner'; state.sheet = true; state.mapCity = '广州'; state.mapLanguage = '日语'; state.consoleScenario = '日语面授 · 当前城无结果'; },
     'teacher-payment': () => { state.consoleMode = 'booking'; state.profileId = 'sarah'; state.profileRoute = 'course-detail'; state.selectedCourse = 'conversation'; state.selectedVenue = '南山慢咖啡'; state.selectedDate = '今天'; state.selectedSlot = '19:00'; state.paymentMethod = '支付宝'; state.paymentSheet = true; state.consoleScenario = '课程预约与支付'; },
     'trial-unpurchased': () => { state.consoleMode = 'trial'; state.profileId = 'sarah'; state.profileRoute = 'profile'; state.courseOrigin = 'profile'; state.selectedCourse = 'trial-video'; state.trialPurchased = false; state.consoleScenario = '试听课 · 待购买'; },
     'trial-purchased': () => { state.consoleMode = 'trial'; state.profileId = 'sarah'; state.profileRoute = 'profile'; state.courseOrigin = 'profile'; state.selectedCourse = 'trial-video'; state.trialPurchased = true; state.consoleScenario = '试听课 · 已购买'; },
@@ -468,13 +467,6 @@ function normalizeSearch(value) {
   return String(value || '').toLocaleLowerCase().replace(/[\s·・,，、/\\-]/g, '');
 }
 
-function matchesCourseSearch(text, query) {
-  const normalizedQuery = normalizeSearch(query);
-  if (!normalizedQuery || text.includes(normalizedQuery)) return true;
-  const intentTerms = normalizedQuery.match(/西班牙语|中文|英语|日语|韩语|面授|课程|会话|老师|地点/g) || [];
-  return intentTerms.length > 1 && intentTerms.every((term) => text.includes(term));
-}
-
 function venueRows(city = state.city) {
   const todayOnly = state.mapFilter === '今天可约';
   const weekOnly = state.mapFilter === '本周有课';
@@ -482,16 +474,14 @@ function venueRows(city = state.city) {
     const courses = teacherCourses(teacher, city).filter((course) => course.format === 'offline' && course.live);
     return courses.flatMap((course) => course.venues.map((venue) => ({ ...venue, teacher, course, sessionTime: course.id === 'weekend' ? course.schedule : venue.slots })));
   }).filter((item) => {
-    const text = normalizeSearch(`${item.venue}${item.teacher.name}${item.area}${item.course.title}${item.course.language}`);
-    const queryOk = matchesCourseSearch(text, state.mapQuery);
     const timingOk = state.mapFilter === '全部' || (todayOnly && item.sessionTime.includes('今天')) || (weekOnly && !item.sessionTime.includes('今天'));
     const languageOk = state.mapLanguage === '全部' || item.course.language === state.mapLanguage;
-    return queryOk && timingOk && languageOk;
+    return timingOk && languageOk;
   });
 }
 
 function citySearchCounts() {
-  if (!state.mapQuery || state.mapTeacherId) return [];
+  if (state.mapTeacherId) return [];
   return ['深圳', '上海', '东京', '广州'].map((city) => ({ city, count: venueRows(city).length })).filter((item) => item.count > 0);
 }
 
@@ -689,7 +679,7 @@ function renderMapSheet() {
   const venues = venueRows(state.mapCity);
   const active = state.activeVenue || venues[0]?.venue || '';
   const focusedTeacher = teachers.find((teacher) => teacher.id === state.mapTeacherId);
-  const globalControls = `<label class="map-search">⌕<input data-action="map-search" value="${state.mapQuery}" placeholder="搜索课程、地点或老师" /></label><div class="map-filters"><div class="map-filter-row">${['全部', '今天可约', '本周有课'].map((filter) => `<button data-action="map-filter" data-filter="${filter}" class="${filter === state.mapFilter ? 'selected' : ''}">${filter === '全部' ? '任意时间' : filter}</button>`).join('')}</div><div class="map-filter-row language-filter-row">${['全部', '中文', '英语', '日语', '韩语'].map((language) => `<button data-action="map-language" data-language="${language}" class="${language === state.mapLanguage ? 'selected' : ''}">${language === '全部' ? '全部语言' : language}</button>`).join('')}</div></div>`;
+  const globalControls = `<div class="map-filters"><div class="map-filter-row">${['全部', '今天可约', '本周有课'].map((filter) => `<button data-action="map-filter" data-filter="${filter}" class="${filter === state.mapFilter ? 'selected' : ''}">${filter === '全部' ? '任意时间' : filter}</button>`).join('')}</div><div class="map-filter-row language-filter-row">${['全部', '中文', '英语', '日语', '韩语'].map((language) => `<button data-action="map-language" data-language="${language}" class="${language === state.mapLanguage ? 'selected' : ''}">${language === '全部' ? '全部语言' : language}</button>`).join('')}</div></div>`;
   return `<div class="sheet-layer"><button class="scrim" data-action="close-sheet" aria-label="关闭地图抽屉"></button><section class="map-sheet ${focusedTeacher ? 'focused-teacher' : ''}" aria-label="面授场所地图"><div class="sheet-handle"></div><div class="sheet-title"><strong>${focusedTeacher ? `${focusedTeacher.name} 的面授课程` : '面授场所'}</strong>${focusedTeacher ? '' : `<button data-action="sheet-city-menu" class="city-switch">${state.mapCity}⌄</button>`}<button data-action="close-sheet" class="close">×</button></div>${!focusedTeacher && state.sheetCityMenu ? renderCityMenu(true) : ''}
     ${focusedTeacher ? '' : globalControls}
     ${focusedTeacher ? '' : renderCitySearchResults() || '<div data-search-city-results></div>'}
@@ -1295,11 +1285,11 @@ function syncCreatorConsole() {
   let title = '模块展示条件';
   let parameters = '';
   let expected = '';
-  if (state.consoleMode === 'search') {
-    title = '搜索范围与筛选';
-    parameters = `<label>当前城市<select data-console-field="mapCity">${cityOptions}</select></label><label>预设搜索<select data-console-field="mapQuery">${options(['日语面授', '中文会话', '英语面授'], state.mapQuery)}</select></label><label>课程语言<select data-console-field="mapLanguage">${options(['全部', '中文', '英语', '日语', '韩语'], state.mapLanguage)}</select></label><label>可约时间<select data-console-field="mapFilter">${options(['全部', '今天可约', '本周有课'], state.mapFilter)}</select></label>`;
+  if (state.consoleMode === 'map') {
+    title = '地图筛选与城市';
+    parameters = `<label>当前城市<select data-console-field="mapCity">${cityOptions}</select></label><label>课程语言<select data-console-field="mapLanguage">${options(['全部', '中文', '英语', '日语', '韩语'], state.mapLanguage)}</select></label><label>可约时间<select data-console-field="mapFilter">${options(['全部', '今天可约', '本周有课'], state.mapFilter)}</select></label>`;
     const count = venueRows(state.mapCity).length;
-    expected = count ? `当前城市展示 ${count} 个课程地点；搜索“${state.mapQuery}”时，上方保留其他有课城市入口。` : `当前城市不展示空点位；显示“${state.mapCity} 暂无相关课程”及其他有课城市入口。`;
+    expected = count ? `当前城市展示 ${count} 个课程地点；支持按课程语言和可约时间筛选。` : `当前城市不展示空点位；显示“${state.mapCity} 暂无相关课程”及其他有课城市入口。`;
   } else if (state.consoleMode === 'booking') {
     title = '预约与支付';
     parameters = `<label>教师<select data-console-field="profileId">${options(['sarah', 'david', 'yuki', 'minji', 'lucas'], state.profileId || 'sarah')}</select></label><label>预约日期<select data-console-field="selectedDate">${options(['今天', '周六', '周日'], state.selectedDate)}</select></label><label>预约时段<select data-console-field="selectedSlot">${options(['19:00', '14:00', '10:00'], state.selectedSlot)}</select></label><label>支付方式<select data-console-field="paymentMethod">${options(['支付宝', '微信'], state.paymentMethod)}</select></label>`;
@@ -1372,9 +1362,6 @@ function creatorPriceValidationMessage() {
 function bindEvents() {
   app.querySelectorAll('[data-action]').forEach((element) => element.addEventListener('click', (event) => {
     const action = event.currentTarget.dataset.action;
-    // The search field has its own input listener below. Re-rendering on click
-    // would immediately remove focus and prevent typing.
-    if (action === 'map-search') return;
     if (action === 'open-sheet') { state.sheet = true; state.mapTeacherId = null; state.activeVenue = null; }
     if (action === 'close-sheet') { state.sheet = false; state.cityMenu = false; state.sheetCityMenu = false; state.mapTeacherId = null; state.activeVenue = null; }
     if (action === 'sheet-city-menu') state.sheetCityMenu = !state.sheetCityMenu;
@@ -1419,7 +1406,6 @@ function bindEvents() {
       state.selectedVenue = event.currentTarget.dataset.venue;
       state.activeVenue = event.currentTarget.dataset.venue;
       state.mapFilter = '全部';
-      state.mapQuery = '';
       state.sheet = true;
       render();
       return;
@@ -1645,8 +1631,6 @@ function bindEvents() {
     if (action === 'confirm-booking' && state.selectedSlot) state.paymentSheet = true;
     render();
   }));
-  const mapInput = app.querySelector('[data-action="map-search"]');
-  if (mapInput) mapInput.addEventListener('input', (event) => { state.mapQuery = event.target.value; state.activeVenue = null; refreshMapResults(); });
   app.querySelectorAll('[data-creator-input]').forEach((input) => input.addEventListener('input', (event) => {
     const field = event.currentTarget.dataset.creatorInput;
     state[field] = event.currentTarget.value;
@@ -1699,7 +1683,6 @@ document.querySelector('#scenario-parameters').addEventListener('change', (event
   const value = event.target.value;
   if (field === 'city') { state.city = value; state.sheet = false; state.profileId = null; }
   if (field === 'mapCity') { state.mapCity = value; state.activeVenue = null; state.mapTeacherId = null; state.sheet = true; state.rootPage = 'partner'; }
-  if (field === 'mapQuery') { state.mapQuery = value; state.activeVenue = null; state.sheet = true; state.rootPage = 'partner'; }
   if (field === 'mapLanguage') { state.mapLanguage = value; state.sheet = true; }
   if (field === 'mapFilter') { state.mapFilter = value; state.sheet = true; }
   if (field === 'profileId') { state.profileId = value; state.profileRoute = 'course-detail'; state.rootPage = 'partner'; state.selectedCourse = 'conversation'; state.selectedVenue = teacherCourses(teacherForProfile())[0]?.venues[0]?.venue || ''; state.paymentSheet = true; }

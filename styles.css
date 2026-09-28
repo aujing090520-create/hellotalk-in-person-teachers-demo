@@ -120,8 +120,6 @@
  .city-switch { font-size:13px; padding:8px; }
  .close { font-size:25px; line-height:20px; }
  .sheet-city-menu { top:46px; left:auto; right:50px; }
- .map-search { display:flex; align-items:center; gap:7px; height:35px; margin-top:9px; padding:0 11px; border-radius:18px; color:#94969c; background:#f5f5f7; }
- .map-search input { width:100%; border:0; outline:0; background:transparent; font-size:12px; }
 .map-filters { display:grid; gap:7px; margin:10px 0; }
 .map-filter-row { display:flex; gap:7px; overflow:hidden; }
 .map-filters button { padding:6px 11px; border-radius:13px; color:#676a70; background:#f5f5f7; font-size:11px; white-space:nowrap; }
