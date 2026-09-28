@@ -348,6 +348,7 @@ function applyConsoleScenario(scenario) {
     'partner-hidden': () => { state.consoleMode = 'discovery'; state.city = '广州'; state.consoleScenario = '展示条件不满足'; },
     'map-japanese': () => { state.consoleMode = 'map'; state.rootPage = 'partner'; state.sheet = true; state.mapCity = '深圳'; state.mapLanguage = '日语'; state.consoleScenario = '日语面授 · 跨城'; },
     'map-empty': () => { state.consoleMode = 'map'; state.rootPage = 'partner'; state.sheet = true; state.mapCity = '广州'; state.mapLanguage = '日语'; state.consoleScenario = '日语面授 · 当前城无结果'; },
+    'teacher-map-focus': () => { state.consoleMode = 'teacher-map'; state.rootPage = 'partner'; state.city = '深圳'; state.mapCity = '深圳'; state.mapTeacherId = 'sarah'; state.activeVenue = '南山慢咖啡'; state.selectedVenue = '南山慢咖啡'; state.mapFilter = '今天可约'; state.mapLanguage = '日语'; state.sheet = true; state.consoleScenario = '老师聚焦地图'; },
     'teacher-payment': () => { state.consoleMode = 'booking'; state.profileId = 'sarah'; state.profileRoute = 'course-detail'; state.selectedCourse = 'conversation'; state.selectedVenue = '南山慢咖啡'; state.selectedDate = '今天'; state.selectedSlot = '19:00'; state.paymentMethod = '支付宝'; state.paymentSheet = true; state.consoleScenario = '课程预约与支付'; },
     'trial-unpurchased': () => { state.consoleMode = 'trial'; state.profileId = 'sarah'; state.profileRoute = 'profile'; state.courseOrigin = 'profile'; state.selectedCourse = 'trial-video'; state.trialPurchased = false; state.consoleScenario = '试听课 · 待购买'; },
     'trial-purchased': () => { state.consoleMode = 'trial'; state.profileId = 'sarah'; state.profileRoute = 'profile'; state.courseOrigin = 'profile'; state.selectedCourse = 'trial-video'; state.trialPurchased = true; state.consoleScenario = '试听课 · 已购买'; },
@@ -468,12 +469,15 @@ function normalizeSearch(value) {
 }
 
 function venueRows(city = state.city) {
+  const focusedTeacher = teachers.find((teacher) => teacher.id === state.mapTeacherId);
   const todayOnly = state.mapFilter === '今天可约';
   const weekOnly = state.mapFilter === '本周有课';
-  return eligibleTeachers(city).filter((teacher) => !state.mapTeacherId || teacher.id === state.mapTeacherId).flatMap((teacher) => {
+  const scopedTeachers = focusedTeacher ? [focusedTeacher] : eligibleTeachers(city);
+  return scopedTeachers.flatMap((teacher) => {
     const courses = teacherCourses(teacher, city).filter((course) => course.format === 'offline' && course.live);
     return courses.flatMap((course) => course.venues.map((venue) => ({ ...venue, teacher, course, sessionTime: course.id === 'weekend' ? course.schedule : venue.slots })));
   }).filter((item) => {
+    if (focusedTeacher) return true;
     const timingOk = state.mapFilter === '全部' || (todayOnly && item.sessionTime.includes('今天')) || (weekOnly && !item.sessionTime.includes('今天'));
     const languageOk = state.mapLanguage === '全部' || item.course.language === state.mapLanguage;
     return timingOk && languageOk;
@@ -594,9 +598,9 @@ function renderGlobalCourseList(venues, active) {
   return `<div class="course-map-list global-course-list">${orderedGroups.map(({ teacher, course, venues: courseVenues }) => `<article class="map-course-card ${courseVenues.some((venue) => venue.venue === active) ? 'selected' : ''}"><div class="map-course-head"><div><strong>${course.title}</strong><small class="course-teacher-meta"><button class="course-teacher-avatar photo-${teacher.photo}" data-action="profile" data-id="${teacher.id}" aria-label="查看${teacher.name}的资料"></button><span>${teacher.name} · ${course.duration}</span></small></div><em>${courseOfferText(course)}</em></div><div class="map-course-venues">${courseVenues.map((venue) => `<button data-action="select-global-course-venue" data-course="${course.id}" data-venue="${venue.venue}" class="${venue.venue === active ? 'selected' : ''}"><b>${venue.venue}</b><small>${venue.sessionTime}</small></button>`).join('')}</div></article>`).join('') || '<div class="empty">没有符合条件的课程</div>'}</div>`;
 }
 
-function renderTeacherCourseList(teacher, active) {
-  const courses = teacherCourses(teacher);
-  return `<div class="teacher-course-list"><p>课程与可选上课地点</p>${courses.map((course) => `<article class="teacher-course-card ${course.id === state.selectedCourse ? 'selected' : ''}"><button class="teacher-course-head" data-action="open-course-from-map" data-course="${course.id}"><div><strong>${course.title}</strong><small>${course.sessions} 节课 · ${course.duration}</small></div><em>${courseOfferText(course)}</em><span>›</span></button><div class="teacher-course-venues">${course.venues.map((venue) => `<button data-action="select-teacher-course-venue" data-course="${course.id}" data-venue="${venue.venue}" class="${course.id === state.selectedCourse && venue.venue === active ? 'selected' : ''}"><b>${venue.venue}</b><small>${course.id === 'weekend' ? course.schedule : venue.slots}</small></button>`).join('')}</div></article>`).join('')}</div>`;
+function renderTeacherCourseList(teacher, venues, active) {
+  const courses = [...new Map(venues.map((item) => [item.course.id, { course: item.course, venues: venues.filter((row) => row.course.id === item.course.id) }])).values()];
+  return `<div class="teacher-course-list"><p>课程与可选上课地点</p>${courses.map(({ course, venues: courseVenues }) => `<article class="teacher-course-card ${course.id === state.selectedCourse ? 'selected' : ''}"><button class="teacher-course-head" data-action="open-course-from-map" data-course="${course.id}"><div><strong>${course.title}</strong><small>${course.sessions} 节课 · ${course.duration}</small></div><em>${courseOfferText(course)}</em><span>›</span></button><div class="teacher-course-venues">${courseVenues.map((venue) => `<button data-action="select-teacher-course-venue" data-course="${course.id}" data-venue="${venue.venue}" class="${course.id === state.selectedCourse && venue.venue === active ? 'selected' : ''}"><b>${venue.venue}</b><small>${course.id === 'weekend' ? course.schedule : venue.slots}</small></button>`).join('')}</div></article>`).join('')}</div>`;
 }
 
 function renderMapStage(venues, active, focusedTeacher) {
@@ -604,7 +608,7 @@ function renderMapStage(venues, active, focusedTeacher) {
     const suggestions = citySearchCounts();
     return `<div class="map-empty-city"><strong>${state.mapCity}暂无相关课程</strong><p>试试其他有课城市</p><div>${suggestions.map(({ city, count }) => `<button data-action="select-search-city" data-city="${city}">${city} <b>${count}</b></button>`).join('')}</div></div>`;
   }
-  return `<div class="real-map" aria-label="${state.mapCity}面授场所概览">${renderStaticMapTiles(state.mapCity)}<div class="map-marker-layer" data-map-markers>${renderMapMarkers(mapLocations(venues), active)}</div><small class="map-attribution">© OpenStreetMap contributors</small></div><div data-map-results>${focusedTeacher ? renderTeacherCourseList(focusedTeacher, active) : renderGlobalCourseList(venues, active)}</div>`;
+  return `<div class="real-map" aria-label="${state.mapCity}面授场所概览">${renderStaticMapTiles(state.mapCity)}<div class="map-marker-layer" data-map-markers>${renderMapMarkers(mapLocations(venues), active)}</div><small class="map-attribution">© OpenStreetMap contributors</small></div><div data-map-results>${focusedTeacher ? renderTeacherCourseList(focusedTeacher, venues, active) : renderGlobalCourseList(venues, active)}</div>`;
 }
 
 function bindDynamicMapResults() {
@@ -680,7 +684,7 @@ function renderMapSheet() {
   const active = state.activeVenue || venues[0]?.venue || '';
   const focusedTeacher = teachers.find((teacher) => teacher.id === state.mapTeacherId);
   const globalControls = `<div class="map-filters"><div class="map-filter-row">${['全部', '今天可约', '本周有课'].map((filter) => `<button data-action="map-filter" data-filter="${filter}" class="${filter === state.mapFilter ? 'selected' : ''}">${filter === '全部' ? '任意时间' : filter}</button>`).join('')}</div><div class="map-filter-row language-filter-row">${['全部', '中文', '英语', '日语', '韩语'].map((language) => `<button data-action="map-language" data-language="${language}" class="${language === state.mapLanguage ? 'selected' : ''}">${language === '全部' ? '全部语言' : language}</button>`).join('')}</div></div>`;
-  return `<div class="sheet-layer"><button class="scrim" data-action="close-sheet" aria-label="关闭地图抽屉"></button><section class="map-sheet ${focusedTeacher ? 'focused-teacher' : ''}" aria-label="面授场所地图"><div class="sheet-handle"></div><div class="sheet-title"><strong>${focusedTeacher ? `${focusedTeacher.name} 的面授课程` : '面授场所'}</strong>${focusedTeacher ? '' : `<button data-action="sheet-city-menu" class="city-switch">${state.mapCity}⌄</button>`}<button data-action="close-sheet" class="close">×</button></div>${!focusedTeacher && state.sheetCityMenu ? renderCityMenu(true) : ''}
+  return `<div class="sheet-layer"><button class="scrim" data-action="close-sheet" aria-label="关闭地图抽屉"></button><section class="map-sheet ${focusedTeacher ? 'focused-teacher' : ''}" aria-label="面授场所地图"><div class="sheet-handle"></div><div class="sheet-title"><strong>${focusedTeacher ? `${focusedTeacher.name} 在${state.mapCity}的面授课程` : '面授场所'}</strong>${focusedTeacher ? '' : `<button data-action="sheet-city-menu" class="city-switch">${state.mapCity}⌄</button>`}<button data-action="close-sheet" class="close">×</button></div>${!focusedTeacher && state.sheetCityMenu ? renderCityMenu(true) : ''}
     ${focusedTeacher ? '' : globalControls}
     ${focusedTeacher ? '' : renderCitySearchResults() || '<div data-search-city-results></div>'}
     <div data-map-stage>${renderMapStage(venues, active, focusedTeacher)}</div>
@@ -1290,6 +1294,12 @@ function syncCreatorConsole() {
     parameters = `<label>当前城市<select data-console-field="mapCity">${cityOptions}</select></label><label>课程语言<select data-console-field="mapLanguage">${options(['全部', '中文', '英语', '日语', '韩语'], state.mapLanguage)}</select></label><label>可约时间<select data-console-field="mapFilter">${options(['全部', '今天可约', '本周有课'], state.mapFilter)}</select></label>`;
     const count = venueRows(state.mapCity).length;
     expected = count ? `当前城市展示 ${count} 个课程地点；支持按课程语言和可约时间筛选。` : `当前城市不展示空点位；显示“${state.mapCity} 暂无相关课程”及其他有课城市入口。`;
+  } else if (state.consoleMode === 'teacher-map') {
+    title = '老师聚焦地图';
+    const teacher = teachers.find((item) => item.id === state.mapTeacherId);
+    const count = venueRows(state.mapCity).length;
+    parameters = `<div class="console-metric"><span>当前老师<b>${teacher?.name || '未选择'}</b></span><span>当前城市<b>${state.mapCity}</b></span><span>课程地点<b>${count} 个</b></span><span>全局筛选<b>不继承</b></span></div>`;
+    expected = `${teacher?.name || '该老师'} 的 Profile 地图仅展示其在 ${state.mapCity} 的在售线下课程与地点；不显示城市切换、时间/语言筛选、其他老师课程或试听课。`;
   } else if (state.consoleMode === 'booking') {
     title = '预约与支付';
     parameters = `<label>教师<select data-console-field="profileId">${options(['sarah', 'david', 'yuki', 'minji', 'lucas'], state.profileId || 'sarah')}</select></label><label>预约日期<select data-console-field="selectedDate">${options(['今天', '周六', '周日'], state.selectedDate)}</select></label><label>预约时段<select data-console-field="selectedSlot">${options(['19:00', '14:00', '10:00'], state.selectedSlot)}</select></label><label>支付方式<select data-console-field="paymentMethod">${options(['支付宝', '微信'], state.paymentMethod)}</select></label>`;
@@ -1406,6 +1416,8 @@ function bindEvents() {
       state.selectedVenue = event.currentTarget.dataset.venue;
       state.activeVenue = event.currentTarget.dataset.venue;
       state.mapFilter = '全部';
+      state.mapLanguage = '全部';
+      state.sheetCityMenu = false;
       state.sheet = true;
       render();
       return;
