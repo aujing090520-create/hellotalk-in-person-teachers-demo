@@ -16,7 +16,8 @@ const people = [
   { name: '林霁', photo: 'p4', gender: '♀', city: '深圳市, 中国', distance: '5km', status: '7 分钟前活跃', intro: '想去：日本', tags: ['ISFJ', '火影忍者', '夏目友人帐', '堀与宫村', '王者荣耀'], newcomer: true, lang: 'CN  ⇄  JP' }
 ];
 
-const state = { city: '深圳', mapCity: '深圳', rootPage: 'partner', myRoute: 'courses', creatorPlacePage: false, vip: false, activeLanguage: '中文（简体）', sheet: false, cityMenu: false, sheetCityMenu: false, mapFilter: '全部', mapLanguage: '全部', activeVenue: null, mapTeacherId: null, profileId: null, profileRoute: 'profile', profileTab: 'archive', profileMore: false, profileVenueIndex: 0, profilePhotoIndex: null, profileScrollTop: 0, creatorScrollTop: 0, coursePicker: false, courseFilter: 'all', courseManageType: 'offline', creatorCourseState: '有课程', courseOrigin: 'profile', selectedCourse: 'conversation', selectedVenue: '', selectedDate: '今天', selectedSlot: '19:00', bookingConfirmed: false, trialPurchased: false, trialPlaying: false, paymentSheet: false, paymentMethod: '支付宝', courseDelivery: '线下课程', courseDeliverySheet: false, courseFormat: 'offline', creatorCity: '深圳', creatorSheet: '', creatorVenueQuery: '', creatorVenueResults: [], creatorPlaceHistory: [], courseType: '1v1', editingCourseId: '', courseLifecycle: {}, courseTitle: '', courseTags: [], courseLanguage: '', courseDuration: '', courseSessions: '', courseDescription: '', coursePrice: '', courseSalesMode: 'none', coursePackSessions: '', coursePackPrice: '', courseFirstDiscount: '', courseVenues: [], courseAvailability: [], teachingInfoOrigin: 'courses', teacherProfile: { photos: ['sarah-lifestyle-0', 'sarah-lifestyle-1', 'sarah-lifestyle-2'], language: '中文', alsoSpeaks: 'English, 中文', intro: '一对一面授中文课，地点和时间可协商。', types: ['FreeTalk', '实用口语', '旅行口语'] }, followed: false, toast: '', consoleScenario: '', consoleMode: 'discovery', uiLanguage: 'zh' };
+const state = { city: '深圳', mapCity: '深圳', rootPage: 'partner', myRoute: 'courses', myIdentity: 'teacher', studentCoursePage: false, studentInPersonSheet: false, studentInPersonTab: 'pending', studentCheckinCourseId: '', studentInPersonAttendance: {}, studentCompletedClasses: [], studentReviewCourseId: '', studentRating: 0, creatorPlacePage: false, vip: false, activeLanguage: '中文（简体）', sheet: false, cityMenu: false, sheetCityMenu: false, mapFilter: '全部', mapLanguage: '全部', activeVenue: null, mapTeacherId: null, profileId: null, profileRoute: 'profile', profileTab: 'archive', profileMore: false, profileVenueIndex: 0, profileScrollTop: 0, creatorScrollTop: 0, coursePicker: false, courseFilter: 'all', courseManageType: 'offline', creatorCourseState: '有课程', courseOrigin: 'profile', selectedCourse: 'conversation', selectedVenue: '', selectedDate: '今天', selectedSlot: '19:00', bookingConfirmed: false, trialPurchased: false, trialPlaying: false, paymentSheet: false, paymentMethod: '支付宝', courseDelivery: '线下课程', courseDeliverySheet: false, courseFormat: 'offline', creatorCity: '深圳', creatorSheet: '', creatorVenueQuery: '', creatorVenueResults: [], creatorPlaceHistory: [], courseType: '1v1', editingCourseId: '', courseLifecycle: {}, courseTitle: '', courseTags: [], courseLanguage: '', courseDuration: '', courseSessions: '', courseDescription: '', coursePrice: '', courseSalesMode: 'none', coursePackSessions: '', coursePackPrice: '', courseFirstDiscount: '', courseVenues: [], courseAvailability: [], teachingInfoOrigin: 'courses', teacherProfile: { photos: ['sarah-lifestyle-0', 'sarah-lifestyle-1', 'sarah-lifestyle-2'], language: '中文', alsoSpeakList: ['English', '中文'], intro: '一对一面授中文课，地点和时间可协商。', types: ['FreeTalk', '实用口语', '旅行口语'], experience: '5 年中文教学经验，擅长会话与发音训练。', materials: 'PPT文件', certificate: 'Other', certificateImage: false, education: '暂不设置', email: 'teacher@example.com', phone: '138 0000 0000' }, followed: false, toast: '', consoleScenario: '', consoleMode: 'discovery', uiLanguage: 'zh' };
+state.studentRatedCourses = {};
 const initialDemoState = JSON.parse(JSON.stringify(state));
 const app = document.querySelector('#app');
 
@@ -354,7 +355,8 @@ function applyConsoleScenario(scenario) {
     'trial-purchased': () => { state.consoleMode = 'trial'; state.profileId = 'sarah'; state.profileRoute = 'profile'; state.courseOrigin = 'profile'; state.selectedCourse = 'trial-video'; state.trialPurchased = true; state.consoleScenario = '试听课 · 已购买'; },
     'trial-video': () => { state.consoleMode = 'trial'; state.profileId = 'sarah'; state.profileRoute = 'trial-video'; state.courseOrigin = 'profile'; state.selectedCourse = 'trial-video'; state.trialPurchased = true; state.trialPlaying = true; state.consoleScenario = '试听课 · 视频页'; },
     'creator-offline': () => { state.consoleMode = 'creator'; state.rootPage = 'mine'; state.myRoute = 'create'; state.creatorCity = '深圳'; state.courseDelivery = '线下课程'; state.courseTitle = '一对一中文面授'; state.courseTags = ['日常会话', '发音纠正']; state.courseLanguage = '中文'; state.courseDuration = '50 分钟/节'; state.courseSessions = '2 节'; state.courseDescription = '适合想提升日常中文表达的学习者。'; state.coursePrice = '50'; state.courseSalesMode = 'pack'; state.coursePackSessions = '2'; state.coursePackPrice = '90'; state.courseFirstDiscount = ''; state.courseVenues = shenzhenPlaces; state.courseAvailability = ['周一至周五 14:00–18:00', '周六、周日 19:00–21:00']; state.consoleScenario = '完整线下课程'; },
-    'creator-search': () => { state.consoleMode = 'creator'; state.rootPage = 'mine'; state.myRoute = 'create'; state.creatorPlacePage = true; state.creatorCity = '深圳'; state.courseDelivery = '线下课程'; state.creatorVenueQuery = '咖啡'; state.creatorVenueResults = [{ name: '南山慢咖啡', district: '南山区', address: '南山大道 88 号' }]; state.creatorPlaceHistory = [{ name: '南山慢咖啡', district: '南山区', address: '南山大道 88 号', city: '深圳' }, { name: '华侨城创意文化园', district: '南山区', address: '恩平街 1 号', city: '深圳' }]; state.consoleScenario = '地点搜索记录'; }
+    'creator-search': () => { state.consoleMode = 'creator'; state.rootPage = 'mine'; state.myRoute = 'create'; state.creatorPlacePage = true; state.creatorCity = '深圳'; state.courseDelivery = '线下课程'; state.creatorVenueQuery = '咖啡'; state.creatorVenueResults = [{ name: '南山慢咖啡', district: '南山区', address: '南山大道 88 号' }]; state.creatorPlaceHistory = [{ name: '南山慢咖啡', district: '南山区', address: '南山大道 88 号', city: '深圳' }, { name: '华侨城创意文化园', district: '南山区', address: '恩平街 1 号', city: '深圳' }]; state.consoleScenario = '地点搜索记录'; },
+    'student-center': () => { state.consoleMode = 'student'; state.rootPage = 'mine'; state.myIdentity = 'student'; state.studentCoursePage = false; state.studentInPersonSheet = false; state.studentInPersonTab = 'pending'; state.studentCheckinCourseId = ''; state.studentReviewCourseId = ''; state.studentRating = 0; state.consoleScenario = '学生端 · 我的页面'; }
   };
   presets[scenario]?.();
   render();
@@ -457,9 +459,9 @@ function renderMomentsHome() {
 
 function renderBottomTab(active = 'partner') {
   const items = [{ tab: 'HelloTalk', icon: 'tab_chat_active.png', key: 'chat' }, { tab: '找语伴', icon: active === 'partner' ? 'tab_partner_active.png' : 'tab_partner.png', key: 'partner' }, { tab: '动态', icon: 'tab_moment.png', key: 'moments' }, { tab: '语聊 / 直播', icon: 'tab_live.png', key: 'live' }, { tab: '我', icon: 'tab_mine.png', key: 'mine' }];
-  const native = active === 'moments' ? 'moments-native-tabbar' : 'partner-native-tabbar';
-  const reference = active === 'moments' ? 'ht-native-moments-tabbar.jpg' : 'ht-bottom-tab-partner-active.png';
-  return `<nav class="bottom-tab ${native}" aria-label="主导航"><img class="bottom-native-reference" src="assets/${reference}" alt="" />${items.map((item) => `<button class="bottom-item ${active === item.key ? 'selected' : ''}" data-action="tab-root" data-tab="${item.tab}">${active === 'moments' && item.key === 'moments' ? bottomMomentActiveIcon() : `<img src="assets/${item.icon}" alt="" />`}<small>${item.tab}</small></button>`).join('')}</nav>`;
+  const native = active === 'moments' ? 'moments-native-tabbar' : active === 'mine' ? 'student-native-tabbar' : 'partner-native-tabbar';
+  const reference = active === 'moments' ? 'ht-native-moments-tabbar.jpg' : active === 'partner' ? 'ht-bottom-tab-partner-active.png' : '';
+  return `<nav class="bottom-tab ${native}" aria-label="主导航">${reference ? `<img class="bottom-native-reference" src="assets/${reference}" alt="" />` : ''}${items.map((item) => `<button class="bottom-item ${active === item.key ? 'selected' : ''}" data-action="tab-root" data-tab="${item.tab}">${active === 'moments' && item.key === 'moments' ? bottomMomentActiveIcon() : `<img src="assets/${item.icon}" alt="" />`}<small>${item.tab}</small></button>`).join('')}</nav>`;
 }
 
 function renderCityMenu(inSheet) { return `<div class="city-menu ${inSheet ? 'sheet-city-menu' : ''}">${['深圳', '上海', '东京', '广州'].map((city) => `<button data-action="select-city" data-city="${city}"><span>${city}</span>${city === state.mapCity ? '✓' : ''}</button>`).join('')}</div>`; }
@@ -1047,6 +1049,110 @@ function renderMyCourses() {
   return `<div class="screen creator-courses"><header class="creator-hero">${systemStatus('creator-status')}<div class="creator-title">${creatorBack()}<strong>我的课程</strong><span><button aria-label="完善教学信息" data-action="open-teaching-info">${creatorIcon('cap')}</button><button aria-label="通知" data-action="creator-toast">${creatorIcon('bell')}</button></span></div></header><main class="creator-scroll"><section class="creator-tools"><button data-action="create-course"><i class="tool-plus">+</i><b>创建新课</b></button><button data-action="manage-courses"><i class="tool-notebook">${creatorIcon('notebook')}</i><b>授课管理</b></button><button data-action="creator-toast"><i class="tool-wallet">${creatorIcon('wallet')}</i><b>课时收入</b></button></section>${courseContent}</main>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
 }
 
+function renderStudentCenter() {
+  const shortcutIcons = {
+    boost: '<svg viewBox="0 0 40 48" aria-hidden="true"><defs><linearGradient id="student-bolt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eb5be5"/><stop offset=".46" stop-color="#8b54f7"/><stop offset="1" stop-color="#27b9ef"/></linearGradient></defs><path fill="url(#student-bolt)" d="M25 1 4 27h14L14 47l23-29H23z"/></svg>',
+    heat: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M36 11A16 16 0 1 0 42 28" fill="none" stroke="#f66faf" stroke-width="6" stroke-linecap="round"/><circle cx="24" cy="24" r="7" fill="none" stroke="#f66faf" stroke-width="5"/><path d="m30 18 12-12v14z" fill="#df59ec"/></svg>',
+    shop: '<span aria-hidden="true">🐈‍⬛</span>'
+  };
+  const courses = [
+    ['hello', 'HelloWords', '<span class="student-letter">◔A</span>'],
+    ['foreign', '英语外教课', '<span class="student-letter">Aa</span>'],
+    ['talk', '英语口语陪练', '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="23" cy="24" r="9" fill="#fff"/><circle cx="43" cy="24" r="9" fill="#fff"/><path d="M9 51c1-12 27-12 28 0M27 51c1-12 27-12 28 0" fill="#fff"/></svg>'],
+    ['ai', 'Ai 学英语', '<span class="student-ai-face">AI</span>'],
+    ['learn', '学英语', '<span class="student-letter">EN</span>'],
+    ['audio', '从零学外语', '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M15 36V31a17 17 0 0 1 34 0v5M14 35h9v15h-5a4 4 0 0 1-4-4zm36 0h-9v15h5a4 4 0 0 0 4-4z" fill="none" stroke="#fff" stroke-width="6" stroke-linejoin="round"/><path d="m28 39 4-6 4 11 4-6" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>'],
+    ['book', '有声外语书', '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 15c12-5 20-1 24 5v30c-7-7-15-8-24-4zm48 0c-12-5-20-1-24 5v30c7-7 15-8 24-4z" fill="#fff"/></svg>'],
+    ['more', '更多课程', '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M16 12h34v13H28c-7 0-12 5-12 12v15H8V20c0-5 3-8 8-8Z" fill="#fff"/><path d="M17 38h32v14H17z" fill="none" stroke="#fff" stroke-width="6" stroke-linejoin="round"/></svg>']
+  ];
+  const navIcons = [
+    ['HelloTalk', '<svg viewBox="0 0 28 28"><path d="M6 5h16a4 4 0 0 1 4 4v9a4 4 0 0 1-4 4H13l-5 4v-4H6a4 4 0 0 1-4-4V9a4 4 0 0 1 4-4Z"/><path d="M9 14c2 2 8 2 10-2"/></svg>', '316'],
+    ['找语伴', '<svg viewBox="0 0 28 28"><circle cx="9" cy="8" r="3"/><circle cx="19" cy="8" r="3"/><path d="M4 23v-7c0-3 10-3 10 0v7M14 23v-7c0-3 10-3 10 0v7"/></svg>', ''],
+    ['动态', '<svg viewBox="0 0 28 28"><path d="M3 16c4-9 13-11 22-7-4 9-13 11-22 7Z"/><path d="M7 20c4 3 10 3 15-1"/></svg>', ''],
+    ['语聊 / 直播', '<svg viewBox="0 0 28 28"><rect x="10" y="3" width="8" height="14" rx="4"/><path d="M6 13a8 8 0 0 0 16 0M14 21v4M9 25h10"/></svg>', ''],
+    ['我', '<svg viewBox="0 0 28 28"><circle cx="14" cy="9" r="5"/><path d="M4 25c1-7 19-7 20 0"/></svg>', '']
+  ];
+  return `<div class="screen student-center student-me-tab">${systemStatus('student-status')}<main class="student-me-scroll"><header class="student-me-profile"><button class="student-me-avatar" data-action="student-toast" aria-label="查看个人资料"></button><span class="student-me-coins"><i>HT</i><b>4258</b></span><i class="student-me-vip" aria-hidden="true">⌣</i><div class="student-me-identity"><h1>Calina is is</h1><p><b>177</b> 正在关注　 <b>178</b> 粉丝</p></div><button class="student-me-action student-me-share" data-action="student-toast" aria-label="分享"><svg viewBox="0 0 30 30"><path d="M9 15v9h12v-9M15 4v15M10 9l5-5 5 5"/></svg></button><button class="student-me-action student-me-settings" data-action="student-toast" aria-label="设置"><svg viewBox="0 0 30 30"><path d="M15 3l3 3 4-1 1 4 4 2-2 4 2 4-4 2-1 4-4-1-3 3-3-3-4 1-1-4-4-2 2-4-2-4 4-2 1-4 4 1z"/><circle cx="15" cy="15" r="4"/></svg></button></header><button class="student-me-class" data-action="student-toast"><b>语伴畅聊：1 课时待上课</b><span>去上课</span></button><section class="student-me-stats"><button data-action="student-toast"><b><i>🔥</i>781</b><span>连胜天数</span><em>🪐</em></button><button data-action="student-toast"><b>4.9k</b><span>想认识你</span><i class="student-me-people"><u class="photo-p1"></u><u class="photo-p4"></u><u class="photo-p6"></u></i></button></section><button class="student-me-moments" data-action="student-toast"><svg viewBox="0 0 32 32"><path d="M2 20c5-13 18-17 28-10-5 13-18 17-28 10Z"/><path d="M6 25c6 3 13 2 19-3"/></svg><b>动态</b><span>25</span></button><section class="student-me-tools">${[['boost','超级曝光'],['heat','帖文加热'],['shop','商城']].map(([key,label]) => `<button class="student-me-tool ${key}" data-action="student-toast"><i>${shortcutIcons[key]}</i><b>${label}</b></button>`).join('')}</section><h2>课程中心</h2><section class="student-me-courses">${courses.map(([kind,label,icon]) => `<button class="student-me-course ${kind}" data-action="student-toast"><i>${icon}</i><b>${label}</b></button>`).join('')}<button class="student-me-record" data-action="student-toast"><b>课程学习记录</b><span>›</span></button></section></main><nav class="student-me-nav" aria-label="主导航">${navIcons.map(([label,icon,badge]) => `<button class="${label === '我' ? 'selected' : ''}" data-action="tab-root" data-tab="${label}"><i>${icon}${badge ? `<em>${badge}</em>` : ''}</i><small>${label}</small></button>`).join('')}</nav>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
+}
+
+/* v8：学生端「我」页仅用矢量图标与原生导航资源，避免字符图标在手机画布中失真。 */
+function studentMeIcon(name) {
+  const icons = {
+    bag: '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 12h18v12a4 4 0 0 1-4 4H11a4 4 0 0 1-4-4V12Z" fill="#fff"/><path d="M11 12a5 5 0 0 1 10 0" fill="none" stroke="#ffae2c" stroke-width="2.4" stroke-linecap="round"/></svg>',
+    share: '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 5v16M10 11l6-6 6 6M8 18v7h16v-7" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    gear: '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="m16 5 2 3 3.5-.2.8 3.4 3 1.8-1.8 3 1.8 3-3 1.8-.8 3.4-3.5-.2-2 3-2-3-3.5.2-.8-3.4-3-1.8 1.8-3-1.8-3 3-1.8.8-3.4L14 8l2-3Z" fill="currentColor"/><circle cx="16" cy="16" r="4" fill="#fff"/></svg>',
+    planet: '<svg viewBox="0 0 38 30" aria-hidden="true"><ellipse cx="19" cy="15" rx="16" ry="6" fill="none" stroke="currentColor" stroke-width="2.6" transform="rotate(-23 19 15)"/><circle cx="19" cy="15" r="8" fill="currentColor"/><circle cx="29" cy="5" r="2.5" fill="#ffbd53"/></svg>',
+    bolt: '<svg viewBox="0 0 36 42" aria-hidden="true"><path d="M21 1 5 24h12l-2 17 16-25H19L21 1Z" fill="url(#bolt)"/><defs><linearGradient id="bolt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4c88ff"/><stop offset="1" stop-color="#db55ef"/></linearGradient></defs></svg>',
+    heat: '<svg viewBox="0 0 38 38" aria-hidden="true"><circle cx="17" cy="18" r="12" fill="none" stroke="#f66da6" stroke-width="4"/><circle cx="17" cy="18" r="5" fill="none" stroke="#f66da6" stroke-width="3"/><path d="m25 27 10-8M29 27l5-8" fill="none" stroke="#e85bdd" stroke-width="4" stroke-linecap="round"/></svg>',
+    shop: '<svg viewBox="0 0 38 38" aria-hidden="true"><path d="M8 30V17c0-6 4-10 11-10s11 4 11 10v13H8Z" fill="#d14b77"/><path d="M13 8c0-4 2-6 4-7l2 7m2 0 4-7c2 1 4 3 4 7" fill="#d14b77"/><circle cx="15" cy="19" r="2" fill="#fff"/><circle cx="23" cy="19" r="2" fill="#fff"/><path d="M16 25c2 1 4 1 6 0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>',
+    hello: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 36c0-14 10-24 24-24 8 0 14 4 18 10-1 14-11 26-26 26-9 0-16-5-16-12Z" fill="#fff"/><circle cx="27" cy="28" r="3" fill="#06c985"/><path d="M31 38c5 2 10 0 12-4" fill="none" stroke="#06c985" stroke-width="3" stroke-linecap="round"/><path d="m43 14 7 7-7 4" fill="#fff"/></svg>',
+    foreign: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 12h40v31a7 7 0 0 1-7 7H28l-9 6v-6h0a7 7 0 0 1-7-7V12Z" fill="#fff"/><text x="18" y="39" fill="#368cf7" font-size="27" font-family="Georgia,serif" font-weight="700">Aa</text></svg>',
+    talk: '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="24" cy="27" r="9" fill="#fff"/><circle cx="42" cy="27" r="9" fill="#fff"/><path d="M10 51c1-9 8-14 14-14s13 5 14 14H10Zm16 0c1-9 8-14 16-14s11 5 12 14H26Z" fill="#fff"/></svg>',
+    ai: '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="33" r="18" fill="#bd7e55"/><path d="M16 28c1-14 30-18 34 1-6-4-8-7-11-11-8 8-14 10-23 10Z" fill="#5c301e"/><text x="24" y="39" fill="#fff" font-size="13" font-weight="800">AI</text></svg>',
+    learn: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 12h40v31a7 7 0 0 1-7 7H29l-8 6v-6h-2a7 7 0 0 1-7-7V12Z" fill="#fff"/><text x="18" y="40" fill="#368cf7" font-size="24" font-weight="800">EN</text></svg>',
+    audio: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M13 37v-7a19 19 0 0 1 38 0v7M13 34h9v15h-5a4 4 0 0 1-4-4V34Zm29 0h9v11a4 4 0 0 1-4 4h-5V34Z" fill="#fff"/><path d="M28 38c2 3 6 3 8 0m-6 8 2-10 3 10" fill="none" stroke="#ff8528" stroke-width="2.5" stroke-linecap="round"/></svg>',
+    book: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 14c10-3 16 0 20 6 4-6 10-9 20-6v35c-9-3-14-1-20 5-6-6-11-8-20-5V14Z" fill="#fff"/><path d="M32 20v31" stroke="#dd0dba" stroke-width="3"/></svg>',
+    more: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M16 13h32v14H28c-6 0-10 4-10 10v14H9V20c0-4 3-7 7-7Z" fill="#fff"/><path d="M19 38h29v13H19z" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round"/></svg>'
+  };
+  return icons[name] || '';
+}
+
+function renderStudentCenter() {
+  const courseApps = [['hello', 'HelloWords'], ['foreign', '英语外教课'], ['talk', '英语口语陪练'], ['ai', 'Ai 学英语'], ['learn', '学英语'], ['audio', '从零学外语'], ['book', '有声外语书'], ['more', '更多课程']];
+  const nav = [['HelloTalk', 'assets/tab_chat_active.png', '316', 'muted-chat'], ['找语伴', 'assets/tab_partner.png', '', ''], ['动态', 'assets/tab_moment.png', '', ''], ['语聊 / 直播', 'assets/tab_live.png', '', ''], ['我', 'assets/tab_mine_active.png', '', 'active']];
+  const pendingInPerson = studentPurchasedOfflineCourses().reduce((total, course) => total + course.remainingSessions, 0);
+  return `<div class="screen student-center student-target-me student-target-v8">${systemStatus('student-status')}<main class="student-target-scroll">
+    <header class="student-target-head"><div class="student-target-tools"><button class="student-target-coin" data-action="student-toast"><i>HT</i><b>4258</b></button><button class="student-target-bag" data-action="student-toast" aria-label="背包">${studentMeIcon('bag')}</button></div><div><button class="student-target-head-action" data-action="student-toast" aria-label="分享">${studentMeIcon('share')}</button><button class="student-target-head-action gear" data-action="student-toast" aria-label="设置">${studentMeIcon('gear')}</button></div></header>
+    <section class="student-target-profile"><button class="student-target-lime" data-action="student-toast" aria-label="查看个人资料"><i></i></button><div class="student-target-copy"><h1>菜菜爱吃菜 <mark>VIP+</mark><em>✧ 24</em></h1><p>@caicai1515 <span class="student-copy-code">▧</span></p><div><b>177</b><span>正在关注</span><b>178</b><span>粉丝</span></div></div><button class="student-target-next" data-action="student-toast" aria-label="查看个人资料">›</button></section>
+    <button class="student-target-class" data-action="open-student-courses"><b>面授课程：${pendingInPerson}课时待上课</b><span>查看</span></button>
+    <section class="student-target-stats"><button data-action="student-toast"><b><i class="student-flame">🔥</i><strong>781</strong></b><span>连胜天数</span><i class="student-orbit">${studentMeIcon('planet')}</i></button><button data-action="student-toast"><b>4.9k</b><span>想认识你</span><i><u class="photo-p1"></u><u class="photo-p4"></u><u class="photo-p6"></u></i><mark>+1</mark></button></section>
+    <button class="student-target-moments" data-action="student-toast"><i>${studentMeIcon('planet')}</i><b>动态</b><span>25</span></button>
+    <section class="student-target-shortcuts">${[['lightning', 'bolt', '超级曝光'], ['heat', 'heat', '帖文加热'], ['shop', 'shop', '商城']].map(([kind, icon, label]) => `<button class="${kind}" data-action="student-toast"><i>${studentMeIcon(icon)}</i><b>${label}</b></button>`).join('')}</section>
+    <h2>课程中心</h2><section class="student-target-course-grid">${courseApps.map(([kind, label], index) => `<button class="${kind}" data-action="student-toast"><i>${studentMeIcon(kind)}${index === 0 || index === 3 ? '<em></em>' : ''}</i><b>${label}</b></button>`).join('')}</section>
+  </main><nav class="student-target-nav" aria-label="HelloTalk 主导航">${nav.map(([label, icon, badge, cls]) => `<button class="${cls}" data-action="${label === '我' ? 'student-toast' : 'tab-root'}" data-tab="${label}"><i><img src="${icon}" alt=""/>${badge ? `<em>${badge}</em>` : ''}</i><small>${label}</small></button>`).join('')}</nav>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
+}
+
+/* HT 资源库 mine.home.default 的组件化重建：保持原生层级，使用可点击 DOM 而非参考截图切片。 */
+function renderStudentCenterNativeBaseline() {
+  const nav = [['◔', 'HelloTalk', '11'], ['♙', '找语伴', ''], ['◌', '动态', '3'], ['♟', '语聊 / 直播', ''], ['●', '我', '']];
+  return `<div class="screen student-center student-native-me">
+    ${systemStatus('student-status')}
+    <main class="student-native-scroll">
+      <header class="student-native-header">
+        <div class="student-native-header-left"><button class="student-native-points" data-action="student-toast"><i>HT</i><b>4258</b></button><button class="student-native-header-icon student-native-store" data-action="student-toast" aria-label="商城">▰</button><button class="student-native-header-icon student-native-bag" data-action="student-toast" aria-label="背包">⌑</button></div>
+        <div class="student-native-header-right"><button class="student-native-round-icon" data-action="student-toast" aria-label="分享">⇧</button><button class="student-native-round-icon student-native-gear" data-action="student-toast" aria-label="设置">⚙</button></div>
+      </header>
+      <section class="student-native-profile">
+        <button class="student-native-avatar" data-action="student-toast" aria-label="查看个人资料"><span>45%</span></button>
+        <div class="student-native-profile-copy"><h1>Calina is is <small>VIP 体验期</small></h1><p>@Calina</p><div><b>177</b><span>正在关注</span><b>178</b><span>粉丝</span></div></div>
+        <button class="student-native-edit" data-action="student-toast">✎ 编辑<i></i></button>
+      </section>
+      <section class="student-native-insights"><button data-action="student-toast"><strong><i>🔥</i> 781</strong><span>连胜天数</span><em>🎁</em></button><button data-action="student-toast"><strong><i class="student-native-orbs"></i> 4.9k</strong><span>看过我</span><em>49</em></button></section>
+      <button class="student-native-vip-banner" data-action="student-toast"><span>查看 VIP 专属特权</span><b>立即查看</b></button>
+      <section class="student-native-vip-card"><div class="student-native-vip-tabs"><b>VIP</b><span>VIP+</span></div><div class="student-native-vip-content"><div><strong>特权名称</strong><span>无限翻译特权</span><span>解锁访客特权</span><span>搜索附近的人</span></div><div><strong>非会员</strong><span>5次/天</span><span>🔒</span><span>🔒</span></div><div class="student-native-vip-level"><b>VIP</b><span>无限</span><span>✓</span><span>✓</span></div></div><button data-action="student-toast">成为 VIP</button></section>
+      <button class="student-native-moments" data-action="student-toast"><i>◒</i><b>动态</b><span>25</span></button>
+      <button class="student-native-bottom-banner" data-action="student-toast"><span>更多个人服务</span><b>›</b></button>
+    </main>
+    <nav class="student-native-nav" aria-label="HelloTalk 主导航">${nav.map(([icon, label, badge]) => `<button class="${label === '我' ? 'active' : ''}" data-action="${label === '我' ? 'student-toast' : 'tab-root'}" data-tab="${label}"><i>${icon}${badge ? `<em>${badge}</em>` : ''}</i><small>${label}</small></button>`).join('')}</nav>
+    ${state.toast ? `<div class="toast">${state.toast}</div>` : ''}
+  </div>`;
+}
+
+/* 旧版学生端「我」页保留作回归参考，不参与当前渲染。 */
+function renderStudentCenterLegacyV7() {
+  const courseApps = [['hello','◔A','HelloWords'],['foreign','Aa','英语外教课'],['talk','●●','英语口语陪练'],['ai','AI','Ai 学英语'],['learn','EN','学英语'],['audio','♬','从零学外语'],['book','▰','有声外语书'],['more','▱','更多课程']];
+  const tabs = [['◔','HelloTalk','316'],['♙','找语伴',''],['◌','动态',''],['♟','语聊 / 直播',''],['●','我','']];
+  return `<div class="screen student-center student-target-me">${systemStatus('student-status')}<main class="student-target-scroll">
+    <header class="student-target-head"><div class="student-target-tools"><button class="student-target-coin" data-action="student-toast"><i>HT</i><b>4258</b></button><button class="student-target-bag" data-action="student-toast" aria-label="背包">⌣</button></div><div><button class="student-target-head-action" data-action="student-toast" aria-label="分享">⇧</button><button class="student-target-head-action gear" data-action="student-toast" aria-label="设置">⚙</button></div></header>
+    <section class="student-target-profile"><button class="student-target-lime" data-action="student-toast" aria-label="查看个人资料"></button><div class="student-target-copy"><h1>菜菜爱吃菜 <mark>VIP+</mark><em>✧ 24</em></h1><p>@caicai1515　▧</p><div><b>177</b><span>正在关注</span><b>178</b><span>粉丝</span></div></div><button class="student-target-next" data-action="student-toast" aria-label="查看个人资料">›</button></section>
+    <button class="student-target-class" data-action="student-toast"><b>语伴畅聊：1 课时待上课</b><span>去上课</span></button>
+    <section class="student-target-stats"><button data-action="student-toast"><b>🔥<strong>781</strong></b><span>连胜天数</span><em>🪐</em></button><button data-action="student-toast"><b>4.9k</b><span>想认识你</span><i><u class="photo-p1"></u><u class="photo-p4"></u><u class="photo-p6"></u></i><mark>+1</mark></button></section>
+    <button class="student-target-moments" data-action="student-toast"><i>◒</i><b>动态</b><span>25</span></button>
+    <section class="student-target-shortcuts">${[['lightning','ϟ','超级曝光'],['heat','◎','帖文加热'],['shop','♟','商城']].map(([kind,icon,label]) => `<button class="${kind}" data-action="student-toast"><i>${icon}</i><b>${label}</b></button>`).join('')}</section>
+    <h2>课程中心</h2><section class="student-target-course-grid">${courseApps.map(([kind, icon, label], index) => `<button class="${kind}" data-action="student-toast"><i>${icon}${index === 0 || index === 3 ? '<em></em>' : ''}</i><b>${label}</b></button>`).join('')}</section>
+  </main><nav class="student-target-nav" aria-label="HelloTalk 主导航">${tabs.map(([icon,label,badge]) => `<button class="${label === '我' ? 'active' : ''}" data-action="${label === '我' ? 'student-toast' : 'tab-root'}" data-tab="${label}"><i>${icon}${badge ? `<em>${badge}</em>` : ''}</i><small>${label}</small></button>`).join('')}</nav>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
+}
+
 function formChevron() { return '<span class="creator-chevron">›</span>'; }
 
 const creatorPlaceDirectory = {
@@ -1223,19 +1329,33 @@ function renderTeachingInfoSheet() {
   const sheet = state.creatorSheet;
   if (!sheet.startsWith('teaching-')) return '';
   const close = '<button data-action="close-teaching-sheet" aria-label="关闭">×</button>';
+  const profile = state.teacherProfile;
+  const option = (label, selected, field, value = label) => `<button class="delivery-option ${selected ? 'selected' : ''}" data-action="select-teaching-value" data-field="${field}" data-value="${value}"><span><b>${label}</b></span><i>${selected ? '✓' : ''}</i></button>`;
   if (sheet === 'teaching-types') {
     const types = ['实用口语', '旅游口语', '商务谈判', '雅思考试', '面试技巧', '文化风俗', '学术口语', 'FreeTalk'];
     return `<div class="delivery-sheet-mask" data-action="close-teaching-sheet"><section class="delivery-sheet teaching-types-sheet" role="dialog" aria-modal="true" aria-label="选择教学类型" onclick="event.stopPropagation()"><i class="sheet-handle"></i><header><span><strong>教学类型</strong><small>最多选择 3 个</small></span>${close}</header><div class="teaching-types-grid">${types.map((type) => `<button class="${state.teacherProfile.types.includes(type) ? 'selected' : ''}" data-action="toggle-teaching-type" data-value="${type}">${type}</button>`).join('')}</div><button class="creator-sheet-confirm" data-action="close-teaching-sheet">确定（${state.teacherProfile.types.length}/3）</button></section></div>`;
   }
-  const values = sheet === 'teaching-language' ? ['中文', '英语', '日语', '韩语'] : ['一对一面授中文课，地点和时间可协商。', '专注日常会话与发音训练，帮助你建立真实表达能力。', '结合你的学习目标，安排可落地的中文练习与反馈。'];
-  const title = sheet === 'teaching-language' ? '教授语言' : '个人介绍';
-  const selected = sheet === 'teaching-language' ? state.teacherProfile.language : state.teacherProfile.intro;
-  return `<div class="delivery-sheet-mask" data-action="close-teaching-sheet"><section class="delivery-sheet" role="dialog" aria-modal="true" aria-label="选择${title}" onclick="event.stopPropagation()"><i class="sheet-handle"></i><header><strong>${title}</strong>${close}</header>${values.map((value) => `<button class="delivery-option ${selected === value ? 'selected' : ''}" data-action="select-teaching-value" data-field="${sheet}" data-value="${value}"><span><b>${value}</b></span><i>${selected === value ? '✓' : ''}</i></button>`).join('')}</section></div>`;
+  if (sheet === 'teaching-also-speaks') {
+    const languages = ['中文', 'English', '日本語', '한국어', 'Español'];
+    return `<div class="delivery-sheet-mask" data-action="close-teaching-sheet"><section class="delivery-sheet teaching-types-sheet" role="dialog" aria-modal="true" aria-label="选择同时会说的语言" onclick="event.stopPropagation()"><i class="sheet-handle"></i><header><span><strong>同时会说</strong><small>最多选择 3 种</small></span>${close}</header><div class="teaching-types-grid">${languages.map((language) => `<button class="${profile.alsoSpeakList.includes(language) ? 'selected' : ''}" data-action="toggle-teaching-speaking" data-value="${language}">${language}</button>`).join('')}</div><button class="creator-sheet-confirm" data-action="close-teaching-sheet">确定（${profile.alsoSpeakList.length}/3）</button></section></div>`;
+  }
+  if (sheet === 'teaching-experience') return `<div class="delivery-sheet-mask" data-action="close-teaching-sheet"><section class="delivery-sheet creator-input-sheet" role="dialog" aria-modal="true" aria-label="编辑教学经验" onclick="event.stopPropagation()"><i class="sheet-handle"></i><header><strong>教学经验</strong>${close}</header><textarea data-teaching-input="experience" placeholder="请输入教学经历、年限与擅长方向">${profile.experience}</textarea><button class="creator-sheet-confirm" data-action="close-teaching-sheet">完成</button></section></div>`;
+  const configs = {
+    'teaching-language': { title: '教授语言', values: ['中文', '英语', '日语', '韩语'], key: 'language' },
+    'teaching-intro': { title: '个人介绍', values: ['一对一面授中文课，地点和时间可协商。', '专注日常会话与发音训练，帮助你建立真实表达能力。', '结合你的学习目标，安排可落地的中文练习与反馈。'], key: 'intro' },
+    'teaching-materials': { title: '教学资料', values: ['PPT文件', 'PDF讲义', 'Word练习册', '图片素材'], key: 'materials' },
+    'teaching-certificate': { title: '获得证书', values: ['CELTA', 'TESOL', 'CTCSOL', 'Other'], key: 'certificate' },
+    'teaching-education': { title: '学历背景', values: ['本科 · 汉语言文学', '硕士 · 对外汉语', '暂不设置'], key: 'education' },
+    'teaching-email': { title: '常用邮箱', values: ['teacher@example.com', 'sarah.teacher@example.com'], key: 'email' },
+    'teaching-phone': { title: '手机号', values: ['138 0000 0000', '139 0000 0000'], key: 'phone' }
+  };
+  const config = configs[sheet];
+  return `<div class="delivery-sheet-mask" data-action="close-teaching-sheet"><section class="delivery-sheet" role="dialog" aria-modal="true" aria-label="选择${config.title}" onclick="event.stopPropagation()"><i class="sheet-handle"></i><header><strong>${config.title}</strong>${close}</header>${config.values.map((value) => option(value, profile[config.key] === value, sheet)).join('')}</section></div>`;
 }
 
 function renderTeachingInfo() {
   const profile = state.teacherProfile;
-  return `<div class="screen teaching-info-page"><header class="creator-form-nav">${systemStatus('creator-status creator-form-status')}<div class="creator-nav-row">${creatorBack()}<strong>完善教学信息</strong><span></span></div></header><main class="teaching-info-scroll"><section class="teaching-section"><h2>个人照片 <i>*</i><small>（最多 3 张）</small><button data-action="rotate-teaching-photos">更换照片</button></h2><div class="teaching-photo-grid">${profile.photos.map((photo, index) => `<button class="teaching-photo teacher-lifestyle-photo ${photo}" data-action="rotate-teaching-photos" aria-label="更换第 ${index + 1} 张个人照片"></button>`).join('')}</div></section><section class="teaching-section"><h2>教授语言<i>*</i></h2><button class="teaching-select" data-action="open-teaching-sheet" data-sheet="teaching-language">${profile.language} <span>›</span></button><h2>同时会说</h2><button class="teaching-select" data-action="creator-toast">${profile.alsoSpeaks} <span>›</span></button><h2>教学类型<i>*</i><small>（最多 3 个）</small></h2><button class="teaching-select teaching-types-value" data-action="open-teaching-sheet" data-sheet="teaching-types"><b>${profile.types.join('、')}</b><span>›</span></button><h2>个人介绍<i>*</i></h2><button class="teaching-textarea" data-action="open-teaching-sheet" data-sheet="teaching-intro">${profile.intro}</button><h2>教学经验<i>*</i></h2><button class="teaching-textarea" data-action="creator-toast">5 年中文教学经验，擅长会话与发音训练。</button></section><section class="teaching-section"><h2>教学资料<i>*</i><small>（可用于教学的文件类型）</small></h2><button class="teaching-select" data-action="creator-toast">PPT文件 <span>›</span></button><h2>获得证书<i>*</i><small>（推荐上传 CELTA、TESOL、CTCSOL 等证书）</small></h2><button class="teaching-select" data-action="creator-toast">Other <span>›</span></button><h2>证书图片<i>*</i></h2><button class="certificate-upload" data-action="creator-toast">▧<b>+</b></button><h2>学历背景</h2><div class="education-row"><button data-action="creator-toast">开始时间</button><span>−</span><button data-action="creator-toast">结束时间</button></div><button class="school-field" data-action="creator-toast">学校名称</button><h2>常用邮箱 <i>*</i></h2><button class="teaching-select" data-action="creator-toast">teacher@example.com</button><h2>手机号</h2><button class="teaching-select" data-action="creator-toast">138 0000 0000</button></section></main><button class="teaching-submit" data-action="finish-teaching-info">确认提交</button>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}${renderTeachingInfoSheet()}</div>`;
+  return `<div class="screen teaching-info-page"><header class="creator-form-nav">${systemStatus('creator-status creator-form-status')}<div class="creator-nav-row">${creatorBack()}<strong>完善教学信息</strong><span></span></div></header><main class="teaching-info-scroll"><section class="teaching-section"><h2>个人照片 <i>*</i><small>（最多 3 张）</small><button data-action="rotate-teaching-photos">更换照片</button></h2><div class="teaching-photo-grid">${profile.photos.map((photo, index) => `<button class="teaching-photo teacher-lifestyle-photo ${photo}" data-action="rotate-teaching-photos" aria-label="更换第 ${index + 1} 张个人照片"></button>`).join('')}</div></section><section class="teaching-section"><h2>教授语言<i>*</i></h2><button class="teaching-select" data-action="open-teaching-sheet" data-sheet="teaching-language">${profile.language} <span>›</span></button><h2>同时会说</h2><button class="teaching-select" data-action="open-teaching-sheet" data-sheet="teaching-also-speaks">${profile.alsoSpeakList.join('、')} <span>›</span></button><h2>教学类型<i>*</i><small>（最多 3 个）</small></h2><button class="teaching-select teaching-types-value" data-action="open-teaching-sheet" data-sheet="teaching-types"><b>${profile.types.join('、')}</b><span>›</span></button><h2>个人介绍<i>*</i></h2><button class="teaching-textarea" data-action="open-teaching-sheet" data-sheet="teaching-intro">${profile.intro}</button><h2>教学经验<i>*</i></h2><button class="teaching-textarea" data-action="open-teaching-sheet" data-sheet="teaching-experience">${profile.experience}</button></section><section class="teaching-section"><h2>教学资料<i>*</i><small>（可用于教学的文件类型）</small></h2><button class="teaching-select" data-action="open-teaching-sheet" data-sheet="teaching-materials">${profile.materials} <span>›</span></button><h2>获得证书<i>*</i><small>（推荐上传 CELTA、TESOL、CTCSOL 等证书）</small></h2><button class="teaching-select" data-action="open-teaching-sheet" data-sheet="teaching-certificate">${profile.certificate} <span>›</span></button><h2>证书图片<i>*</i></h2><button class="certificate-upload ${profile.certificateImage ? 'uploaded' : ''}" data-action="upload-certificate" aria-label="上传证书图片">${profile.certificateImage ? '✓' : '▧'}<b>${profile.certificateImage ? '' : '+'}</b></button><h2>学历背景</h2><button class="teaching-select" data-action="open-teaching-sheet" data-sheet="teaching-education">${profile.education} <span>›</span></button><h2>常用邮箱 <i>*</i></h2><button class="teaching-select" data-action="open-teaching-sheet" data-sheet="teaching-email">${profile.email} <span>›</span></button><h2>手机号</h2><button class="teaching-select" data-action="open-teaching-sheet" data-sheet="teaching-phone">${profile.phone} <span>›</span></button></section></main><button class="teaching-submit" data-action="finish-teaching-info">确认提交</button>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}${renderTeachingInfoSheet()}</div>`;
 }
 
 function renderTimeManagement() {
@@ -1245,7 +1365,52 @@ function renderTimeManagement() {
   return `<div class="screen time-page"><header class="creator-form-nav">${systemStatus('creator-status creator-form-status')}<div class="creator-nav-row">${creatorBack()}<strong>时间管理</strong><button class="time-settings" data-action="creator-toast">⎔</button></div></header><main class="time-scroll"><section class="calendar-card"><div class="calendar-top"><button data-action="creator-toast">‹</button><b>2026/9</b><button data-action="creator-toast">›</button><span><button data-action="creator-toast">批量关课</button><button data-action="creator-toast">批量开课</button></span></div><div class="calendar-week">${days.map((day) => `<b>${day}</b>`).join('')}</div><div class="calendar-days">${dates.map((day) => `<button data-action="creator-toast" class="${day === '2' ? 'selected' : ''}">${day}</button>`).join('')}</div></section><button class="open-all" data-action="open-all-slots">全部打开</button><section class="time-grid">${slots.map((slot) => `<button data-action="toggle-slot"><b>${slot}</b><small>Closed</small></button>`).join('')}</section></main><button class="save-time" data-action="save-time">保存时间表</button>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
 }
 
+function renderStudentMyCourses() {
+  const purchasedOffline = studentPurchasedOfflineCourses();
+  const pendingInPerson = purchasedOffline.reduce((total, course) => total + course.remainingSessions, 0);
+  const cards = [
+    ['foreign', '外教口语课', '#eef2ff', '78', '34'],
+    ['partner', '语伴畅聊', '#fff0e3', '1', '4'],
+    ['group', '英语精选语伴', '#edf8f8', '', ''],
+    ['live', '热门主播课', '#eef2ff', '0', '1'],
+    ['group', '日语精选语伴', '#edf8f8', '', ''],
+    ['group', '韩语精选语伴', '#edf8f8', '', '']
+  ];
+  const icon = (kind) => kind === 'foreign' ? studentMeIcon('foreign') : kind === 'partner' ? '<svg viewBox="0 0 42 42"><path d="M9 7h24v20a7 7 0 0 1-7 7H17l-6 5v-5h-2a7 7 0 0 1-7-7V14a7 7 0 0 1 7-7Z" fill="#ff8230"/><text x="10" y="25" fill="#fff" font-size="14" font-weight="900">HI</text></svg>' : kind === 'live' ? '<svg viewBox="0 0 42 42"><rect x="7" y="10" width="28" height="25" rx="7" fill="#4296f7"/><path d="M17 18l10 5-10 5Z" fill="#fff"/><path d="M21 6v5m-5-2 2 3m8-3-2 3" stroke="#4296f7" stroke-width="2.5" stroke-linecap="round"/></svg>' : '<svg viewBox="0 0 42 42"><circle cx="16" cy="17" r="6" fill="#00868a"/><circle cx="27" cy="17" r="6" fill="#00868a"/><path d="M5 34c1-7 8-10 12-10s11 3 12 10H5Zm13 0c1-7 7-10 12-10s10 3 11 10H18Z" fill="#00868a"/></svg>';
+  return `<div class="screen student-course-page">${systemStatus('student-status')}<header class="student-course-nav"><button data-action="back-student-courses" aria-label="返回">‹</button><strong>我的课程</strong><span></span></header><main class="student-course-scroll"><button class="student-course-summary student-inperson-summary" data-action="open-student-inperson-sheet" style="--student-course-bg:#f1ebff"><i class="inperson"><svg viewBox="0 0 42 42" aria-hidden="true"><path d="m5 18 16-10 16 10-16 10L5 18Z" fill="#6f4de9"/><path d="M11 22v10c5 4 15 4 20 0V22" fill="none" stroke="#6f4de9" stroke-width="3" stroke-linecap="round"/><path d="M37 18v11" fill="none" stroke="#6f4de9" stroke-width="3" stroke-linecap="round"/></svg></i><b>面授课程</b><em>›</em><div class="student-course-counts single"><span><strong>${pendingInPerson}</strong>待上课</span></div></button>${cards.map(([kind, title, color, active, booking]) => `<button class="student-course-summary" data-action="student-toast" style="--student-course-bg:${color}"><i class="${kind}">${icon(kind)}</i><b>${title}</b><em>›</em>${active ? `<div class="student-course-counts"><span><strong>${active}</strong>待上课</span><i></i><span><strong>${booking}</strong>待预约</span></div>` : '<small>学习记录</small>'}</button>`).join('')}<article class="student-course-promo"><i>IT</i><div><b>HelloItalian</b><span>适合语言等级：A1-B2</span><em>9个主题　 134节课</em></div><button data-action="student-toast">立即学习</button></article></main>${state.studentInPersonSheet ? renderStudentInPersonSheet(purchasedOffline) : ''}${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
+}
+
+function studentPurchasedOfflineCourses() {
+  const teacher = teachers.find((item) => item.id === 'sarah');
+  return teacherCourses(teacher).filter((course) => course.format === 'offline' && course.live).map((course) => {
+    const totalSessions = course.pack?.sessions || Number(course.sessions) || 1;
+    const attendedSessions = state.studentInPersonAttendance[course.id] || 0;
+    return { ...course, remainingSessions: Math.max(0, totalSessions - attendedSessions) };
+  });
+}
+
+function renderStudentInPersonSheet(courses) {
+  const checkinCourse = courses.find((course) => course.id === state.studentCheckinCourseId);
+  const completed = state.studentCompletedClasses;
+  const pendingCourses = courses.filter((course) => course.remainingSessions > 0);
+  const isPending = state.studentInPersonTab === 'pending';
+  const pendingContent = `<p>共 ${pendingCourses.reduce((total, course) => total + course.remainingSessions, 0)} 节待上课</p>${pendingCourses.length ? `<div class="student-inperson-list">${pendingCourses.map((course) => `<article class="student-inperson-card"><div class="student-inperson-card-main"><b>${course.title}</b><p>${courseIcon('mic')}${course.language}　${courseIcon('clock')}${course.duration}</p><small>剩余 ${course.remainingSessions} 节 · ${course.schedule}</small><div class="student-inperson-actions"><button class="student-inperson-checkin" data-action="request-student-checkin" data-course="${course.id}">签到</button><button class="student-inperson-contact" data-action="contact-teacher">联系</button></div></div><img src="${course.cover}" alt="${course.title}课程封面"/><footer>可选地点：${course.venues.map((venue) => venue.venue).join('、')}</footer></article>`).join('')}</div>` : `<div class="student-completed-empty"><b>暂无待上课程</b><span>已完成的课程可在「已上课」中查看</span></div>`}`;
+  const completedContent = completed.length ? `<p>共 ${completed.length} 节已上课</p><div class="student-completed-list">${completed.map((item) => `<article class="student-completed-card"><div class="student-completed-card-head"><b>${item.title}</b><small>已完成</small></div><div class="student-completed-teacher"><span class="mini-avatar photo-${item.teacherPhoto}"></span><b>${item.teacherName}</b><span>·</span><em>${item.language}</em></div><p>上课时间：${item.time}</p><div><button data-action="rate-student-course" data-course="${item.courseId}" ${state.studentRatedCourses[item.courseId] ? 'disabled' : ''}>${state.studentRatedCourses[item.courseId] ? '已评价' : '评价'}</button><button data-action="contact-teacher">联系</button></div></article>`).join('')}</div>` : `<div class="student-completed-empty"><b>暂无已上课程</b><span>完成签到后，课程记录会展示在这里</span></div>`;
+  return `<div class="student-inperson-layer"><button class="student-inperson-scrim" data-action="close-student-inperson-sheet" aria-label="关闭"></button><section class="student-inperson-sheet" aria-label="已购面授课程"><div class="student-inperson-handle"></div><header><strong>已购面授课程</strong><button data-action="close-student-inperson-sheet" aria-label="关闭">×</button></header><div class="student-inperson-tabs"><button class="${isPending ? 'active' : ''}" data-action="select-student-inperson-tab" data-tab="pending">待上课</button><button class="${isPending ? '' : 'active'}" data-action="select-student-inperson-tab" data-tab="completed">已上课</button></div>${isPending ? pendingContent : completedContent}</section>${checkinCourse ? renderStudentCheckinConfirm(checkinCourse) : ''}</div>`;
+}
+
+function renderStudentCheckinConfirm(course) {
+  return `<div class="student-checkin-confirm" role="dialog" aria-modal="true" aria-label="签到确认"><section><strong>确认签到？</strong><p>签到后将扣减「${course.title}」1 节课时，剩余 ${Math.max(0, course.remainingSessions - 1)} 节。</p><div><button data-action="cancel-student-checkin">取消</button><button data-action="confirm-student-checkin">确认签到</button></div></section></div>`;
+}
+
+function renderStudentCourseReview() {
+  const course = state.studentCompletedClasses.find((item) => item.courseId === state.studentReviewCourseId) || state.studentCompletedClasses[0];
+  const ratings = ['😎', '😎', '😎', '😎', '😎'];
+  return `<div class="screen student-review-page"><div class="student-review-blue">${systemStatus('student-review-status')}<button class="student-review-back" data-action="back-student-review" aria-label="返回">‹</button><div class="student-review-illustration"><span>😊</span><i>◢</i><i>◣</i></div></div><main class="student-review-sheet"><p class="student-review-course">${course ? course.title : '面授课程'} · ${course ? course.teacherName : 'Sarah'}</p><h1>你觉得本节课的收获如何？</h1><section class="student-review-rating">${ratings.map((emoji, index) => `<button class="${state.studentRating === index + 1 ? 'selected' : ''}" data-action="select-student-rating" data-rating="${index + 1}" aria-label="${index + 1}星评价">${emoji}</button>`).join('')}</section><h2>写下你对本节课的评价吧！</h2><textarea placeholder="分享一下你的学习收获，帮助老师持续改进"></textarea><button class="student-review-submit" data-action="submit-student-review">提交反馈</button><button class="student-review-share" data-action="share-student-review">🎁 提交并分享</button></main>${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
+}
+
 function renderCreatorRoute() {
+  if (state.myIdentity === 'student') return state.studentReviewCourseId ? renderStudentCourseReview() : state.studentCoursePage ? renderStudentMyCourses() : renderStudentCenter();
   if (state.creatorPlacePage) return renderCreatorPlacePage();
   if (state.myRoute === 'create') return renderCreateCourse();
   if (state.myRoute === 'teaching-info') return renderTeachingInfo();
@@ -1338,6 +1503,10 @@ function syncCreatorConsole() {
     const availabilityLabel = state.courseAvailability.length ? `${state.courseAvailability.length} 个时段` : '未设置';
     parameters = `<label>我的课程<select data-console-field="creatorCourseState">${options(['有课程', '暂无课程'], state.creatorCourseState)}</select></label><label>课程所在城市<select data-console-field="creatorCity">${cityOptions}</select></label><div class="console-metric"><span>我的课程<b>${state.creatorCourseState}</b></span><span>课程字段<b>${creatorMissingFields().length ? `待补 ${creatorMissingFields().length} 项` : '可提交'}</b></span><span>可选地点<b>${state.courseVenues.length}/3 处</b></span><span>可授课时段<b>${availabilityLabel}</b></span><span>售卖方案<b>${salesModeLabel}</b></span><span>实际售价<b>${finalSaleLabel}</b></span></div>`;
     expected = state.creatorCourseState === '暂无课程' ? '“我的课程”展示空状态，保留创建新课入口；不展示课程分类和在售/下架列表。' : state.creatorPlacePage ? `已进入地点搜索，保留“咖啡”的搜索记录与最近搜索；用户可继续搜索并选择地点。` : `线下课程最多可选 3 个地点，且至少设置 1 个每日可授课时段；预约页仅展示老师设置的时段。`;
+  } else if (state.consoleMode === 'student') {
+    title = '学生端我的页面';
+    parameters = `<label>进入身份<select data-console-field="myIdentity">${options(['student', 'teacher'], state.myIdentity)}</select></label><div class="console-metric"><span>用户资料<b>已展示</b></span><span>权益入口<b>VIP</b></span><span>动态入口<b>可查看</b></span><span>当前身份<b>学生</b></span></div>`;
+    expected = '选择学生身份后，底部“我”进入 HT 原生层级的个人页：资料、VIP 权益、动态与底部导航；不展示老师创建、授课管理与收入入口。';
   } else {
     const count = eligibleTeachers(state.city).length;
     parameters = `<label>用户所在城市<select data-console-field="city">${cityOptions}</select></label><div class="console-metric"><span>符合条件老师<b>${count} 位</b></span><span>模块状态<b>${count >= 4 ? '展示' : '不展示'}</b></span></div>`;
@@ -1439,6 +1608,32 @@ function bindEvents() {
       return;
     }
     if (action === 'open-teacher-certification') { state.toast = '认证面授老师：已完成平台教师认证，可开设线下面授课程'; setTimeout(() => { state.toast = ''; render(); }, 2400); }
+    if (action === 'student-toast') { state.toast = '该学生端入口已保留'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
+    if (action === 'open-student-courses') { state.studentCoursePage = true; render(); return; }
+    if (action === 'back-student-courses') { state.studentCoursePage = false; render(); return; }
+    if (action === 'open-student-inperson-sheet') { state.studentInPersonSheet = true; state.studentInPersonTab = 'pending'; render(); return; }
+    if (action === 'close-student-inperson-sheet') { state.studentInPersonSheet = false; state.studentInPersonTab = 'pending'; state.studentCheckinCourseId = ''; render(); return; }
+    if (action === 'select-student-inperson-tab') { state.studentInPersonTab = event.currentTarget.dataset.tab; render(); return; }
+    if (action === 'request-student-checkin') { state.studentCheckinCourseId = event.currentTarget.dataset.course; render(); return; }
+    if (action === 'cancel-student-checkin') { state.studentCheckinCourseId = ''; render(); return; }
+    if (action === 'rate-student-course') { state.studentReviewCourseId = event.currentTarget.dataset.course; state.studentRating = 0; render(); return; }
+    if (action === 'back-student-review') { state.studentReviewCourseId = ''; state.studentCoursePage = true; state.studentInPersonSheet = true; state.studentInPersonTab = 'completed'; render(); return; }
+    if (action === 'select-student-rating') { state.studentRating = Number(event.currentTarget.dataset.rating); render(); return; }
+    if (action === 'submit-student-review' || action === 'share-student-review') { state.studentRatedCourses[state.studentReviewCourseId] = true; state.toast = action === 'share-student-review' ? '已提交评价并分享' : '已提交课程评价'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
+    if (action === 'confirm-student-checkin') {
+      const course = studentPurchasedOfflineCourses().find((item) => item.id === state.studentCheckinCourseId);
+      if (!course || !course.remainingSessions) { state.studentCheckinCourseId = ''; render(); return; }
+      state.studentInPersonAttendance[course.id] = (state.studentInPersonAttendance[course.id] || 0) + 1;
+      const teacher = teachers.find((item) => item.id === 'sarah');
+      const completedIndex = state.studentCompletedClasses.filter((item) => item.courseId === course.id).length;
+      const classTimes = course.id === 'weekend' ? ['2026年9月28日 10:00–11:00', '2026年9月21日 10:00–11:00'] : ['2026年9月30日 14:00–14:50'];
+      state.studentCompletedClasses.unshift({ courseId: course.id, title: course.title, teacherName: teacher.name, teacherPhoto: teacher.photo, language: course.language, time: classTimes[completedIndex] || classTimes[classTimes.length - 1] });
+      state.studentCheckinCourseId = '';
+      state.toast = `${course.title} 已签到，剩余 ${course.remainingSessions - 1} 节`;
+      setTimeout(() => { state.toast = ''; render(); }, 1800);
+      render();
+      return;
+    }
     if (action === 'clear-map-teacher') { state.mapTeacherId = null; state.activeVenue = null; render(); return; }
     if (action === 'hi') { state.toast = '已向对方打招呼'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'tab-root') { const tab = event.currentTarget.dataset.tab; if (tab === '找语伴') state.rootPage = 'partner'; else if (tab === '动态') state.rootPage = 'moments'; else if (tab === '我') { state.rootPage = 'mine'; state.myRoute = 'courses'; } else { state.toast = `${tab} 页面暂未纳入本次 Demo`; setTimeout(() => { state.toast = ''; render(); }, 1800); } }
@@ -1578,9 +1773,11 @@ function bindEvents() {
     if (action === 'open-teaching-info') { state.teachingInfoOrigin = 'courses'; state.myRoute = 'teaching-info'; }
     if (action === 'open-teaching-sheet') { state.creatorSheet = event.currentTarget.dataset.sheet; render(); return; }
     if (action === 'close-teaching-sheet') { state.creatorSheet = ''; render(); return; }
-    if (action === 'select-teaching-value') { const { field, value } = event.currentTarget.dataset; if (field === 'teaching-language') state.teacherProfile.language = value; else state.teacherProfile.intro = value; state.creatorSheet = ''; render(); return; }
+    if (action === 'select-teaching-value') { const { field, value } = event.currentTarget.dataset; const key = { 'teaching-language': 'language', 'teaching-intro': 'intro', 'teaching-materials': 'materials', 'teaching-certificate': 'certificate', 'teaching-education': 'education', 'teaching-email': 'email', 'teaching-phone': 'phone' }[field]; state.teacherProfile[key] = value; state.creatorSheet = ''; render(); return; }
     if (action === 'toggle-teaching-type') { const value = event.currentTarget.dataset.value; if (state.teacherProfile.types.includes(value)) state.teacherProfile.types = state.teacherProfile.types.filter((type) => type !== value); else if (state.teacherProfile.types.length < 3) state.teacherProfile.types = [...state.teacherProfile.types, value]; else { state.toast = '最多选择 3 个教学类型'; setTimeout(() => { state.toast = ''; render(); }, 1800); } render(); return; }
+    if (action === 'toggle-teaching-speaking') { const value = event.currentTarget.dataset.value; if (state.teacherProfile.alsoSpeakList.includes(value)) state.teacherProfile.alsoSpeakList = state.teacherProfile.alsoSpeakList.filter((language) => language !== value); else if (state.teacherProfile.alsoSpeakList.length < 3) state.teacherProfile.alsoSpeakList = [...state.teacherProfile.alsoSpeakList, value]; else { state.toast = '最多选择 3 种语言'; setTimeout(() => { state.toast = ''; render(); }, 1800); } render(); return; }
     if (action === 'rotate-teaching-photos') { state.teacherProfile.photos = [...state.teacherProfile.photos.slice(1), state.teacherProfile.photos[0]]; state.toast = '已更新老师个人照片'; render(); setTimeout(() => { state.toast = ''; render(); }, 1500); return; }
+    if (action === 'upload-certificate') { state.teacherProfile.certificateImage = true; state.toast = '证书图片已上传'; render(); setTimeout(() => { state.toast = ''; render(); }, 1500); return; }
     if (action === 'finish-teaching-info') { state.creatorSheet = ''; state.myRoute = 'courses'; state.toast = '教学信息已保存'; setTimeout(() => { state.toast = ''; render(); }, 1800); }
     if (action === 'toggle-slot') { const slot = event.currentTarget; slot.classList.toggle('opened'); slot.querySelector('small').textContent = slot.classList.contains('opened') ? 'Open' : 'Closed'; return; }
     if (action === 'open-all-slots') { app.querySelectorAll('.time-grid button').forEach((slot) => { slot.classList.add('opened'); slot.querySelector('small').textContent = 'Open'; }); return; }
@@ -1678,6 +1875,9 @@ function bindEvents() {
     }
     syncCreatorConsole();
   }));
+  app.querySelectorAll('[data-teaching-input]').forEach((input) => input.addEventListener('input', (event) => {
+    state.teacherProfile[event.currentTarget.dataset.teachingInput] = event.currentTarget.value;
+  }));
   app.querySelectorAll('[data-availability-index]').forEach((input) => input.addEventListener('change', (event) => {
     const index = Number(event.currentTarget.dataset.availabilityIndex);
     const part = event.currentTarget.dataset.availabilityPart;
@@ -1745,6 +1945,19 @@ document.querySelector('#scenario-parameters').addEventListener('change', (event
     state.creatorPlacePage = false;
     state.consoleMode = 'creator';
     state.consoleScenario = `我的课程 · ${value}`;
+  }
+  if (field === 'myIdentity') {
+    state.myIdentity = value;
+    state.studentCoursePage = false;
+    state.studentInPersonSheet = false;
+    state.studentInPersonTab = 'pending';
+    state.studentCheckinCourseId = '';
+    state.studentReviewCourseId = '';
+    state.studentRating = 0;
+    state.rootPage = 'mine';
+    state.myRoute = 'courses';
+    state.consoleMode = value === 'student' ? 'student' : 'creator';
+    state.consoleScenario = value === 'student' ? '学生端 · 我的页面' : '老师端 · 我的课程';
   }
   render();
 });
