@@ -57,7 +57,7 @@ const interfacePhrases = {
   '面授课程': { en: 'In-person Courses', ja: '対面レッスン' },
   '线下课程': { en: 'In-person Course', ja: '対面レッスン' },
   '个人档案': { en: 'Profile', ja: 'プロフィール' },
-  '个人照片': { en: 'Photos', ja: '写真' },
+  '老师风采': { en: 'Teacher highlights', ja: '講師の魅力' },
   '教学类型': { en: 'Teaching focus', ja: '指導カテゴリー' },
   '老师自我介绍': { en: 'About the teacher', ja: '講師紹介' },
   '课程列表': { en: 'Course list', ja: 'コース一覧' },
@@ -795,9 +795,10 @@ function teacherLifestylePhotoClass(teacher, index) {
   return teacher.id === 'sarah' ? `teacher-lifestyle-photo ${state.teacherProfile.photos[index]}` : `photo-${teacher.photo} portrait-shot-${index}`;
 }
 
-function renderTeacherPortraitShowcase(teacher) {
+function renderTeacherMediaShowcase(teacher) {
   const labels = ['日常照片', '备课时刻', '课堂留影'];
-  return `<section class="teacher-portrait-showcase" aria-label="${teacher.name}的个人照片"><h3>个人照片</h3><div class="teacher-showcase-grid">${labels.map((label, index) => `<button class="teacher-showcase-photo" data-action="open-profile-photo" data-photo-index="${index}" aria-label="查看${teacher.name}的${label}"><span class="teacher-showcase-image ${teacherLifestylePhotoClass(teacher, index)}"></span></button>`).join('')}</div></section>`;
+  const video = teacher.id === 'sarah' ? state.teacherProfile.introVideo : { title: `${teacher.name} 的介绍视频`, duration: '00:42', cover: 'assets/sarah-lifestyle-triptych.png' };
+  return `<section class="teacher-portrait-showcase teacher-media-showcase" aria-label="${teacher.name}的老师风采"><h3>老师风采</h3><div class="teacher-showcase-grid"><button class="teacher-showcase-photo teacher-showcase-video" data-action="play-intro-video" aria-label="播放${video.title}"><img src="${video.cover}" alt="${teacher.name}上传的介绍视频封面" /><i>▶</i><small>${video.duration}</small></button>${labels.map((label, index) => `<button class="teacher-showcase-photo" data-action="open-profile-photo" data-photo-index="${index}" aria-label="查看${teacher.name}的${label}"><span class="teacher-showcase-image ${teacherLifestylePhotoClass(teacher, index)}"></span></button>`).join('')}</div></section>`;
 }
 
 function renderProfilePhotoViewer(teacher) {
@@ -815,7 +816,7 @@ function renderProfileCoursePicker(teacher) {
 
 function renderTeacherOverview(teacher) {
   const profile = teacher.id === 'sarah' ? state.teacherProfile : { types: ['FreeTalk', '实用口语', '旅行口语'], intro: `你好，我是 ${teacher.name}。在深圳开设一对一中文面授课，擅长把日常场景、旅行和工作沟通带入练习。我们可以先从你的学习目标聊起，再一起约定方便的上课地点。` };
-  return `<section class="teacher-profile-overview"><section class="teacher-types"><h3>教学类型</h3><div>${profile.types.map((type) => `<span>${type}</span>`).join('')}</div></section><section class="teacher-self-intro"><h3>老师自我介绍</h3><p>${profile.intro}</p></section>${renderTeacherPortraitShowcase(teacher)}</section>`;
+  return `<section class="teacher-profile-overview"><section class="teacher-types"><h3>教学类型</h3><div>${profile.types.map((type) => `<span>${type}</span>`).join('')}</div></section><section class="teacher-self-intro"><h3>老师自我介绍</h3><p>${profile.intro}</p></section>${renderTeacherMediaShowcase(teacher)}</section>`;
 }
 
 function renderTeacherArchive() {
@@ -839,11 +840,6 @@ function renderCourseVenueBlock(teacher) {
   const venue = currentVenue(teacher);
   const venueLabel = venues.length > 1 ? `${venue.venue}等 ${venues.length} 处` : venue.venue;
   return `<div class="course-venue-inline"><button data-action="open-venue-map" data-id="${teacher.id}" data-venue="${venue.venue}" aria-label="查看${venueLabel}的上课地点"><i class="venue-pin" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg></i><span>${venueLabel}</span><b aria-hidden="true">›</b></button></div>`;
-}
-
-function renderIntroVideoCard(teacher) {
-  const video = teacher.id === 'sarah' ? state.teacherProfile.introVideo : { title: `${teacher.name} 的介绍视频`, duration: '00:42', cover: 'assets/sarah-lifestyle-triptych.png' };
-  return `<section class="course-section trial-course-section intro-video-section"><div class="course-section-head"><h2>介绍视频</h2><span class="course-section-note">了解老师的教学方式</span></div><button class="course-card trial-course-card intro-video-card" data-action="play-intro-video" aria-label="播放${video.title}"><div class="course-card-title"><strong>${video.title}</strong><span class="trial-course-badge">免费</span></div><div class="course-card-body"><div class="trial-cover"><img src="${video.cover}" alt="${teacher.name}上传的介绍视频封面" /><i>▶</i><small>${video.duration}</small></div><div class="course-meta"><p class="course-meta-line"><span>${courseIcon('mic')}${teacher.id === 'sarah' ? state.teacherProfile.language : '中文'}</span></p><p class="course-meta-line"><em>${courseIcon('clock')}点击播放</em></p></div></div></button></section>`;
 }
 
 function renderCourseVenueSection(teacher, venue) {
@@ -879,7 +875,7 @@ function renderProfile() {
   const isPackage = pricing.sessions > 1;
   return `<div class="screen ht-profile map-profile"><main class="profile-scroll">${renderProfileVenueHero(teacher)}
     <section class="map-profile-summary"><div class="map-profile-avatar teacher-profile-avatar photo-${teacher.photo}"><i class="flag">${flag(teacher.country)}</i><i class="teacher-cap" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m2.5 9.5 9.5-5 9.5 5-9.5 5z"></path><path d="M6.5 11.6v4.1c2.8 2.4 8.2 2.4 11 0v-4.1"></path><path d="M21.5 9.5v6"></path></svg></i><b class="teacher-location" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s6-5.6 6-11a6 6 0 0 0-12 0c0 5.4 6 11 6 11Z"></path><circle cx="12" cy="10" r="2.1"></circle></svg></b></div><div class="map-profile-name"><h1>${teacher.name} <span>♀24</span></h1><div class="map-profile-meta"><p class="map-profile-teaching">教学：${teacher.id === 'sarah' ? state.teacherProfile.language : '中文'}</p><p class="map-profile-teacher"><i>✦</i>认证面授老师</p></div></div>${renderTeacherTrustStats()}<i class="teacher-companion-watermark" aria-hidden="true"></i></section>${renderTeacherOverview(teacher)}
-    ${renderIntroVideoCard(teacher)}
+    ${renderTeacherMediaShowcase(teacher)}
     <section class="course-section inserted-course"><div class="course-section-head"><h2>${state.city}面授课程</h2><button data-action="open-course-list">查看更多 <span>›</span></button></div><div class="profile-course-carousel ${state.courseSlideDirection ? `slide-${state.courseSlideDirection}` : ''}"><article class="course-card offline-map-card"><button class="course-card-summary ${isPackage ? '' : 'course-card-summary--single'}" data-action="open-course-detail" data-course="${course.id}" aria-label="查看${course.title}"><div class="course-card-title"><strong>${course.title}</strong><span class="in-person-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="9" r="2"></circle></svg>线下课程</span></div><div class="course-card-body"><img src="${course.cover}" alt="${course.title}课程封面" /><div class="course-meta">${isPackage ? `<p class="course-meta-line"><span>${courseIcon('mic')}${course.language}</span><em>${courseIcon('clock')}${course.duration}</em></p>` : `<p class="course-meta-line"><span>${courseIcon('mic')}${course.language}</span></p><p class="course-meta-line"><em>${courseIcon('clock')}${course.duration}</em></p>`}${renderCoursePrice(course)}</div></div></button>${renderCourseVenueBlock(teacher)}</article></div><div class="course-pagination" aria-label="切换其他课程">${offlineCourses.map((item, index) => `<button type="button" class="${item.id === course.id ? 'active' : ''}" data-action="select-profile-course-page" data-course="${item.id}" aria-label="切换到第 ${index + 1} 门课程"></button>`).join('')}</div></section>
     <nav class="profile-tabs"><button data-action="profile-tab" data-tab="archive" class="${state.profileTab === 'archive' ? 'selected' : ''}">个人档案</button><button data-action="profile-tab" data-tab="moments" class="${state.profileTab === 'moments' ? 'selected' : ''}">动态 63</button><button data-action="profile-tab" data-tab="reviews" class="${state.profileTab === 'reviews' ? 'selected' : ''}">评价</button></nav>${renderProfileTab(teacher)}</main>
     <div class="profile-actions map-profile-actions"><button class="relationship ${state.followed ? 'followed' : ''}" data-action="follow" aria-label="${state.followed ? '已关注' : '关注'}">${state.followed ? '已关注' : '关注'}</button><button class="primary" data-action="${state.bookingConfirmed ? 'consult-teacher' : 'open-profile-booking'}">${state.bookingConfirmed ? '咨询' : '预约老师'}</button></div>${renderProfilePhotoViewer(teacher)}${renderProfileCoursePicker(teacher)}${state.profileMore ? renderProfileMore() : ''}${state.sheet ? renderMapSheet() : ''}${state.toast ? `<div class="toast">${state.toast}</div>` : ''}</div>`;
